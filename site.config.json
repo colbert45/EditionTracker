@@ -2,7 +2,10 @@
   "siteUrl": "https://editiontracker.com",
   "siteName": "Edition Tracker",
   "analytics": {
-    "provider": "plausible",
+    "provider": "google",
+    "google": {
+      "id": "G-F1LCC9JJTH"
+    },
     "plausible": {
       "domain": "editiontracker.com",
       "script": "https://plausible.io/js/script.outbound-links.js"

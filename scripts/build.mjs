@@ -78,6 +78,9 @@ const PRELOAD = ["barlow-latin-400-normal", "barlow-latin-600-normal", "barlow-c
 
 function analytics() {
   const a = config.analytics || {};
+  if (a.provider === "google" && /^G-[A-Z0-9]+$/.test(a.google?.id || ""))
+    return `<script async src="https://www.googletagmanager.com/gtag/js?id=${a.google.id}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","${a.google.id}");</script>`;
   if (a.provider === "plausible" && a.plausible?.domain)
     return `<script defer data-domain="${esc(a.plausible.domain)}" src="${esc(a.plausible.script || "https://plausible.io/js/script.js")}"></script>`;
   if (a.provider === "cloudflare" && a.cloudflare?.token)
