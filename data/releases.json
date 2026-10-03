@@ -164,8 +164,8 @@
       "platform": "Nintendo Switch 2",
       "status": "preorder",
       "price": "$99.99",
-      "releaseDate": null,
-      "releaseWindow": "TBA",
+      "releaseDate": "2026-10-29",
+      "releaseWindow": null,
       "preordersOpened": "2026-09-08",
       "searchQuery": "Switch 2 Pro Controller Zelda 40th Anniversary",
       "image": null,
@@ -179,7 +179,7 @@
         ]
       },
       "notes": [
-        "The matching Pro Controller, sold on its own. There's also a version that comes with a display stand. Most coverage expects it alongside the console on Oct 29, but I haven't seen Nintendo confirm a date for it."
+        "The matching Pro Controller, sold on its own. There's also a version that comes with a display stand. It comes out Oct 29, the same day as the console."
       ],
       "inTheBox": [],
       "stores": [
@@ -208,12 +208,94 @@
         {
           "date": "2026-09-08",
           "text": "Revealed with the console. Preorders opened at $99.99."
+        },
+        {
+          "date": "2026-10-03",
+          "text": "Retailers list Oct 29 as the release date, alongside the console."
         }
       ],
       "sources": [
         {
           "label": "The Shortcut",
           "url": "https://www.theshortcut.com/p/the-legend-of-zelda-40th-anniversary-edition-nintendo-switch-2-and-pro-controller-where-to-buy"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/09/the-zelda-ocarina-of-time-special-edition-switch-2-console-and-pro-controller-launch-this-october"
+        }
+      ]
+    },
+    {
+      "id": "switch-2-carrying-case-zelda-40th",
+      "name": "Switch 2 Carrying Case and Screen Protector, Zelda 40th Anniversary Edition",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "preorder",
+      "price": "$39.99",
+      "releaseDate": "2026-10-29",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Switch 2 Carrying Case Zelda 40th Anniversary Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#14161A",
+          "#C9A23A",
+          "#1F6B45"
+        ]
+      },
+      "notes": [
+        "Black carrying case with a gold Triforce and a map of Hyrule, made to match the 40th anniversary console. Comes with a screen protector and a green Zelda cleaning cloth.",
+        "The cheapest piece of the set, and it's been easier to find than the console or the Pro Controller."
+      ],
+      "inTheBox": [
+        "Carrying case",
+        "Screen protector",
+        "Zelda cleaning cloth"
+      ],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "walmart",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "amazon",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "text": "Revealed with the console and Pro Controller at $39.99."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Notebookcheck",
+          "url": "https://www.notebookcheck.net/Nintendo-celebrates-The-Legend-of-Zelda-40th-anniversary-with-special-edition-Switch-2-and-accessories.1393733.0.html"
+        },
+        {
+          "label": "Best Buy listing",
+          "url": "https://www.bestbuy.com/product/nintendo-switch-2-carrying-case-and-screen-protector-the-legend-of-zelda-40th-anniversary-edition-multi/J7GSL57WCW/sku/6691852"
         }
       ]
     },

@@ -1,5 +1,5 @@
 {
-  "_readme": "Feeds the news check reads. Add or remove entries freely. Before adding a site, check its terms allow reading its RSS feed (headline + link use). Reddit is only used when the REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET and REDDIT_USERNAME secrets are set (see README), because Reddit only allows access through its official API.",
+  "_readme": "Feeds the news check reads. Add or remove entries freely. Before adding a site, check its terms allow reading its RSS feed (headline + link use). Reddit is only used when the REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET and REDDIT_USERNAME secrets are set (see the setup notes), because Reddit only allows access through its official API.",
   "userAgent": "EditionTrackerNewsCheck/1.0 (+https://editiontracker.com; checks headlines a few times a day for an editor to review)",
   "news": [
     {
