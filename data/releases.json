@@ -1138,6 +1138,158 @@
           "url": "https://www.pushsquare.com/news/2026/08/marvels-wolverine-limited-edition-ps5-consoles-controllers-announced-pre-orders-next-week"
         }
       ]
+    },
+    {
+      "id": "dualsense-lisa-limited",
+      "name": "DualSense Lisa Limited Edition",
+      "category": "playstation",
+      "platform": "PS5",
+      "status": "out",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Lisa limited edition DualSense PS5 controller",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#f4f1ee",
+          "#e8a0bf",
+          "#1a1a1a"
+        ]
+      },
+      "notes": [
+        "Limited edition DualSense made with Lisa, Sony's global ambassador.",
+        "It's part of a wider merch collection.",
+        "I haven't confirmed the US price or which stores carry it yet."
+      ],
+      "inTheBox": [
+        "DualSense wireless controller"
+      ],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-02",
+          "text": "On sale now as part of a Lisa x PlayStation merch collection. Reported to be selling out fast."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/10/limited-edition-lisa-ps5-controller-available-now-but-selling-out-fast"
+        }
+      ]
+    },
+    {
+      "id": "lego-playstation-ps1",
+      "name": "LEGO PlayStation (PS1)",
+      "category": "collect",
+      "platform": "LEGO",
+      "status": "out",
+      "price": "$159.99",
+      "releaseDate": "2026-10-01",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "LEGO PlayStation PS1 set 1911 pieces",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "bricks",
+        "colors": [
+          "#c9c9c4",
+          "#5a5a5a",
+          "#2e6db4"
+        ]
+      },
+      "notes": [
+        "A 1,911-piece LEGO build of the original PlayStation.",
+        "PS Direct is adding a free Astro Bot set with orders.",
+        "Push Square expects it to sell out."
+      ],
+      "inTheBox": [
+        "LEGO PS1 set, 1,911 pieces",
+        "Astro Bot mini set (PS Direct offer)"
+      ],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "lego",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "amazon",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-01",
+          "text": "Released. PS Direct includes a free Astro Bot set."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/10/lego-ps1-now-available-to-buy-from-ps-direct-with-free-astro-bot-set"
+        }
+      ]
+    },
+    {
+      "id": "sonic-35th-porcelain-statue",
+      "name": "Sonic 35th Anniversary Porcelain Statue",
+      "category": "collect",
+      "platform": "Statue",
+      "status": "announced",
+      "price": "$6,300",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Sonic 35th anniversary porcelain statue",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "figure",
+        "colors": [
+          "#1f5fd6",
+          "#f5f5f0",
+          "#d4202a"
+        ]
+      },
+      "notes": [
+        "Made in Japan by two porcelain kilns working together.",
+        "Only 50 will be made.",
+        "I don't know yet how sales will work or when it ships."
+      ],
+      "inTheBox": [
+        "Porcelain Sonic statue"
+      ],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-02",
+          "text": "Announced. 50 pieces at $6,300 each."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/sega-is-releasing-a-porcelain-sonic-35th-anniversary-statue-limited-to-50-pieces-and-costing-6300-each/"
+        }
+      ]
     }
   ]
 }
