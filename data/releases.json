@@ -5,6 +5,7 @@
     "playstation": "PlayStation",
     "xbox": "Xbox",
     "pc": "PC & handhelds",
+    "retro": "Retro & other",
     "collect": "Collectibles"
   },
   "statuses": {
@@ -66,6 +67,14 @@
     "amazon": {
       "name": "Amazon",
       "searchUrl": "https://www.amazon.com/s?k="
+    },
+    "funstock": {
+      "name": "Funstock",
+      "url": "https://funstockusa.com/"
+    },
+    "iam8bit": {
+      "name": "iam8bit",
+      "url": "https://www.iam8bit.com/"
     }
   },
   "items": [
@@ -1131,11 +1140,11 @@
       "name": "DualSense Lisa Limited Edition",
       "category": "playstation",
       "platform": "PS5",
-      "status": "out",
-      "price": "TBA",
-      "releaseDate": null,
-      "releaseWindow": "TBA",
-      "preordersOpened": null,
+      "status": "preorder",
+      "price": "$84.99",
+      "releaseDate": "2026-10-30",
+      "releaseWindow": null,
+      "preordersOpened": "2026-10-02",
       "searchQuery": "Lisa limited edition DualSense PS5 controller",
       "image": null,
       "imageCredit": null,
@@ -1148,9 +1157,8 @@
         ]
       },
       "notes": [
-        "Limited edition DualSense made with Lisa, Sony's global ambassador.",
-        "It's part of a wider merch collection.",
-        "I haven't confirmed the US price or which stores carry it yet."
+        "Made with Lisa from BLACKPINK. Chroma Pearl finish with her eyes and bangs on the touchpad, plus stars and an \"LL\" monogram. It's part of a wider Lisa x PlayStation merch line.",
+        "Sony says stock will be very limited, so expect it to go fast."
       ],
       "inTheBox": [
         "DualSense wireless controller"
@@ -1164,28 +1172,40 @@
       ],
       "timeline": [
         {
+          "date": "2026-09-21",
+          "text": "Revealed at $84.99."
+        },
+        {
           "date": "2026-10-02",
-          "text": "On sale now as part of a Lisa x PlayStation merch collection. Reported to be selling out fast."
+          "text": "Preorders opened at PlayStation Direct and other stores."
         }
       ],
       "sources": [
         {
           "label": "Push Square",
           "url": "https://www.pushsquare.com/news/2026/10/limited-edition-lisa-ps5-controller-available-now-but-selling-out-fast"
+        },
+        {
+          "label": "GamesRadar",
+          "url": "https://www.gamesradar.com/hardware/gaming-controllers/lisa-limited-edition-dualsense-pre-orders-go-live-today-heres-where-to-grab-yours/"
+        },
+        {
+          "label": "Digital Citizen",
+          "url": "https://www.digitalcitizen.life/sony-and-blackpinks-lisa-reveal-84-99-limited-edition-dualsense-controller/"
         }
       ]
     },
     {
       "id": "lego-playstation-ps1",
-      "name": "LEGO PlayStation (PS1)",
+      "name": "LEGO PlayStation (72306)",
       "category": "collect",
       "platform": "LEGO",
       "status": "out",
-      "price": "$159.99",
-      "releaseDate": "2026-10-01",
+      "price": "$179.99",
+      "releaseDate": "2026-10-04",
       "releaseWindow": null,
       "preordersOpened": null,
-      "searchQuery": "LEGO PlayStation PS1 set 1911 pieces",
+      "searchQuery": "LEGO PlayStation 72306",
       "image": null,
       "imageCredit": null,
       "art": {
@@ -1197,27 +1217,21 @@
         ]
       },
       "notes": [
-        "A 1,911-piece LEGO build of the original PlayStation.",
-        "PS Direct is adding a free Astro Bot set with orders.",
-        "Push Square expects it to sell out."
+        "A 1,911-piece LEGO build of the original PlayStation and its controller, with a working disc lid and hidden Gran Turismo and Ape Escape scenes inside.",
+        "LEGO Insiders could buy it from Oct 1, and it's open to everyone from Oct 4. PlayStation Direct is adding a free Astro Bot set with orders."
       ],
       "inTheBox": [
-        "LEGO PS1 set, 1,911 pieces",
-        "Astro Bot mini set (PS Direct offer)"
+        "1,911 pieces",
+        "Astro Bot mini set (PlayStation Direct orders only)"
       ],
       "stores": [
-        {
-          "store": "psdirect",
-          "listed": true,
-          "affiliateUrl": null
-        },
         {
           "store": "lego",
           "listed": true,
           "affiliateUrl": null
         },
         {
-          "store": "amazon",
+          "store": "psdirect",
           "listed": true,
           "affiliateUrl": null
         }
@@ -1225,13 +1239,21 @@
       "timeline": [
         {
           "date": "2026-10-01",
-          "text": "Released. PS Direct includes a free Astro Bot set."
+          "text": "Early access for LEGO Insiders."
+        },
+        {
+          "date": "2026-10-04",
+          "text": "On sale to everyone."
         }
       ],
       "sources": [
         {
           "label": "Push Square",
           "url": "https://www.pushsquare.com/news/2026/10/lego-ps1-now-available-to-buy-from-ps-direct-with-free-astro-bot-set"
+        },
+        {
+          "label": "StoneWars",
+          "url": "https://stonewars.com/news/lego-playstation-72306-reveal/"
         }
       ]
     },
@@ -1275,6 +1297,213 @@
         {
           "label": "Video Games Chronicle",
           "url": "https://www.videogameschronicle.com/news/sega-is-releasing-a-porcelain-sonic-35th-anniversary-statue-limited-to-50-pieces-and-costing-6300-each/"
+        }
+      ]
+    },
+    {
+      "id": "gears-of-war-e-day-controller",
+      "name": "Xbox Controller, Gears of War: E-Day Limited Edition",
+      "category": "xbox",
+      "platform": "Xbox Series X|S, PC",
+      "status": "out",
+      "price": "$89.99",
+      "releaseDate": "2026-09-30",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Gears of War E-Day Limited Edition Xbox Wireless Controller",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#2B2B2E",
+          "#B3121F",
+          "#9AA0A6"
+        ]
+      },
+      "notes": [
+        "Cracked-looking shell with the Crimson Omen showing through, transparent red buttons and a metal COG tag.",
+        "There's also a Design Lab version with heavy metal art by Luke Preece, if you'd rather build your own."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "xbox",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-12",
+          "text": "Revealed at $89.99."
+        },
+        {
+          "date": "2026-09-30",
+          "text": "Released."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/xbox-officially-reveals-its-limited-edition-gears-of-war-e-day-controller-plus-new-design-lab-options/"
+        },
+        {
+          "label": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/08/xbox-unveils-two-new-official-controllers-for-gears-of-war-e-day"
+        }
+      ]
+    },
+    {
+      "id": "thec64-spectrum-handheld-collectors-editions",
+      "name": "THEC64 and The Spectrum Handheld Collector's Editions",
+      "category": "retro",
+      "platform": "Retro handhelds",
+      "status": "preorder",
+      "price": "$149.99 each",
+      "releaseDate": "2027-04-22",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "THEC64 Handheld Collector's Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "handheld",
+        "colors": [
+          "#E6DCC8",
+          "#7A4E2D",
+          "#3A3A44"
+        ]
+      },
+      "notes": [
+        "Clamshell handhelds styled after the Commodore 64 and the ZX Spectrum, each with 25 built-in games and a microSD slot for your own.",
+        "The Collector's Editions are limited to 2,000 each and only sold through Funstock. They add a hard travel case and an exclusive magazine (Zzap!64 for the C64, Crash for the Spectrum). The standard versions are $129.99.",
+        "They were due Oct 15, but Blaze pushed both to April 22, 2027 to fix build quality issues."
+      ],
+      "inTheBox": [
+        "Handheld with 25 built-in games",
+        "Hard shell travel case",
+        "Exclusive magazine"
+      ],
+      "stores": [
+        {
+          "store": "funstock",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-29",
+          "text": "Delayed from Oct 15 to April 22, 2027 over build quality."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/clamshell-handhelds-based-on-the-commodore-64-and-zx-spectrum-are-coming-later-this-year/"
+        },
+        {
+          "label": "GamesRadar (delay)",
+          "url": "https://www.gamesradar.com/hardware/handhelds/the-upcoming-c64-and-zx-spectrum-handheld-just-got-hit-with-a-six-month-delay-due-to-quality-issues/"
+        },
+        {
+          "label": "Funstock USA",
+          "url": "https://funstockusa.com/products/thec64-handheld-collectors-edition"
+        }
+      ]
+    },
+    {
+      "id": "sonic-35th-legacy-cartridges",
+      "name": "Sonic 1 & 2 35th Anniversary Legacy Cartridges (Genesis)",
+      "category": "retro",
+      "platform": "Sega Genesis",
+      "status": "preorder",
+      "price": "$99.99 each",
+      "releaseDate": null,
+      "releaseWindow": "Shipping in waves into early 2027",
+      "preordersOpened": null,
+      "searchQuery": "Sonic 35th Anniversary Legacy Cartridge",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#2E6FD8",
+          "#F28C28",
+          "#14161A"
+        ]
+      },
+      "notes": [
+        "Real Genesis cartridges of Sonic the Hedgehog and Sonic 2 from iam8bit that play on an original NTSC Genesis. Sonic 1 comes in a translucent blue shell and Sonic 2 in orange.",
+        "One in eight comes in a special \"Chaos Emerald\" shell. Orders ship in waves, starting in Q3 2026 and running into Q1 2027, so order early if you want one soon."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "iam8bit",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/sega-is-re-releasing-the-original-sonic-genesis-games-on-100-cartridges/"
+        },
+        {
+          "label": "iam8bit (Sonic 1)",
+          "url": "https://www.iam8bit.com/products/sonic-the-hedgehog-35th-anniversary-legacy-cartridge-collection"
+        },
+        {
+          "label": "iam8bit (Sonic 2)",
+          "url": "https://www.iam8bit.com/products/sonic-the-hedgehog-2-35th-anniversary-legacy-cartridge-collection"
+        }
+      ]
+    },
+    {
+      "id": "majoras-mask-remake-switch-2",
+      "name": "Zelda: Majora's Mask remake (Switch 2)",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "rumor",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Majora's Mask Switch 2",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#5B2A86",
+          "#E8B53A",
+          "#C8102E"
+        ]
+      },
+      "notes": [
+        "Nothing official. The rumor comes from an IMDb credit for Nobuyuki Hiyama, who voices adult Link in the Ocarina remake, and anyone can edit IMDb.",
+        "The pattern fits, though: on 3DS, Ocarina of Time 3D was followed by Majora's Mask 3D. If it gets announced, I'd expect a special edition to come with it."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": false,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Game Rant",
+          "url": "https://gamerant.com/zelda-majoras-mask-switch-2-remake-explained/"
+        },
+        {
+          "label": "GamingBible",
+          "url": "https://www.gamingbible.com/news/zelda-majora-mask-remake-rumours-fans-unconvinced-949462-20260722"
         }
       ]
     }

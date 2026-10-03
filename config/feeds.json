@@ -29,6 +29,10 @@
     {
       "name": "Video Games Chronicle",
       "url": "https://www.videogameschronicle.com/feed/"
+    },
+    {
+      "name": "Time Extension",
+      "url": "https://www.timeextension.com/feeds/latest"
     }
   ],
   "reddit": {
