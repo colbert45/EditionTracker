@@ -243,8 +243,8 @@ function item(i, ogImage) {
     <h2>Notes</h2>${i.notes.map(p => `<p>${esc(p)}</p>`).join("")}
     ${i.inTheBox.length ? `<h2>What's in the box</h2><ul class="plain">${i.inTheBox.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
     <h2>Where to buy</h2>
-    <table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
-    <p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>
+    ${i.stores.length ? `<table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
+    <p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>` : `<p class="small">Not listed yet</p>`}
     ${hasAffiliate ? `<p class="small">Some of these are affiliate links, so Edition Tracker may earn a commission if you buy through them. It doesn't change your price.</p>` : ""}
     ${i.timeline.length ? `<h2>Timeline</h2>
     <ul class="tl">${[...i.timeline].sort((a, b) => b.date.localeCompare(a.date)).map(t => `<li><time datetime="${t.date}">${long(t.date)}</time><span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
