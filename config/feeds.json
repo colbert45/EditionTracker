@@ -1,0 +1,69 @@
+{
+  "_readme": "Feeds the news check reads. Add or remove entries freely. Before adding a site, check its terms allow reading its RSS feed (headline + link use). Reddit is only used when the REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET and REDDIT_USERNAME secrets are set (see README), because Reddit only allows access through its official API.",
+  "userAgent": "EditionTrackerNewsCheck/1.0 (+https://editiontracker.com; checks headlines a few times a day for an editor to review)",
+  "news": [
+    {
+      "name": "Nintendo Life",
+      "url": "https://www.nintendolife.com/feeds/latest"
+    },
+    {
+      "name": "Push Square",
+      "url": "https://www.pushsquare.com/feeds/latest"
+    },
+    {
+      "name": "Pure Xbox",
+      "url": "https://www.purexbox.com/feeds/latest"
+    },
+    {
+      "name": "PlayStation Blog",
+      "url": "https://blog.playstation.com/feed/"
+    },
+    {
+      "name": "Xbox Wire",
+      "url": "https://news.xbox.com/en-us/feed/"
+    },
+    {
+      "name": "Gematsu",
+      "url": "https://www.gematsu.com/feed"
+    },
+    {
+      "name": "Video Games Chronicle",
+      "url": "https://www.videogameschronicle.com/feed/"
+    }
+  ],
+  "reddit": {
+    "terms": "https://redditinc.com/policies/data-api-terms",
+    "subreddits": [
+      "NintendoSwitch",
+      "PS5",
+      "XboxSeriesX",
+      "consolerestocks",
+      "Games",
+      "GameDeals"
+    ]
+  },
+  "keywords": [
+    "special edition",
+    "limited edition",
+    "collector's edition",
+    "collectors edition",
+    "anniversary edition",
+    "anniversary",
+    "bundle",
+    "limited run",
+    "exclusive edition",
+    "controller",
+    "dualsense",
+    "joy-con",
+    "amiibo",
+    "lego",
+    "pre-order",
+    "preorder",
+    "pre-orders",
+    "restock",
+    "sold out",
+    "translucent",
+    "steelbook",
+    "deluxe edition"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "edition-tracker",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "validate": "node scripts/validate.mjs",
+    "serve": "node scripts/serve.mjs",
+    "news": "node scripts/news-check.mjs"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0"
+  },
+  "type": "module",
+  "private": true
+}

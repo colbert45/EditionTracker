@@ -1,0 +1,1143 @@
+{
+  "updated": "2026-10-03",
+  "categories": {
+    "nintendo": "Nintendo",
+    "playstation": "PlayStation",
+    "xbox": "Xbox",
+    "pc": "PC & handhelds",
+    "collect": "Collectibles"
+  },
+  "statuses": {
+    "rumor": "Rumor",
+    "announced": "Announced",
+    "preorder": "Preorders open",
+    "out": "Out now",
+    "soldout": "Sold out"
+  },
+  "stores": {
+    "nintendo": {
+      "name": "Nintendo Store",
+      "url": "https://www.nintendo.com/us/store/"
+    },
+    "xbox": {
+      "name": "Xbox Store",
+      "url": "https://www.xbox.com/"
+    },
+    "psdirect": {
+      "name": "PlayStation Direct",
+      "url": "https://direct.playstation.com/"
+    },
+    "asus": {
+      "name": "ASUS",
+      "url": "https://www.asus.com/us/"
+    },
+    "razer": {
+      "name": "Razer",
+      "url": "https://www.razer.com/"
+    },
+    "eightbitdo": {
+      "name": "8BitDo",
+      "url": "https://www.8bitdo.com/"
+    },
+    "gamesir": {
+      "name": "GameSir",
+      "url": "https://www.gamesir.com/"
+    },
+    "lego": {
+      "name": "LEGO",
+      "url": "https://www.lego.com/en-us"
+    },
+    "bestbuy": {
+      "name": "Best Buy",
+      "searchUrl": "https://www.bestbuy.com/site/searchpage.jsp?st="
+    },
+    "target": {
+      "name": "Target",
+      "searchUrl": "https://www.target.com/s?searchTerm="
+    },
+    "gamestop": {
+      "name": "GameStop",
+      "searchUrl": "https://www.gamestop.com/search/?q="
+    },
+    "walmart": {
+      "name": "Walmart",
+      "searchUrl": "https://www.walmart.com/search?q="
+    },
+    "amazon": {
+      "name": "Amazon",
+      "searchUrl": "https://www.amazon.com/s?k="
+    }
+  },
+  "items": [
+    {
+      "id": "switch-2-zelda-40th",
+      "name": "Switch 2 Zelda 40th Anniversary Edition",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "preorder",
+      "price": "$519.99",
+      "releaseDate": "2026-10-29",
+      "releaseWindow": null,
+      "preordersOpened": "2026-09-08",
+      "searchQuery": "Switch 2 Zelda 40th Anniversary Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "hybrid",
+        "colors": [
+          "#1F6B45",
+          "#C9A23A",
+          "#14161A"
+        ]
+      },
+      "notes": [
+        "Nintendo's first special edition Switch 2. Green and gold console, green Joy-Con, and a black dock with a gold Triforce. It's only $20 more than a regular Switch 2, which is a big part of why it went fast.",
+        "Preorders sold out at Nintendo, Best Buy and Target within about a day, with resellers asking $800 and up. If you missed it, keep an eye out for restocks before Oct 29."
+      ],
+      "inTheBox": [
+        "Switch 2 console with green Joy-Con",
+        "Dock with black and gold Triforce design",
+        "AC adapter",
+        "No game. Ocarina of Time is sold separately"
+      ],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "target",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "walmart",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "amazon",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "text": "Revealed in the Zelda 40th Anniversary Direct. Preorders opened at $519.99."
+        },
+        {
+          "date": "2026-09-09",
+          "text": "Reported sold out at Nintendo, Best Buy and Target."
+        }
+      ],
+      "sources": [
+        {
+          "label": "PC Guide",
+          "url": "https://www.pcguide.com/news/zelda-40th-anniversary-edition-nintendo-switch-2-pre-orders-sell-out-as-scalpers-resell-the-console-for-800/"
+        },
+        {
+          "label": "Zelda Universe",
+          "url": "https://zeldauniverse.net/2026/09/08/ocarina-of-time-remake-pre-orders-go-live-after-zelda-direct/"
+        },
+        {
+          "label": "LevelUp",
+          "url": "https://www.levelup.com/en/news/nintendo-switch-2-will-get-a-the-legend-of-zelda-ocarina-of-time-remake-edition-but-it-wont-include-the-game/"
+        }
+      ]
+    },
+    {
+      "id": "switch-2-pro-controller-zelda-40th",
+      "name": "Switch 2 Pro Controller, Zelda 40th Anniversary Edition",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "preorder",
+      "price": "$99.99",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": "2026-09-08",
+      "searchQuery": "Switch 2 Pro Controller Zelda 40th Anniversary",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#1F6B45",
+          "#C9A23A",
+          "#14161A"
+        ]
+      },
+      "notes": [
+        "The matching Pro Controller, sold on its own. There's also a version that comes with a display stand. Most coverage expects it alongside the console on Oct 29, but I haven't seen Nintendo confirm a date for it."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "walmart",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "text": "Revealed with the console. Preorders opened at $99.99."
+        }
+      ],
+      "sources": [
+        {
+          "label": "The Shortcut",
+          "url": "https://www.theshortcut.com/p/the-legend-of-zelda-40th-anniversary-edition-nintendo-switch-2-and-pro-controller-where-to-buy"
+        }
+      ]
+    },
+    {
+      "id": "ocarina-of-time-remake-foil-first-print",
+      "name": "Zelda: Ocarina of Time (Switch 2), foil first print",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "preorder",
+      "price": "$69.99",
+      "releaseDate": "2026-11-05",
+      "releaseWindow": null,
+      "preordersOpened": "2026-09-08",
+      "searchQuery": "Zelda Ocarina of Time Switch 2",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#C8102E",
+          "#D9C27A",
+          "#1F6B45"
+        ]
+      },
+      "notes": [
+        "Not hardware, but collectors will want it. The first print run of the physical game gets a textured foil cover, and later printings get the regular one. Nintendo Support says preorders placed now are guaranteed the foil version.",
+        "Full game on the cartridge, not a game-key card. Digital is $59.99 if you don't care about the box."
+      ],
+      "inTheBox": [
+        "Full game on cartridge",
+        "Textured foil cover (first print only)"
+      ],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "target",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "walmart",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "amazon",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "text": "Preorders opened. $69.99 physical, $59.99 digital."
+        }
+      ],
+      "sources": [
+        {
+          "label": "LevelUp",
+          "url": "https://www.levelup.com/en/news/the-legend-of-zelda-ocarina-of-time-remake-gets-a-5999-digital-price-and-a-limited-edition-physical-cover/"
+        },
+        {
+          "label": "TechRadar",
+          "url": "https://techradar.com/gaming/nintendo-switch/the-physical-edition-of-the-legend-of-zelda-ocarina-of-time-on-nintendo-switch-2-is-getting-limited-textured-foil-packaging-heres-where-to-preorder-now"
+        }
+      ]
+    },
+    {
+      "id": "ocarina-of-time-collectors-edition",
+      "name": "Zelda: Ocarina of Time Collector's Edition",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "rumor",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Ocarina of Time Collector's Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#1F6B45",
+          "#C9A23A",
+          "#14161A"
+        ]
+      },
+      "notes": [
+        "A product list from French retailer Cdiscount, shared in early September, included a Collector's Edition SKU for the remake. That same list also had a themed console and Pro Controller, and those turned out to be real.",
+        "Nintendo hasn't announced it, and nothing is known about price or contents."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": false,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-04",
+          "text": "Cdiscount product list leaks with a Collector's Edition SKU."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Complex",
+          "url": "https://www.complex.com/pop-culture/a/bernadette-giacomazzo/legend-of-zelda-ocarina-of-time-remake-leaked"
+        },
+        {
+          "label": "Tribune",
+          "url": "https://tribune.com.pk/story/2627751/zelda-ocarina-of-time-remake-collectors-edition-reportedly-leaked"
+        }
+      ]
+    },
+    {
+      "id": "joy-con-2-ocarina-of-time-edition",
+      "name": "Joy-Con 2 pair, Ocarina of Time Edition",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "rumor",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Joy-Con 2 Ocarina of Time",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "joycons",
+        "colors": [
+          "#1F6B45",
+          "#2E8B57",
+          "#C9A23A"
+        ]
+      },
+      "notes": [
+        "Same Cdiscount leak as the Collector's Edition. The console ships with green Joy-Con, so a standalone pair would make sense, but Nintendo hasn't announced one."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": false,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-04",
+          "text": "Appears on the Cdiscount product list."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Game Overdrive (SKU list)",
+          "url": "https://gameoverdrive.com.br/ocarina-of-time-remake-data-preco-edicoes/"
+        }
+      ]
+    },
+    {
+      "id": "amiibo-young-link-young-zelda",
+      "name": "Young Link and Young Zelda amiibo",
+      "category": "collect",
+      "platform": "amiibo",
+      "status": "preorder",
+      "price": "$24.99 each",
+      "releaseDate": null,
+      "releaseWindow": "2027",
+      "preordersOpened": "2026-09-08",
+      "searchQuery": "Young Link amiibo",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "figure",
+        "colors": [
+          "#3E8E4A",
+          "#7B5BA6",
+          "#C9A23A"
+        ]
+      },
+      "notes": [
+        "Kid Link and kid Zelda in their remake designs. Listed on Nintendo's store at $24.99 each. Expected in 2027."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "text": "Revealed in the Zelda Direct and listed for preorder."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Zelda Universe",
+          "url": "https://zeldauniverse.net/2026/09/09/ocarina-of-time-remake-is-getting-new-young-link-and-zelda-amiibo/"
+        },
+        {
+          "label": "Gear Live",
+          "url": "https://www.gearlive.com/news/article/lego-zelda-link-epona-set-1750-pieces-no-price"
+        }
+      ]
+    },
+    {
+      "id": "lego-zelda-link-epona",
+      "name": "LEGO Zelda: Ocarina of Time Link & Epona",
+      "category": "collect",
+      "platform": "LEGO",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "Spring 2027",
+      "preordersOpened": null,
+      "searchQuery": "LEGO Zelda Link Epona",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "bricks",
+        "colors": [
+          "#8B5A2B",
+          "#2F7D3A",
+          "#E8E1D0"
+        ]
+      },
+      "notes": [
+        "1,750-piece display build of adult Link on a rearing Epona. No minifigures. No price yet. For reference, the 1,003-piece Final Battle set is $130 and the 2,500-piece Deku Tree was $300."
+      ],
+      "inTheBox": [
+        "1,750 pieces",
+        "No minifigures"
+      ],
+      "stores": [
+        {
+          "store": "lego",
+          "listed": false,
+          "affiliateUrl": null
+        },
+        {
+          "store": "amazon",
+          "listed": false,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "text": "Shown in the Zelda Direct. Spring 2027."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Zelda Universe",
+          "url": "https://zeldauniverse.net/2026/09/09/nintendo-announces-link-epona-lego-set-to-celebrate-zeldas-40th/"
+        },
+        {
+          "label": "Kotaku",
+          "url": "https://kotaku.com/nintendo-keeps-revealing-cool-expensive-lego-sets-that-wont-be-ready-for-christmas-2000732729"
+        }
+      ]
+    },
+    {
+      "id": "xbox-series-x25",
+      "name": "Xbox Series X25 Limited Edition",
+      "category": "xbox",
+      "platform": "Xbox Series X",
+      "status": "preorder",
+      "price": "$899.99",
+      "releaseDate": "2026-11-13",
+      "releaseWindow": null,
+      "preordersOpened": "2026-08-27",
+      "searchQuery": "Xbox Series X25 Limited Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "tower",
+        "colors": [
+          "#3DBB4A",
+          "#1C2B1E",
+          "#9BE07A"
+        ]
+      },
+      "notes": [
+        "Translucent green Series X, styled after the original Xbox, for the 25th anniversary. Every one is numbered with its own engraving. $100 over a standard 1TB Series X, but it comes with the matching controller and Halo: Campaign Evolved.",
+        "Limit one per customer. One outlet listed Oct 20 as the release date, but that's the controller. The console is Nov 13."
+      ],
+      "inTheBox": [
+        "Translucent green 1TB Series X, individually numbered",
+        "X25 Special Edition controller",
+        "Halo: Campaign Evolved (digital)"
+      ],
+      "stores": [
+        {
+          "store": "xbox",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "target",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-26",
+          "text": "Early preorder invites emailed to some fans."
+        },
+        {
+          "date": "2026-08-27",
+          "text": "Preorders opened for everyone."
+        }
+      ],
+      "sources": [
+        {
+          "label": "The Shortcut",
+          "url": "https://www.theshortcut.com/p/xbox-series-x25-limited-edition-pre-order-date-and-price-revealed-and-there-is-a-nice-surprise-no-one-saw-coming"
+        },
+        {
+          "label": "Dexerto",
+          "url": "https://www.dexerto.com/gaming/microsoft-opens-pre-orders-for-translucent-900-xbox-series-x25-limited-edition-controller-3402610/"
+        }
+      ]
+    },
+    {
+      "id": "xbox-x25-controller",
+      "name": "Xbox X25 Special Edition Controller",
+      "category": "xbox",
+      "platform": "Xbox Series X|S, PC",
+      "status": "preorder",
+      "price": "$79.99",
+      "releaseDate": "2026-10-20",
+      "releaseWindow": null,
+      "preordersOpened": "2026-08-26",
+      "searchQuery": "Xbox X25 Special Edition Controller",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#3DBB4A",
+          "#9BE07A",
+          "#1C2B1E"
+        ]
+      },
+      "notes": [
+        "The translucent green controller from the X25 set, on its own. Comes out about three weeks before the console."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "xbox",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "target",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-26",
+          "text": "Preorders opened."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Digital Citizen",
+          "url": "https://www.digitalcitizen.life/xbox-series-x25-launches-november-13-for-899-99-with-special-edition-controller/"
+        }
+      ]
+    },
+    {
+      "id": "razer-xbox-25-collection",
+      "name": "Razer Xbox 25th Anniversary Collection",
+      "category": "pc",
+      "platform": "PC, Xbox",
+      "status": "preorder",
+      "price": "$119.99 to $209.99",
+      "releaseDate": "2026-10-20",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Razer Xbox 25 Anniversary",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "keyboard",
+        "colors": [
+          "#3DBB4A",
+          "#1C2B1E",
+          "#9BE07A"
+        ]
+      },
+      "notes": [
+        "Translucent green versions of three existing Razer products. Razer's US store lists the keyboard at $209.99, the mouse at $179.99 and the earbuds at $119.99, shipping Oct 20. Some early coverage had lower prices, so go by Razer's site.",
+        "Same hardware as the regular versions, so you're paying for the look."
+      ],
+      "inTheBox": [
+        "BlackWidow V4 75% keyboard (with anniversary wrist rest)",
+        "Basilisk V3 Pro 35K mouse",
+        "Hammerhead V3 X HyperSpeed earbuds"
+      ],
+      "stores": [
+        {
+          "store": "razer",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "TechGenyz (Razer store prices)",
+          "url": "https://techgenyz.com/razer-xbox-25th-anniversary-collection-gaming-gear/"
+        },
+        {
+          "label": "TechSpot",
+          "url": "https://techspot.com/news/113624-microsoft-partners-razer-8bitdo-backbone-xbox-25th-anniversary.html"
+        }
+      ]
+    },
+    {
+      "id": "8bitdo-x25-charging-dock",
+      "name": "8BitDo X25 Special Edition Charging Dock",
+      "category": "xbox",
+      "platform": "Xbox controllers",
+      "status": "announced",
+      "price": "$39.99",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "8BitDo X25 charging dock",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "dock",
+        "colors": [
+          "#3DBB4A",
+          "#1C2B1E",
+          "#9BE07A"
+        ]
+      },
+      "notes": [
+        "Translucent green version of 8BitDo's Ultimate Charging Dock for Xbox controllers, part of the 25th anniversary accessory lineup."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "eightbitdo",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "InGame News",
+          "url": "https://ingamenews.com/pc-gaming/razer-unveils-xbox-25th-anniversary-accessory-collection/"
+        }
+      ]
+    },
+    {
+      "id": "gamesir-x5-lite-xbox-25",
+      "name": "GameSir X5 Lite, Xbox 25th Anniversary",
+      "category": "xbox",
+      "platform": "Phones",
+      "status": "preorder",
+      "price": "$44.99",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "GameSir X5 Lite Xbox",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "phonepad",
+        "colors": [
+          "#3DBB4A",
+          "#1C2B1E",
+          "#9BE07A"
+        ]
+      },
+      "notes": [
+        "Phone controller in the anniversary green. Cheapest way into the X25 look."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "gamesir",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "InGame News",
+          "url": "https://ingamenews.com/pc-gaming/razer-unveils-xbox-25th-anniversary-accessory-collection/"
+        }
+      ]
+    },
+    {
+      "id": "rog-xbox-ally-x20",
+      "name": "ROG Xbox Ally X20",
+      "category": "pc",
+      "platform": "Windows handheld",
+      "status": "preorder",
+      "price": "$1,299.99",
+      "releaseDate": "2026-10-15",
+      "releaseWindow": null,
+      "preordersOpened": "2026-08-25",
+      "searchQuery": "ROG Xbox Ally X20",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "handheld",
+        "colors": [
+          "#1B1B1F",
+          "#C9A23A",
+          "#3A3A44"
+        ]
+      },
+      "notes": [
+        "ASUS's 20th anniversary version of the Xbox Ally X. Translucent black shell with gold inside, and a 7.4\" OLED screen, which is the real upgrade. Same chip as the Ally X, so it's not any faster.",
+        "$300 more than the Ally X. There's also a $2,499.99 bundle with XREAL AR glasses, a dbrand case and a Pelican case."
+      ],
+      "inTheBox": [
+        "Handheld with 7.4\" 1080p OLED",
+        "1TB storage, 24GB RAM"
+      ],
+      "stores": [
+        {
+          "store": "asus",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-25",
+          "text": "Price confirmed at Gamescom and preorders opened."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Shacknews",
+          "url": "https://www.shacknews.com/article/150469/asus-oled-xbox-ally-x20-price"
+        },
+        {
+          "label": "Dexerto",
+          "url": "https://www.dexerto.com/gaming/asuss-new-oled-xbox-handheld-finally-gets-release-date-pricing-3402033/"
+        }
+      ]
+    },
+    {
+      "id": "dualsense-gta-vi-white",
+      "name": "DualSense GTA VI White Limited Edition",
+      "category": "playstation",
+      "platform": "PS5",
+      "status": "preorder",
+      "price": "$84.99",
+      "releaseDate": "2026-11-19",
+      "releaseWindow": null,
+      "preordersOpened": "2026-09-10",
+      "searchQuery": "DualSense Grand Theft Auto VI White Limited Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#F2F0EC",
+          "#7A5CC7",
+          "#3BB6D9"
+        ]
+      },
+      "notes": [
+        "The \"daytime\" Vice City controller. Color-shifting finish and palm trees molded into the grips. Ships the day GTA VI comes out. This one is sold at regular stores too, not just PlayStation Direct."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "amazon",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "walmart",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "target",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-03",
+          "text": "Shown at State of Play."
+        },
+        {
+          "date": "2026-09-10",
+          "text": "Preorders opened."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Beebom",
+          "url": "https://beebom.com/gta-6-ps5-controller-announced/"
+        },
+        {
+          "label": "TechRadar",
+          "url": "https://www.techradar.com/live/news/gta-6-ps5-dualsense-controllers-pre-orders-live"
+        }
+      ]
+    },
+    {
+      "id": "dualsense-gta-vi-black",
+      "name": "DualSense GTA VI Black Limited Edition",
+      "category": "playstation",
+      "platform": "PS5",
+      "status": "preorder",
+      "price": "$84.99",
+      "releaseDate": "2026-11-19",
+      "releaseWindow": null,
+      "preordersOpened": "2026-09-10",
+      "searchQuery": "DualSense Grand Theft Auto VI Black Limited Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#17171C",
+          "#E0479E",
+          "#3BB6D9"
+        ]
+      },
+      "notes": [
+        "The \"nightlife\" version. Same finish and grips as the white one, but in the US it's only sold through PlayStation Direct, so it's the harder one to get."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-03",
+          "text": "Shown at State of Play."
+        },
+        {
+          "date": "2026-09-10",
+          "text": "Preorders opened on PlayStation Direct."
+        }
+      ],
+      "sources": [
+        {
+          "label": "TweakTown",
+          "url": "https://www.tweaktown.com/rss/click/news/113410/?c=news-mf"
+        }
+      ]
+    },
+    {
+      "id": "ps5-gta-vi-bundle",
+      "name": "PS5 GTA VI console bundle",
+      "category": "playstation",
+      "platform": "PS5",
+      "status": "rumor",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "PS5 GTA VI bundle",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#E0479E",
+          "#3BB6D9",
+          "#17171C"
+        ]
+      },
+      "notes": [
+        "People have expected a GTA VI PS5 bundle since a 2023 leak, and Sony has been pushing the PS5 Pro version of the game. So far the two controllers are the only official GTA VI hardware.",
+        "If one gets announced before Nov 19, expect it to go fast."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": false,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-10",
+          "text": "Controllers went up for preorder, still no console bundle."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Ascendants",
+          "url": "https://ascendants.in/industry_events/gta-6-ps5-dualsense-controller-price-design-release-date/"
+        },
+        {
+          "label": "Tom's Guide (2023 rumor)",
+          "url": "https://www.tomsguide.com/news/ps5-pro-could-be-bundled-with-gta-6-but-theres-bad-news-for-pc-gamers"
+        }
+      ]
+    },
+    {
+      "id": "ps5-wolverine-battle-yellow",
+      "name": "PS5 Wolverine Battle Yellow Bundle",
+      "category": "playstation",
+      "platform": "PS5 Digital Edition",
+      "status": "out",
+      "price": "$649.99",
+      "releaseDate": "2026-09-15",
+      "releaseWindow": null,
+      "preordersOpened": "2026-08-19",
+      "searchQuery": "PS5 Wolverine Limited Edition Bundle",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "ps5",
+        "colors": [
+          "#F2C318",
+          "#1A1A1A",
+          "#3A3A3A"
+        ]
+      },
+      "notes": [
+        "Yellow and black PS5 Digital with claw marks cut into it, plus a matching controller and the game. Matching console covers are $74.99 on PlayStation Direct."
+      ],
+      "inTheBox": [
+        "PS5 Digital Edition console",
+        "Battle Yellow DualSense",
+        "Marvel's Wolverine voucher"
+      ],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "target",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "walmart",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-19",
+          "text": "Preorders opened."
+        },
+        {
+          "date": "2026-09-15",
+          "text": "Released with the game."
+        }
+      ],
+      "sources": [
+        {
+          "label": "PlayStation",
+          "url": "https://www.playstation.com/ps5/marvels-wolverine-limited-edition-console-bundle-and-accessories"
+        },
+        {
+          "label": "GameGeeker",
+          "url": "https://gamegeeker.com/news/marvel-wolverine-ps5-limited-edition-console-bundle-announced"
+        }
+      ]
+    },
+    {
+      "id": "dualsense-wolverine",
+      "name": "DualSense Wolverine Limited Editions",
+      "category": "playstation",
+      "platform": "PS5",
+      "status": "out",
+      "price": "$84.99 each",
+      "releaseDate": "2026-09-15",
+      "releaseWindow": null,
+      "preordersOpened": "2026-08-19",
+      "searchQuery": "DualSense Wolverine Limited Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#F2C318",
+          "#1A1A1A",
+          "#B8BEC6"
+        ]
+      },
+      "notes": [
+        "Two designs: Battle Yellow, and Adamantium, which is metallic silver with see-through claw marks."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "target",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-19",
+          "text": "Preorders opened."
+        },
+        {
+          "date": "2026-09-15",
+          "text": "Released."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/08/marvels-wolverine-limited-edition-ps5-consoles-controllers-announced-pre-orders-next-week"
+        }
+      ]
+    }
+  ]
+}

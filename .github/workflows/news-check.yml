@@ -1,0 +1,110 @@
+# Checks news and subreddit feeds a few times a day and opens (or adds to) one
+# pull request with proposed edits to data/releases.json. It never pushes to main:
+# nothing goes live until you merge the pull request.
+name: News check
+
+on:
+  schedule:
+    - cron: "23 1,7,13,19 * * *" # four times a day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: news-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # Remembers which headlines were already looked at, so they aren't proposed twice.
+      - uses: actions/cache/restore@v4
+        with:
+          path: .news-state
+          key: news-state-${{ github.run_id }}
+          restore-keys: news-state-
+
+      - name: Pick the branch to work on
+        id: branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="news-check/proposals"
+          PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$PR" ]; then
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+            if ! git merge --no-edit origin/main; then
+              git merge --abort
+              echo "The open news PR conflicts with main, starting a separate one."
+              BRANCH="news-check/$(date -u +%Y%m%d-%H%M)"
+              PR=""
+              git checkout -B "$BRANCH" origin/main
+            fi
+          else
+            git checkout -B "$BRANCH" origin/main
+          fi
+          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "pr=$PR" >> "$GITHUB_OUTPUT"
+
+      - name: Read feeds and propose edits
+        id: news
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          NEWS_MODEL: ${{ vars.NEWS_MODEL }}
+        run: node scripts/news-check.mjs
+
+      - name: Make sure the site still builds with the edits
+        if: steps.news.outputs.changed == 'true'
+        run: npm run validate && npm run build
+
+      - name: Open or update the pull request
+        if: steps.news.outputs.changed == 'true'
+        env:
+          BRANCH: ${{ steps.branch.outputs.name }}
+          PR: ${{ steps.branch.outputs.pr }}
+        run: |
+          git add data/releases.json
+          git commit -m "News check: proposed release updates"
+          if [ -n "$PR" ]; then
+            git push origin "HEAD:$BRANCH"
+            gh pr comment "$PR" --body-file .news-state/pr-body.md
+          else
+            git push --force origin "HEAD:$BRANCH"
+            gh label create news-check --color D7263D --description "Proposed by the news check" 2>/dev/null || true
+            {
+              echo "Proposed by the scheduled news check. **Nothing is published until you merge this.**"
+              echo
+              echo "Check each change against its sources, fix or remove anything that's wrong (Files changed tab, then the ... menu on releases.json, Edit file), then merge. Close the pull request to reject everything."
+              echo
+              echo "Later runs add to this same pull request and post a comment for each new batch."
+              echo
+              cat .news-state/pr-body.md
+            } > .news-state/pr-full.md
+            gh pr create --base main --head "$BRANCH" --title "News check: proposed release updates" \
+              --body-file .news-state/pr-full.md --label news-check
+          fi
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .news-state
+          key: news-state-${{ github.run_id }}

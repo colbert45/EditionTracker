@@ -1,0 +1,14 @@
+{
+  "siteUrl": "https://editiontracker.com",
+  "siteName": "Edition Tracker",
+  "analytics": {
+    "provider": "plausible",
+    "plausible": {
+      "domain": "editiontracker.com",
+      "script": "https://plausible.io/js/script.outbound-links.js"
+    },
+    "cloudflare": {
+      "token": ""
+    }
+  }
+}

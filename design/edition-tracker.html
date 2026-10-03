@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Edition Tracker</title>
+<meta name="description" content="Special edition consoles, controllers and collectibles, with release dates, prices and where to buy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#16181D; --soft:#5B6170; --line:#E3E5EA; --row:#F6F7F9; --red:#D7263D;
+  --c-rumor:#6B5B95; --t-rumor:#EFECF6; --c-announced:#2563A8; --t-announced:#E7F0FA;
+  --c-preorder:#8A5A00; --t-preorder:#FDF1D6; --c-out:#1E7A4C; --t-out:#E3F4EA; --c-soldout:#B42335; --t-soldout:#FBE6E9;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#121418; --ink:#ECEEF2; --soft:#A2A8B5; --line:#2A2E36; --row:#1A1D23; --red:#FF4D62;
+    --c-rumor:#C3B6EA; --t-rumor:#2A2540; --c-announced:#8DBBF0; --t-announced:#18283C; --c-preorder:#F4C66B; --t-preorder:#3A2E12;
+    --c-out:#7FD3A6; --t-out:#163126; --c-soldout:#FF9AA6; --t-soldout:#3D1A20; }
+}
+:root[data-theme="dark"]{ --bg:#121418; --ink:#ECEEF2; --soft:#A2A8B5; --line:#2A2E36; --row:#1A1D23; --red:#FF4D62;
+  --c-rumor:#C3B6EA; --t-rumor:#2A2540; --c-announced:#8DBBF0; --t-announced:#18283C; --c-preorder:#F4C66B; --t-preorder:#3A2E12;
+  --c-out:#7FD3A6; --t-out:#163126; --c-soldout:#FF9AA6; --t-soldout:#3D1A20; }
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.5}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+.cond{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+
+.mast{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0 14px;border-bottom:3px solid var(--ink)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.tag{width:26px;height:18px;background:var(--red);border-radius:3px 9px 9px 3px;position:relative;flex-shrink:0}
+.tag::after{content:"";position:absolute;right:5px;top:6px;width:6px;height:6px;border-radius:50%;background:var(--bg)}
+.logo b{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:1.65rem;letter-spacing:-.01em;line-height:1}
+.updated{font-size:.88rem;color:var(--soft)}
+
+.lede{margin:22px 0 18px;max-width:58ch}
+.lede p{margin:0;font-size:1.05rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.chips button{font:inherit;font-size:.92rem;font-weight:600;padding:6px 13px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+
+h2.sec{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.45rem;margin:34px 0 6px;display:flex;align-items:baseline;gap:10px}
+h2.sec small{font-family:"Barlow",sans-serif;font-size:.9rem;font-weight:500;color:var(--soft)}
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.list a{display:grid;grid-template-columns:72px 1fr 120px 128px;gap:14px;align-items:center;padding:12px 8px;border-bottom:1px solid var(--line);text-decoration:none}
+.list a:hover{background:var(--row)}
+.list .nm{font-weight:600;line-height:1.3}
+.list .pf{display:block;font-size:.86rem;color:var(--soft);font-weight:400}
+.list .dt{font-variant-numeric:tabular-nums;font-size:.95rem}
+.list .dt span{display:block;font-size:.82rem;color:var(--soft)}
+.thumb{width:72px;height:44px;flex-shrink:0;display:block}
+.thumb svg,.hero svg{display:block;width:100%;height:100%}
+.hero{background:var(--row);border-radius:6px;padding:18px 18px 8px;margin:0 0 14px}
+.hero .art{max-width:420px;margin:0 auto;aspect-ratio:200/120}
+.hero figcaption{font-size:.78rem;color:var(--soft);text-align:right;margin-top:4px}
+.empty{color:var(--soft);padding:12px 8px;border-bottom:1px solid var(--line);margin:0}
+.st{display:inline-block;font-size:.8rem;font-weight:700;padding:3px 9px;border-radius:4px;color:var(--c);background:var(--t);white-space:nowrap}
+
+.back{display:inline-block;margin:18px 0 0;font-size:.92rem;color:var(--soft)}
+.item h1{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.02;letter-spacing:-.01em;margin:10px 0 10px;max-width:22ch}
+.sub{display:flex;flex-wrap:wrap;align-items:center;gap:10px;color:var(--soft);margin-bottom:18px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1.5px solid var(--ink);border-radius:6px;margin:0}
+.facts div{padding:10px 12px;border-right:1px solid var(--line)}
+.facts div:last-child{border-right:0}
+.facts dt{font-size:.8rem;color:var(--soft)}
+.facts dd{margin:0;font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.countdown{margin:12px 0 0;font-weight:600}
+.item h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.35rem;margin:30px 0 8px}
+.item p{max-width:64ch;margin:0 0 10px}
+.item ul.plain{margin:0;padding-left:20px}
+.stores{width:100%;border-collapse:collapse}
+.stores td{padding:10px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.stores tr:first-child td{border-top:1px solid var(--line)}
+.stores td:last-child{text-align:right}
+.stores a{font-weight:600;color:var(--red)}
+.stores .na{color:var(--soft);font-size:.92rem}
+.small{font-size:.86rem;color:var(--soft)}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:6px 0}
+.tl time{font-variant-numeric:tabular-nums;color:var(--soft);font-size:.92rem;padding-top:1px}
+.src li{margin-bottom:4px}
+
+footer{margin:56px 0 30px;padding-top:14px;border-top:1px solid var(--line);font-size:.86rem;color:var(--soft)}
+footer p{margin:0 0 6px}
+
+@media (max-width:600px){
+  .list a{grid-template-columns:64px 1fr auto;gap:4px 12px}
+  .thumb{width:64px;height:40px;grid-row:span 2}
+  .list .nm{grid-column:2 / -1}
+  .facts{grid-template-columns:1fr 1fr}
+  .facts div:nth-child(2){border-right:0}
+  .facts div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .updated{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <a class="logo" href="#/"><span class="tag" aria-hidden="true"></span><b>edition tracker</b></a>
+    <span class="updated" id="updated"></span>
+  </header>
+  <main id="app"></main>
+  <footer>
+    <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
+    <p>Spotted something I missed? It'll be added once there's a source.</p>
+  </footer>
+</div>
+
+<script>
+const UPDATED = "2026-10-03";
+
+const STORES = {
+  nintendo: ["Nintendo Store", "https://www.nintendo.com/us/store/"],
+  xbox:     ["Xbox Store", "https://www.xbox.com/"],
+  psdirect: ["PlayStation Direct", "https://direct.playstation.com/"],
+  asus:     ["ASUS", "https://www.asus.com/us/"],
+  razer:    ["Razer", "https://www.razer.com/"],
+  eightbitdo: ["8BitDo", "https://www.8bitdo.com/"],
+  gamesir:  ["GameSir", "https://www.gamesir.com/"],
+  lego:     ["LEGO", "https://www.lego.com/en-us"],
+  bestbuy:  ["Best Buy", "https://www.bestbuy.com/site/searchpage.jsp?st=", true],
+  target:   ["Target", "https://www.target.com/s?searchTerm=", true],
+  gamestop: ["GameStop", "https://www.gamestop.com/search/?q=", true],
+  walmart:  ["Walmart", "https://www.walmart.com/search?q=", true],
+  amazon:   ["Amazon", "https://www.amazon.com/s?k=", true]
+};
+
+const STATUS = {
+  rumor:     { label: "Rumor",          c: "rumor" },
+  announced: { label: "Announced",      c: "announced" },
+  preorder:  { label: "Preorders open", c: "preorder" },
+  out:       { label: "Out now",        c: "out" },
+  soldout:   { label: "Sold out",       c: "soldout" }
+};
+
+const CATS = { nintendo: "Nintendo", playstation: "PlayStation", xbox: "Xbox", pc: "PC & handhelds", collect: "Collectibles" };
+
+/* One entry per item. date = "YYYY-MM-DD" or null (then "when" is shown). */
+const ITEMS = [
+  { id: "switch-2-zelda-40th", art: ["hybrid", "#1F6B45", "#C9A23A", "#14161A"], cat: "nintendo", name: "Switch 2 Zelda 40th Anniversary Edition", platform: "Nintendo Switch 2",
+    status: "preorder", price: "$519.99", date: "2026-10-29", pre: "2026-09-08", q: "Switch 2 Zelda 40th Anniversary Edition",
+    notes: ["Nintendo's first special edition Switch 2. Green and gold console, green Joy-Con, and a black dock with a gold Triforce. It's only $20 more than a regular Switch 2, which is a big part of why it went fast.",
+            "Preorders sold out at Nintendo, Best Buy and Target within about a day, with resellers asking $800 and up. If you missed it, keep an eye out for restocks before Oct 29."],
+    box: ["Switch 2 console with green Joy-Con", "Dock with black and gold Triforce design", "AC adapter", "No game. Ocarina of Time is sold separately"],
+    stores: ["nintendo", "bestbuy", "target", "gamestop", "walmart", "amazon"],
+    timeline: [["2026-09-08", "Revealed in the Zelda 40th Anniversary Direct. Preorders opened at $519.99."], ["2026-09-09", "Reported sold out at Nintendo, Best Buy and Target."]],
+    sources: [["PC Guide", "https://www.pcguide.com/news/zelda-40th-anniversary-edition-nintendo-switch-2-pre-orders-sell-out-as-scalpers-resell-the-console-for-800/"], ["Zelda Universe", "https://zeldauniverse.net/2026/09/08/ocarina-of-time-remake-pre-orders-go-live-after-zelda-direct/"], ["LevelUp", "https://www.levelup.com/en/news/nintendo-switch-2-will-get-a-the-legend-of-zelda-ocarina-of-time-remake-edition-but-it-wont-include-the-game/"]] },
+
+  { id: "switch-2-pro-controller-zelda-40th", art: ["pad", "#1F6B45", "#C9A23A", "#14161A"], cat: "nintendo", name: "Switch 2 Pro Controller, Zelda 40th Anniversary Edition", platform: "Nintendo Switch 2",
+    status: "preorder", price: "$99.99", date: null, when: "TBA", pre: "2026-09-08", q: "Switch 2 Pro Controller Zelda 40th Anniversary",
+    notes: ["The matching Pro Controller, sold on its own. There's also a version that comes with a display stand. Most coverage expects it alongside the console on Oct 29, but I haven't seen Nintendo confirm a date for it."],
+    box: [], stores: ["nintendo", "bestbuy", "gamestop", "walmart"],
+    timeline: [["2026-09-08", "Revealed with the console. Preorders opened at $99.99."]],
+    sources: [["The Shortcut", "https://www.theshortcut.com/p/the-legend-of-zelda-40th-anniversary-edition-nintendo-switch-2-and-pro-controller-where-to-buy"]] },
+
+  { id: "ocarina-of-time-remake-foil-first-print", art: ["case", "#C8102E", "#D9C27A", "#1F6B45"], cat: "nintendo", name: "Zelda: Ocarina of Time (Switch 2), foil first print", platform: "Nintendo Switch 2",
+    status: "preorder", price: "$69.99", date: "2026-11-05", pre: "2026-09-08", q: "Zelda Ocarina of Time Switch 2",
+    notes: ["Not hardware, but collectors will want it. The first print run of the physical game gets a textured foil cover, and later printings get the regular one. Nintendo Support says preorders placed now are guaranteed the foil version.",
+            "Full game on the cartridge, not a game-key card. Digital is $59.99 if you don't care about the box."],
+    box: ["Full game on cartridge", "Textured foil cover (first print only)"],
+    stores: ["nintendo", "bestbuy", "target", "gamestop", "walmart", "amazon"],
+    timeline: [["2026-09-08", "Preorders opened. $69.99 physical, $59.99 digital."]],
+    sources: [["LevelUp", "https://www.levelup.com/en/news/the-legend-of-zelda-ocarina-of-time-remake-gets-a-5999-digital-price-and-a-limited-edition-physical-cover/"], ["TechRadar", "https://techradar.com/gaming/nintendo-switch/the-physical-edition-of-the-legend-of-zelda-ocarina-of-time-on-nintendo-switch-2-is-getting-limited-textured-foil-packaging-heres-where-to-preorder-now"]] },
+
+  { id: "ocarina-of-time-collectors-edition", art: ["mystery", "#1F6B45", "#C9A23A", "#14161A"], cat: "nintendo", name: "Zelda: Ocarina of Time Collector's Edition", platform: "Nintendo Switch 2",
+    status: "rumor", price: "TBA", date: null, when: "TBA", pre: null, q: "Ocarina of Time Collector's Edition",
+    notes: ["A product list from French retailer Cdiscount, shared in early September, included a Collector's Edition SKU for the remake. That same list also had a themed console and Pro Controller, and those turned out to be real.",
+            "Nintendo hasn't announced it, and nothing is known about price or contents."],
+    box: [], stores: [["nintendo", "na"]],
+    timeline: [["2026-09-04", "Cdiscount product list leaks with a Collector's Edition SKU."]],
+    sources: [["Complex", "https://www.complex.com/pop-culture/a/bernadette-giacomazzo/legend-of-zelda-ocarina-of-time-remake-leaked"], ["Tribune", "https://tribune.com.pk/story/2627751/zelda-ocarina-of-time-remake-collectors-edition-reportedly-leaked"]] },
+
+  { id: "joy-con-2-ocarina-of-time-edition", art: ["joycons", "#1F6B45", "#2E8B57", "#C9A23A"], cat: "nintendo", name: "Joy-Con 2 pair, Ocarina of Time Edition", platform: "Nintendo Switch 2",
+    status: "rumor", price: "TBA", date: null, when: "TBA", pre: null, q: "Joy-Con 2 Ocarina of Time",
+    notes: ["Same Cdiscount leak as the Collector's Edition. The console ships with green Joy-Con, so a standalone pair would make sense, but Nintendo hasn't announced one."],
+    box: [], stores: [["nintendo", "na"]],
+    timeline: [["2026-09-04", "Appears on the Cdiscount product list."]],
+    sources: [["Game Overdrive (SKU list)", "https://gameoverdrive.com.br/ocarina-of-time-remake-data-preco-edicoes/"]] },
+
+  { id: "amiibo-young-link-young-zelda", art: ["figure", "#3E8E4A", "#7B5BA6", "#C9A23A"], cat: "collect", name: "Young Link and Young Zelda amiibo", platform: "amiibo",
+    status: "preorder", price: "$24.99 each", date: null, when: "2027", pre: "2026-09-08", q: "Young Link amiibo",
+    notes: ["Kid Link and kid Zelda in their remake designs. Listed on Nintendo's store at $24.99 each. Expected in 2027."],
+    box: [], stores: ["nintendo", "bestbuy"],
+    timeline: [["2026-09-08", "Revealed in the Zelda Direct and listed for preorder."]],
+    sources: [["Zelda Universe", "https://zeldauniverse.net/2026/09/09/ocarina-of-time-remake-is-getting-new-young-link-and-zelda-amiibo/"], ["Gear Live", "https://www.gearlive.com/news/article/lego-zelda-link-epona-set-1750-pieces-no-price"]] },
+
+  { id: "lego-zelda-link-epona", art: ["bricks", "#8B5A2B", "#2F7D3A", "#E8E1D0"], cat: "collect", name: "LEGO Zelda: Ocarina of Time Link & Epona", platform: "LEGO",
+    status: "announced", price: "TBA", date: null, when: "Spring 2027", pre: null, q: "LEGO Zelda Link Epona",
+    notes: ["1,750-piece display build of adult Link on a rearing Epona. No minifigures. No price yet. For reference, the 1,003-piece Final Battle set is $130 and the 2,500-piece Deku Tree was $300."],
+    box: ["1,750 pieces", "No minifigures"], stores: [["lego", "na"], ["amazon", "na"]],
+    timeline: [["2026-09-08", "Shown in the Zelda Direct. Spring 2027."]],
+    sources: [["Zelda Universe", "https://zeldauniverse.net/2026/09/09/nintendo-announces-link-epona-lego-set-to-celebrate-zeldas-40th/"], ["Kotaku", "https://kotaku.com/nintendo-keeps-revealing-cool-expensive-lego-sets-that-wont-be-ready-for-christmas-2000732729"]] },
+
+  { id: "xbox-series-x25", art: ["tower", "#3DBB4A", "#1C2B1E", "#9BE07A"], cat: "xbox", name: "Xbox Series X25 Limited Edition", platform: "Xbox Series X",
+    status: "preorder", price: "$899.99", date: "2026-11-13", pre: "2026-08-27", q: "Xbox Series X25 Limited Edition",
+    notes: ["Translucent green Series X, styled after the original Xbox, for the 25th anniversary. Every one is numbered with its own engraving. $100 over a standard 1TB Series X, but it comes with the matching controller and Halo: Campaign Evolved.",
+            "Limit one per customer. One outlet listed Oct 20 as the release date, but that's the controller. The console is Nov 13."],
+    box: ["Translucent green 1TB Series X, individually numbered", "X25 Special Edition controller", "Halo: Campaign Evolved (digital)"],
+    stores: ["xbox", "bestbuy", "gamestop", "target"],
+    timeline: [["2026-08-26", "Early preorder invites emailed to some fans."], ["2026-08-27", "Preorders opened for everyone."]],
+    sources: [["The Shortcut", "https://www.theshortcut.com/p/xbox-series-x25-limited-edition-pre-order-date-and-price-revealed-and-there-is-a-nice-surprise-no-one-saw-coming"], ["Dexerto", "https://www.dexerto.com/gaming/microsoft-opens-pre-orders-for-translucent-900-xbox-series-x25-limited-edition-controller-3402610/"]] },
+
+  { id: "xbox-x25-controller", art: ["pad", "#3DBB4A", "#9BE07A", "#1C2B1E"], cat: "xbox", name: "Xbox X25 Special Edition Controller", platform: "Xbox Series X|S, PC",
+    status: "preorder", price: "$79.99", date: "2026-10-20", pre: "2026-08-26", q: "Xbox X25 Special Edition Controller",
+    notes: ["The translucent green controller from the X25 set, on its own. Comes out about three weeks before the console."],
+    box: [], stores: ["xbox", "bestbuy", "gamestop", "target"],
+    timeline: [["2026-08-26", "Preorders opened."]],
+    sources: [["Digital Citizen", "https://www.digitalcitizen.life/xbox-series-x25-launches-november-13-for-899-99-with-special-edition-controller/"]] },
+
+  { id: "razer-xbox-25-collection", art: ["keyboard", "#3DBB4A", "#1C2B1E", "#9BE07A"], cat: "pc", name: "Razer Xbox 25th Anniversary Collection", platform: "PC, Xbox",
+    status: "preorder", price: "$119.99 to $209.99", date: "2026-10-20", pre: null, q: "Razer Xbox 25 Anniversary",
+    notes: ["Translucent green versions of three existing Razer products. Razer's US store lists the keyboard at $209.99, the mouse at $179.99 and the earbuds at $119.99, shipping Oct 20. Some early coverage had lower prices, so go by Razer's site.",
+            "Same hardware as the regular versions, so you're paying for the look."],
+    box: ["BlackWidow V4 75% keyboard (with anniversary wrist rest)", "Basilisk V3 Pro 35K mouse", "Hammerhead V3 X HyperSpeed earbuds"],
+    stores: ["razer"],
+    timeline: [],
+    sources: [["TechGenyz (Razer store prices)", "https://techgenyz.com/razer-xbox-25th-anniversary-collection-gaming-gear/"], ["TechSpot", "https://techspot.com/news/113624-microsoft-partners-razer-8bitdo-backbone-xbox-25th-anniversary.html"]] },
+
+  { id: "8bitdo-x25-charging-dock", art: ["dock", "#3DBB4A", "#1C2B1E", "#9BE07A"], cat: "xbox", name: "8BitDo X25 Special Edition Charging Dock", platform: "Xbox controllers",
+    status: "announced", price: "$39.99", date: null, when: "TBA", pre: null, q: "8BitDo X25 charging dock",
+    notes: ["Translucent green version of 8BitDo's Ultimate Charging Dock for Xbox controllers, part of the 25th anniversary accessory lineup."],
+    box: [], stores: ["eightbitdo"],
+    timeline: [],
+    sources: [["InGame News", "https://ingamenews.com/pc-gaming/razer-unveils-xbox-25th-anniversary-accessory-collection/"]] },
+
+  { id: "gamesir-x5-lite-xbox-25", art: ["phonepad", "#3DBB4A", "#1C2B1E", "#9BE07A"], cat: "xbox", name: "GameSir X5 Lite, Xbox 25th Anniversary", platform: "Phones",
+    status: "preorder", price: "$44.99", date: null, when: "TBA", pre: null, q: "GameSir X5 Lite Xbox",
+    notes: ["Phone controller in the anniversary green. Cheapest way into the X25 look."],
+    box: [], stores: ["gamesir"],
+    timeline: [],
+    sources: [["InGame News", "https://ingamenews.com/pc-gaming/razer-unveils-xbox-25th-anniversary-accessory-collection/"]] },
+
+  { id: "rog-xbox-ally-x20", art: ["handheld", "#1B1B1F", "#C9A23A", "#3A3A44"], cat: "pc", name: "ROG Xbox Ally X20", platform: "Windows handheld",
+    status: "preorder", price: "$1,299.99", date: "2026-10-15", pre: "2026-08-25", q: "ROG Xbox Ally X20",
+    notes: ["ASUS's 20th anniversary version of the Xbox Ally X. Translucent black shell with gold inside, and a 7.4\" OLED screen, which is the real upgrade. Same chip as the Ally X, so it's not any faster.",
+            "$300 more than the Ally X. There's also a $2,499.99 bundle with XREAL AR glasses, a dbrand case and a Pelican case."],
+    box: ["Handheld with 7.4\" 1080p OLED", "1TB storage, 24GB RAM"], stores: ["asus", "bestbuy"],
+    timeline: [["2026-08-25", "Price confirmed at Gamescom and preorders opened."]],
+    sources: [["Shacknews", "https://www.shacknews.com/article/150469/asus-oled-xbox-ally-x20-price"], ["Dexerto", "https://www.dexerto.com/gaming/asuss-new-oled-xbox-handheld-finally-gets-release-date-pricing-3402033/"]] },
+
+  { id: "dualsense-gta-vi-white", art: ["pad", "#F2F0EC", "#7A5CC7", "#3BB6D9"], cat: "playstation", name: "DualSense GTA VI White Limited Edition", platform: "PS5",
+    status: "preorder", price: "$84.99", date: "2026-11-19", pre: "2026-09-10", q: "DualSense Grand Theft Auto VI White Limited Edition",
+    notes: ["The \"daytime\" Vice City controller. Color-shifting finish and palm trees molded into the grips. Ships the day GTA VI comes out. This one is sold at regular stores too, not just PlayStation Direct."],
+    box: [], stores: ["psdirect", "amazon", "walmart", "bestbuy", "target", "gamestop"],
+    timeline: [["2026-09-03", "Shown at State of Play."], ["2026-09-10", "Preorders opened."]],
+    sources: [["Beebom", "https://beebom.com/gta-6-ps5-controller-announced/"], ["TechRadar", "https://www.techradar.com/live/news/gta-6-ps5-dualsense-controllers-pre-orders-live"]] },
+
+  { id: "dualsense-gta-vi-black", art: ["pad", "#17171C", "#E0479E", "#3BB6D9"], cat: "playstation", name: "DualSense GTA VI Black Limited Edition", platform: "PS5",
+    status: "preorder", price: "$84.99", date: "2026-11-19", pre: "2026-09-10", q: "DualSense Grand Theft Auto VI Black Limited Edition",
+    notes: ["The \"nightlife\" version. Same finish and grips as the white one, but in the US it's only sold through PlayStation Direct, so it's the harder one to get."],
+    box: [], stores: ["psdirect"],
+    timeline: [["2026-09-03", "Shown at State of Play."], ["2026-09-10", "Preorders opened on PlayStation Direct."]],
+    sources: [["TweakTown", "https://www.tweaktown.com/rss/click/news/113410/?c=news-mf"]] },
+
+  { id: "ps5-gta-vi-bundle", art: ["mystery", "#E0479E", "#3BB6D9", "#17171C"], cat: "playstation", name: "PS5 GTA VI console bundle", platform: "PS5",
+    status: "rumor", price: "TBA", date: null, when: "TBA", pre: null, q: "PS5 GTA VI bundle",
+    notes: ["People have expected a GTA VI PS5 bundle since a 2023 leak, and Sony has been pushing the PS5 Pro version of the game. So far the two controllers are the only official GTA VI hardware.",
+            "If one gets announced before Nov 19, expect it to go fast."],
+    box: [], stores: [["psdirect", "na"]],
+    timeline: [["2026-09-10", "Controllers went up for preorder, still no console bundle."]],
+    sources: [["Ascendants", "https://ascendants.in/industry_events/gta-6-ps5-dualsense-controller-price-design-release-date/"], ["Tom's Guide (2023 rumor)", "https://www.tomsguide.com/news/ps5-pro-could-be-bundled-with-gta-6-but-theres-bad-news-for-pc-gamers"]] },
+
+  { id: "ps5-wolverine-battle-yellow", art: ["ps5", "#F2C318", "#1A1A1A", "#3A3A3A"], cat: "playstation", name: "PS5 Wolverine Battle Yellow Bundle", platform: "PS5 Digital Edition",
+    status: "out", price: "$649.99", date: "2026-09-15", pre: "2026-08-19", q: "PS5 Wolverine Limited Edition Bundle",
+    notes: ["Yellow and black PS5 Digital with claw marks cut into it, plus a matching controller and the game. Matching console covers are $74.99 on PlayStation Direct."],
+    box: ["PS5 Digital Edition console", "Battle Yellow DualSense", "Marvel's Wolverine voucher"],
+    stores: ["psdirect", "bestbuy", "target", "gamestop", "walmart"],
+    timeline: [["2026-08-19", "Preorders opened."], ["2026-09-15", "Released with the game."]],
+    sources: [["PlayStation", "https://www.playstation.com/ps5/marvels-wolverine-limited-edition-console-bundle-and-accessories"], ["GameGeeker", "https://gamegeeker.com/news/marvel-wolverine-ps5-limited-edition-console-bundle-announced"]] },
+
+  { id: "dualsense-wolverine", art: ["pad", "#F2C318", "#1A1A1A", "#B8BEC6"], cat: "playstation", name: "DualSense Wolverine Limited Editions", platform: "PS5",
+    status: "out", price: "$84.99 each", date: "2026-09-15", pre: "2026-08-19", q: "DualSense Wolverine Limited Edition",
+    notes: ["Two designs: Battle Yellow, and Adamantium, which is metallic silver with see-through claw marks."],
+    box: [], stores: ["psdirect", "bestbuy", "target", "gamestop"],
+    timeline: [["2026-08-19", "Preorders opened."], ["2026-09-15", "Released."]],
+    sources: [["Push Square", "https://www.pushsquare.com/news/2026/08/marvels-wolverine-limited-edition-ps5-consoles-controllers-announced-pre-orders-next-week"]] }
+];
+
+
+/* Simple drawings of each item type, tinted to the edition's colors. Not product photos. */
+function art(spec) {
+  const [k, a, b, c] = spec || ["mystery", "#888", "#aaa", "#333"];
+  const S = inner => `<svg viewBox="0 0 200 120" role="img" aria-hidden="true">${inner}</svg>`;
+  const shadow = `<ellipse cx="100" cy="110" rx="78" ry="5" fill="#000" opacity=".08"/>`;
+  switch (k) {
+    case "hybrid": return S(shadow + `
+      <rect x="20" y="30" width="26" height="70" rx="12" fill="${a}"/><rect x="154" y="30" width="26" height="70" rx="12" fill="${a}"/>
+      <rect x="44" y="30" width="112" height="70" rx="5" fill="${c}"/><rect x="50" y="36" width="100" height="58" rx="2" fill="#2A2F38"/>
+      <path d="M50 36h40l-22 58H50z" fill="#fff" opacity=".06"/>
+      <circle cx="33" cy="48" r="6" fill="${c}"/><circle cx="167" cy="76" r="6" fill="${c}"/>
+      <g fill="${b}"><circle cx="167" cy="44" r="2.6"/><circle cx="173" cy="50" r="2.6"/><circle cx="161" cy="50" r="2.6"/><circle cx="167" cy="56" r="2.6"/>
+      <rect x="30" y="68" width="6" height="16" rx="1"/><rect x="25" y="73" width="16" height="6" rx="1"/></g>
+      <rect x="44" y="96" width="112" height="4" fill="${b}" opacity=".9"/>`);
+    case "pad": return S(shadow + `
+      <path d="M56 34h88c18 0 28 12 32 30l6 30c3 13-9 20-18 12l-16-16H52l-16 16c-9 8-21 1-18-12l6-30c4-18 14-30 32-30z" fill="${a}"/>
+      <path d="M56 34h88c10 0 18 4 23 12H33c5-8 13-12 23-12z" fill="#fff" opacity=".18"/>
+      <circle cx="74" cy="76" r="10" fill="${c}"/><circle cx="126" cy="76" r="10" fill="${c}"/>
+      <circle cx="74" cy="76" r="6" fill="${b}"/><circle cx="126" cy="76" r="6" fill="${b}"/>
+      <g fill="${c}"><rect x="46" y="50" width="6" height="18" rx="1"/><rect x="40" y="56" width="18" height="6" rx="1"/></g>
+      <g fill="${b}"><circle cx="152" cy="50" r="3.4"/><circle cx="160" cy="58" r="3.4"/><circle cx="144" cy="58" r="3.4"/><circle cx="152" cy="66" r="3.4"/></g>
+      <rect x="88" y="46" width="24" height="12" rx="3" fill="${b}" opacity=".85"/>`);
+    case "case": return S(shadow + `
+      <rect x="62" y="10" width="76" height="98" rx="4" fill="${a}"/>
+      <rect x="62" y="10" width="76" height="16" rx="4" fill="${a}"/><rect x="62" y="20" width="76" height="6" fill="#000" opacity=".15"/>
+      <rect x="70" y="32" width="60" height="62" rx="2" fill="${c}"/>
+      <path d="M70 32h60v62z" fill="${b}" opacity=".55"/><path d="M78 32h14l-22 40V50z" fill="#fff" opacity=".35"/>
+      <rect x="76" y="98" width="48" height="4" rx="2" fill="#fff" opacity=".5"/>`);
+    case "mystery": return S(shadow + `
+      <path d="M48 40l52-20 52 20v52l-52 18-52-18z" fill="${c}"/><path d="M48 40l52 18 52-18-52-20z" fill="${a}"/>
+      <path d="M100 58v52l52-18V40z" fill="#000" opacity=".2"/>
+      <text x="100" y="94" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="${b}" text-anchor="middle">?</text>`);
+    case "joycons": return S(shadow + `
+      <rect x="62" y="16" width="30" height="88" rx="14" fill="${a}"/><rect x="108" y="16" width="30" height="88" rx="14" fill="${b}"/>
+      <circle cx="76" cy="38" r="7" fill="#1B1D22"/><circle cx="123" cy="74" r="7" fill="#1B1D22"/>
+      <g fill="${c}"><circle cx="123" cy="34" r="3"/><circle cx="130" cy="41" r="3"/><circle cx="116" cy="41" r="3"/><circle cx="123" cy="48" r="3"/>
+      <rect x="73" y="62" width="6" height="18" rx="1"/><rect x="67" y="68" width="18" height="6" rx="1"/></g>`);
+    case "figure": return S(shadow + `
+      <ellipse cx="72" cy="100" rx="24" ry="7" fill="${c}"/><ellipse cx="128" cy="100" rx="24" ry="7" fill="${c}"/>
+      <rect x="62" y="44" width="20" height="54" rx="10" fill="${a}"/><circle cx="72" cy="34" r="12" fill="${a}"/>
+      <rect x="118" y="44" width="20" height="54" rx="10" fill="${b}"/><circle cx="128" cy="34" r="12" fill="${b}"/>
+      <path d="M62 30c4-14 16-14 20 0z" fill="#fff" opacity=".2"/><path d="M118 30c4-14 16-14 20 0z" fill="#fff" opacity=".2"/>`);
+    case "bricks": {
+      const brick = (x, y, w, col) => `<rect x="${x}" y="${y}" width="${w}" height="18" rx="2" fill="${col}"/><rect x="${x}" y="${y + 14}" width="${w}" height="4" fill="#000" opacity=".15"/>` +
+        Array.from({ length: Math.floor(w / 16) }, (_, i) => `<rect x="${x + 4 + i * 16}" y="${y - 5}" width="9" height="5" rx="1" fill="${col}"/>`).join("");
+      return S(shadow + brick(44, 88, 112, c) + brick(52, 66, 64, a) + brick(116, 66, 32, b) + brick(68, 44, 48, b) + brick(84, 22, 32, a));
+    }
+    case "tower": return S(shadow + `
+      <rect x="66" y="8" width="68" height="98" rx="4" fill="${a}" opacity=".55"/><rect x="66" y="8" width="68" height="98" rx="4" fill="none" stroke="${a}" stroke-width="2"/>
+      <g opacity=".75" fill="${b}"><rect x="74" y="30" width="52" height="8" rx="1"/><rect x="74" y="44" width="34" height="20" rx="1"/><rect x="112" y="44" width="14" height="44" rx="1"/><rect x="74" y="70" width="34" height="18" rx="1"/></g>
+      <ellipse cx="100" cy="16" rx="26" ry="4" fill="${c}" opacity=".8"/><circle cx="76" cy="98" r="3" fill="${c}"/>
+      <path d="M70 12h18L72 100h-2z" fill="#fff" opacity=".18"/>`);
+    case "keyboard": return S(`<ellipse cx="100" cy="104" rx="88" ry="5" fill="#000" opacity=".08"/>
+      <rect x="10" y="44" width="150" height="56" rx="6" fill="${a}" opacity=".7"/><rect x="10" y="44" width="150" height="56" rx="6" fill="none" stroke="${a}" stroke-width="2"/>
+      ${Array.from({ length: 4 }, (_, r) => Array.from({ length: 12 }, (_, i) => `<rect x="${17 + i * 11.6}" y="${50 + r * 11.5}" width="9" height="9" rx="1.5" fill="${b}"/>`).join("")).join("")}
+      <path d="M168 62c0-10 8-16 14-16s14 6 14 16v18c0 12-6 20-14 20s-14-8-14-20z" fill="${a}" opacity=".75"/><path d="M182 46v20" stroke="${b}" stroke-width="2"/>`);
+    case "dock": return S(shadow + `
+      <path d="M40 74h120l8 30H32z" fill="${a}" opacity=".7"/><path d="M40 74h120l8 30H32z" fill="none" stroke="${a}" stroke-width="2"/>
+      <path d="M58 30h30c8 0 12 6 14 14l2 30H48l2-30c2-8 4-14 8-14z" fill="${b}"/><path d="M112 30h30c4 0 6 6 8 14l2 30H96l2-30c2-8 6-14 14-14z" fill="${b}"/>
+      <circle cx="132" cy="96" r="3" fill="${c}"/><circle cx="68" cy="96" r="3" fill="${c}"/>`);
+    case "phonepad": return S(shadow + `
+      <rect x="20" y="40" width="34" height="56" rx="14" fill="${a}"/><rect x="146" y="40" width="34" height="56" rx="14" fill="${a}"/>
+      <rect x="50" y="42" width="100" height="52" rx="8" fill="${b}"/><rect x="56" y="47" width="88" height="42" rx="4" fill="#2A2F38"/>
+      <circle cx="37" cy="58" r="6" fill="${b}"/><circle cx="163" cy="78" r="6" fill="${b}"/>
+      <g fill="${c}"><circle cx="163" cy="54" r="2.6"/><circle cx="169" cy="60" r="2.6"/><circle cx="157" cy="60" r="2.6"/></g>`);
+    case "handheld": return S(shadow + `
+      <path d="M30 34h140c12 0 18 10 18 22v26c0 14-8 22-20 22-8 0-12-4-18-10H50c-6 6-10 10-18 10-12 0-20-8-20-22V56c0-12 6-22 18-22z" fill="${a}"/>
+      <path d="M30 34h140c8 0 14 4 16 12H14c2-8 8-12 16-12z" fill="#fff" opacity=".08"/>
+      <rect x="52" y="38" width="96" height="56" rx="3" fill="#0B0D12"/><path d="M52 38h36L66 94H52z" fill="#fff" opacity=".06"/>
+      <circle cx="34" cy="56" r="8" fill="${c}"/><circle cx="34" cy="56" r="8" fill="none" stroke="${b}" stroke-width="1.5"/>
+      <circle cx="166" cy="78" r="8" fill="${c}"/><circle cx="166" cy="78" r="8" fill="none" stroke="${b}" stroke-width="1.5"/>
+      <g fill="${b}"><circle cx="166" cy="50" r="2.6"/><circle cx="172" cy="56" r="2.6"/><circle cx="160" cy="56" r="2.6"/><circle cx="166" cy="62" r="2.6"/></g>`);
+    case "ps5": return S(shadow + `
+      <path d="M70 8c-6 0-10 4-10 10v80c0 6 4 10 10 10h6V8z" fill="${a}"/><path d="M130 8c6 0 10 4 10 10v80c0 6-4 10-10 10h-6V8z" fill="${a}"/>
+      <rect x="76" y="8" width="48" height="100" rx="3" fill="${b}"/>
+      <path d="M64 30l14-10M62 40l16-12M138 70l-14 10M140 80l-16 12" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <rect x="84" y="20" width="32" height="3" rx="1.5" fill="${c}"/>`);
+  }
+  return "";
+}
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const toDate = d => new Date(d + "T12:00:00");
+const short = d => toDate(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const long = d => toDate(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const when = i => i.date ? long(i.date) : (i.when || "TBA");
+const daysOut = d => { const t = new Date(); t.setHours(12,0,0,0); return Math.round((toDate(d) - t) / 86400000); };
+const chip = s => `<span class="st" style="--c:var(--c-${STATUS[s].c});--t:var(--t-${STATUS[s].c})">${STATUS[s].label}</span>`;
+const isOut = i => i.status === "out" || i.status === "soldout" || (i.date && daysOut(i.date) < 0);
+
+let filter = "all";
+
+function rowHTML(i) {
+  let sub = "";
+  if (i.date && !isOut(i)) { const n = daysOut(i.date); sub = n === 0 ? "today" : n === 1 ? "tomorrow" : `in ${n} days`; }
+  return `<li><a href="#/item/${encodeURIComponent(i.id)}">
+    <span class="thumb">${art(i.art)}</span>
+    <span class="nm">${esc(i.name)}<span class="pf">${esc(i.platform)}, ${esc(i.price)}</span></span>
+    <span class="dt">${i.date ? (isOut(i) ? long(i.date) : short(i.date)) : esc(i.when || "TBA")}${sub ? `<span>${sub}</span>` : ""}</span>
+    <span>${chip(i.status)}</span></a></li>`;
+}
+
+function section(title, note, list) {
+  return `<h2 class="sec">${title}${note ? ` <small>${note}</small>` : ""}</h2>
+    <ul class="list">${list.length ? list.map(rowHTML).join("") : `<li><p class="empty">Nothing here right now.</p></li>`}</ul>`;
+}
+
+function home() {
+  const pool = ITEMS.filter(i => filter === "all" || i.cat === filter);
+  const byDate = (a, b) => (a.date || "9999") .localeCompare(b.date || "9999");
+  const coming = pool.filter(i => i.status !== "rumor" && !isOut(i)).sort(byDate);
+  const rumors = pool.filter(i => i.status === "rumor");
+  const out = pool.filter(i => i.status !== "rumor" && isOut(i)).sort((a, b) => byDate(b, a));
+  document.title = "Edition Tracker: special edition consoles, controllers and collectibles";
+  const chips = [["all", "Everything"]].concat(Object.entries(CATS))
+    .map(([k, v]) => `<button type="button" data-cat="${k}" aria-pressed="${filter === k}">${v}</button>`).join("");
+  $("#app").innerHTML = `
+    <div class="lede"><p>Special edition consoles, controllers and collectibles: when they come out, what they cost, and where to look. I update this as news drops.</p></div>
+    <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
+    ${section("Coming up", "", coming)}
+    ${rumors.length ? section("Rumors and leaks", "not confirmed", rumors) : ""}
+    ${out.length ? section("Already out", "", out) : ""}`;
+  document.querySelectorAll(".chips button").forEach(b => b.addEventListener("click", () => { filter = b.dataset.cat; home(); }));
+}
+
+function item(i) {
+  const n = i.date ? daysOut(i.date) : null;
+  const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
+  const stores = i.stores.map(s => {
+    const [key, state] = Array.isArray(s) ? s : [s, "ok"];
+    const [name, url, isSearch] = STORES[key];
+    const href = isSearch ? url + encodeURIComponent(i.q) : url;
+    return `<tr><td>${esc(name)}</td><td>${state === "na" ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="noopener">Check stock</a>`}</td></tr>`;
+  }).join("");
+  document.title = `${i.name}: price, release date, where to buy | Edition Tracker`;
+  $("#app").innerHTML = `<article class="item">
+    <a class="back" href="#/">Back to all releases</a>
+    <h1>${esc(i.name)}</h1>
+    <div class="sub"><span>${esc(i.platform)}</span>${chip(i.status)}</div>
+    <figure class="hero" style="margin:0 0 14px"><div class="art">${art(i.art)}</div><figcaption>Illustration, not a product photo</figcaption></figure>
+    <dl class="facts">
+      <div><dt>Price</dt><dd>${esc(i.price)}</dd></div>
+      <div><dt>Release</dt><dd>${esc(when(i))}</dd></div>
+      <div><dt>Preorders opened</dt><dd>${i.pre ? long(i.pre) : "No"}</dd></div>
+      <div><dt>Category</dt><dd>${CATS[i.cat]}</dd></div>
+    </dl>
+    ${cd && !isOut(i) ? `<p class="countdown">${cd}</p>` : ""}
+    <h2>Notes</h2>${i.notes.map(p => `<p>${esc(p)}</p>`).join("")}
+    ${i.box.length ? `<h2>What's in the box</h2><ul class="plain">${i.box.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
+    <h2>Where to buy</h2>
+    <table class="stores"><tbody>${stores}</tbody></table>
+    <p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>
+    ${i.timeline.length ? `<h2>Timeline</h2>
+    <ul class="tl">${[...i.timeline].sort((a, b) => b[0].localeCompare(a[0])).map(([d, t]) => `<li><time datetime="${d}">${long(d)}</time><span>${esc(t)}</span></li>`).join("")}</ul>` : ""}
+    <h2>Sources</h2>
+    <ul class="plain src">${i.sources.map(([l, u]) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(l)}</a></li>`).join("")}</ul>
+  </article>`;
+}
+
+function route() {
+  const m = location.hash.match(/^#\/item\/(.+)$/);
+  const i = m && ITEMS.find(x => x.id === decodeURIComponent(m[1]));
+  i ? item(i) : home();
+  window.scrollTo(0, 0);
+}
+$("#updated").textContent = "Updated " + long(UPDATED);
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
