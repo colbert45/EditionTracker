@@ -168,7 +168,7 @@ function home() {
   const chips = [["all", "Everything"]].concat(Object.entries(CATS))
     .map(([k, v]) => `<button type="button" data-cat="${esc(k)}" aria-pressed="${k === "all"}">${esc(v)}</button>`).join("");
   const body = `
-    <div class="lede"><p>Special edition consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. I update this as news drops.</p></div>
+    <div class="lede"><p>Special edition consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. Updated daily as news drops.</p></div>
     <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
     ${section("coming", "Coming up", "", coming, true)}
     ${section("rumors", "Rumors and leaks", "not confirmed", rumors)}
