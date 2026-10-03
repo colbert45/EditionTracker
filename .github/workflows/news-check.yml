@@ -1,14 +1,14 @@
-# Checks news and subreddit feeds twice a day (9am and 5pm New York time) and opens (or adds to) one
+# Checks news and subreddit feeds once a day (9am New York time) and opens (or adds to) one
 # pull request with proposed edits to data/releases.json. It never pushes to main:
 # nothing goes live until you merge the pull request.
 name: News check
 
 on:
   schedule:
-    # GitHub schedules run on UTC. These four times cover 9am and 5pm New York
-    # time in both summer (UTC-4) and winter (UTC-5); the "when" job below
-    # skips the two that don't match the current New York hour.
-    - cron: "3 13,14,21,22 * * *"
+    # GitHub schedules run on UTC. These two times cover 9am New York time in
+    # both summer (UTC-4) and winter (UTC-5); the "when" job below skips the
+    # one that doesn't match the current New York hour.
+    - cron: "3 13,14 * * *"
   workflow_dispatch:
 
 permissions:
@@ -29,10 +29,10 @@ jobs:
       - id: hour
         run: |
           HOUR=$(TZ=America/New_York date +%H)
-          if [ "${{ github.event_name }}" != "schedule" ] || [ "$HOUR" = "09" ] || [ "$HOUR" = "17" ]; then
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$HOUR" = "09" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
-            echo "It's ${HOUR}:00 in New York, not 9am or 5pm. Skipping this run."
+            echo "It's ${HOUR}:00 in New York, not 9am. Skipping this run."
             echo "run=false" >> "$GITHUB_OUTPUT"
           fi
 
