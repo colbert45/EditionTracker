@@ -168,7 +168,7 @@ function home() {
   const chips = [["all", "Everything"]].concat(Object.entries(CATS))
     .map(([k, v]) => `<button type="button" data-cat="${esc(k)}" aria-pressed="${k === "all"}">${esc(v)}</button>`).join("");
   const body = `
-    <div class="lede"><p>Special edition consoles, controllers and collectibles: when they come out, what they cost, and where to look. I update this as news drops.</p></div>
+    <div class="lede"><p>Special edition consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. I update this as news drops.</p></div>
     <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
     ${section("coming", "Coming up", "", coming, true)}
     ${section("rumors", "Rumors and leaks", "not confirmed", rumors)}
@@ -179,9 +179,9 @@ function home() {
       itemListElement: [...coming, ...rumors, ...out].map((i, k) => ({ "@type": "ListItem", position: k + 1, url: i.url, name: i.name })) }
   ];
   return page({
-    title: "Edition Tracker: special edition consoles, controllers and collectibles",
-    description: "Special edition consoles, controllers and collectibles, with release dates, prices and where to buy.",
-    path: "/", ogImage: `${SITE}/og/home.png`, ogAlt: "Edition Tracker: special edition consoles, controllers and collectibles",
+    title: "Edition Tracker: special edition consoles, games, controllers and collectibles",
+    description: "Special edition consoles, games, controllers and collectibles, with release dates, prices and where to buy.",
+    path: "/", ogImage: `${SITE}/og/home.png`, ogAlt: "Edition Tracker: special edition consoles, games, controllers and collectibles",
     jsonld, body, script: HOME_JS
   });
 }
