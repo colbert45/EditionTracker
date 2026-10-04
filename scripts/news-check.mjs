@@ -37,6 +37,7 @@ function summary(md) {
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, md + "\n");
 }
 function saveState() {
+  state.lastCheck = today;
   // Forget links after 30 days so the file stays small.
   const cutoff = Date.now() - 30 * 86400000;
   for (const [k, v] of Object.entries(state.seen)) if (Date.parse(v) < cutoff) delete state.seen[k];
@@ -164,6 +165,12 @@ async function askClaude(data, headlines) {
 }
 
 // ---------- main ----------
+// Scheduled runs fire several times a day as backups; only the first one per New York day checks.
+if (process.env.ONCE_PER_DAY === "true" && state.lastCheck === today) {
+  log(`Already checked today (${today}), skipping this run.`);
+  output("changed", "false");
+  process.exit(0);
+}
 const data = JSON.parse(readFileSync(DATA_FILE, "utf8"));
 const known = new Set(data.items.flatMap(i => i.sources.map(s => s.url)));
 

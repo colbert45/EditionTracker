@@ -1,14 +1,15 @@
-# Checks news and subreddit feeds once a day (9am New York time) and opens (or adds to) one
+# Checks news and subreddit feeds once a day (from 9am New York time) and opens (or adds to) one
 # pull request with proposed edits to data/releases.json. It never pushes to main:
 # nothing goes live until you merge the pull request.
 name: News check
 
 on:
   schedule:
-    # GitHub schedules run on UTC. These two times cover 9am New York time in
-    # both summer (UTC-4) and winter (UTC-5); the "when" job below skips the
-    # one that doesn't match the current New York hour.
-    - cron: "3 13,14 * * *"
+    # GitHub schedules run on UTC and can start hours late or be dropped when
+    # GitHub is busy. Several tries from 9am New York time on (summer UTC-4,
+    # winter UTC-5); the first one that runs does the check, and the script
+    # skips the rest of that day's runs.
+    - cron: "3 13,14,16,19,22 * * *"
   workflow_dispatch:
 
 permissions:
@@ -29,10 +30,10 @@ jobs:
       - id: hour
         run: |
           HOUR=$(TZ=America/New_York date +%H)
-          if [ "${{ github.event_name }}" != "schedule" ] || [ "$HOUR" = "09" ]; then
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$((10#$HOUR))" -ge 9 ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
-            echo "It's ${HOUR}:00 in New York, not 9am. Skipping this run."
+            echo "It's ${HOUR}:00 in New York, before 9am. Skipping this run."
             echo "run=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -90,6 +91,7 @@ jobs:
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
           REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
           NEWS_MODEL: ${{ vars.NEWS_MODEL }}
+          ONCE_PER_DAY: ${{ github.event_name == 'schedule' }}
         run: node scripts/news-check.mjs
 
       - name: Make sure the site still builds with the edits
