@@ -59,6 +59,10 @@ const chip = s => `<span class="st" style="--c:var(--c-${s});--t:var(--t-${s})">
 const absUrl = u => u.startsWith("/") ? SITE + u : u;
 const isRaster = u => /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u);
 const artSpec = i => [i.art.type, ...i.art.colors];
+// site.config.json "photos" decides where product photos replace the illustrations.
+const PHOTOS = config.photos || "all";
+const photoOnPage = i => Boolean(i.image) && (PHOTOS === "all" || PHOTOS === "pages");
+const photoInList = i => Boolean(i.image) && PHOTOS === "all";
 
 // ---------- shared page parts ----------
 const FONTS = [
@@ -149,7 +153,7 @@ ${script ? `<script>\n${script}\n</script>\n` : ""}</body>
 
 // ---------- homepage ----------
 function thumb(i) {
-  return i.image ? `<img src="${esc(i.image)}" alt="" loading="lazy" decoding="async">` : art(artSpec(i));
+  return photoInList(i) ? `<img src="${esc(i.image)}" alt="" loading="lazy" decoding="async">` : art(artSpec(i));
 }
 
 function rowHTML(i) {
@@ -232,7 +236,7 @@ function item(i, ogImage) {
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
   const showCountdown = i.date && i.status !== "out" && i.status !== "soldout";
   const hasAffiliate = i.stores.some(s => s.listed && s.affiliateUrl);
-  const hero = i.image
+  const hero = photoOnPage(i)
     ? `<figure class="hero" style="margin:0 0 14px"><div class="art"><img src="${esc(i.image)}" alt="${esc(i.name)}" decoding="async"></div><figcaption>${esc(i.imageCredit)}</figcaption></figure>`
     : `<figure class="hero" style="margin:0 0 14px"><div class="art">${art(artSpec(i))}</div><figcaption>Illustration, not a product photo</figcaption></figure>`;
   const body = `<article class="item">
@@ -271,7 +275,7 @@ function item(i, ogImage) {
     { "@type": "ListItem", position: 2, name: i.name, item: i.url }] };
   return page({
     title: `${i.name}: price, release date, where to buy | ${NAME}`,
-    description, path: i.path, ogImage, ogAlt: i.image ? i.name : `${i.name} (illustration)`,
+    description, path: i.path, ogImage, ogAlt: photoOnPage(i) ? i.name : `${i.name} (illustration)`,
     jsonld: [product, crumbs], body, script: ITEM_JS
   });
 }
@@ -322,7 +326,7 @@ write("index.html", home());
 
 for (const i of ITEMS) {
   let ogImage;
-  if (i.image && isRaster(i.image)) ogImage = absUrl(i.image);
+  if (photoOnPage(i) && isRaster(i.image)) ogImage = absUrl(i.image);
   else {
     png(i.id, itemCardSvg({ name: i.name, platform: i.platform, price: i.price, statusKey: i.status,
       statusLabel: STATUS[i.status], releaseText: i.date ? `Out ${long(i.date)}` : `Release: ${i.when}`, artSpec: artSpec(i) }));

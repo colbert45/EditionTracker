@@ -1,6 +1,8 @@
 {
   "siteUrl": "https://editiontracker.com",
   "siteName": "Edition Tracker",
+  "_photos": "Where product photos replace the illustrations: \"none\" (illustrations everywhere), \"pages\" (photos on release pages only), or \"all\".",
+  "photos": "none",
   "analytics": {
     "provider": "google",
     "google": {

@@ -12,6 +12,8 @@ test("image and affiliate link replace the illustration and search link", () => 
   const dir = mkdtempSync(join(tmpdir(), "et-"));
   for (const p of ["lib", "scripts", "static", "og", "site.config.json", "package.json"]) cpSync(join(ROOT, p), join(dir, p), { recursive: true });
   symlinkSync(join(ROOT, "node_modules"), join(dir, "node_modules"));
+  const cfg = JSON.parse(readFileSync(join(dir, "site.config.json")));
+  writeFileSync(join(dir, "site.config.json"), JSON.stringify({ ...cfg, photos: "all" }));
   const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
   const it = data.items.find(i => i.id === "xbox-series-x25");
   it.image = "https://images.example/x25.jpg";
