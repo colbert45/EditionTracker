@@ -31,6 +31,8 @@ jobs:
       - run: npm ci
       - run: npm run validate
       - run: npm test
+      - name: Get the last news check date
+        run: git fetch --depth=1 origin status && git show FETCH_HEAD:last-checked.json > data/last-checked.json || echo "No news check recorded yet"
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

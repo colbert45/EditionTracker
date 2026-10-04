@@ -171,6 +171,7 @@ if (process.env.ONCE_PER_DAY === "true" && state.lastCheck === today) {
   output("changed", "false");
   process.exit(0);
 }
+output("checked", "true");
 const data = JSON.parse(readFileSync(DATA_FILE, "utf8"));
 const known = new Set(data.items.flatMap(i => i.sources.map(s => s.url)));
 

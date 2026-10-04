@@ -16,6 +16,10 @@ const read = p => readFileSync(join(ROOT, p), "utf8");
 const config = JSON.parse(read("site.config.json"));
 const data = JSON.parse(read("data/releases.json"));
 const SITE = config.siteUrl.replace(/\/$/, "");
+// The header date is the later of the last data change and the last news check.
+let lastChecked = null;
+try { lastChecked = JSON.parse(read("data/last-checked.json")).lastChecked; } catch {}
+const HEADER_DATE = [data.updated, lastChecked].filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d || "")).sort().pop();
 const NAME = config.siteName;
 
 const { errors, warnings } = validate(data, { staticDir: STATIC });
@@ -130,7 +134,7 @@ ${analytics()}
 <div class="wrap">
   <header class="mast">
     <a class="logo" href="/"><span class="tag" aria-hidden="true"></span><b>edition tracker</b></a>
-    <span class="updated" id="updated">Updated ${long(data.updated)}</span>
+    <span class="updated" id="updated">Updated ${long(HEADER_DATE)}</span>
   </header>
   <main id="app">${body}</main>
   <footer>

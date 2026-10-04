@@ -2,3 +2,4 @@ node_modules/
 _site/
 .cache/
 .news-state/
+data/last-checked.json
