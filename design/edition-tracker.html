@@ -128,7 +128,7 @@ const STORES = {
   target:   ["Target", "https://www.target.com/s?searchTerm=", true],
   gamestop: ["GameStop", "https://www.gamestop.com/search/?q=", true],
   walmart:  ["Walmart", "https://www.walmart.com/search?q=", true],
-  amazon:   ["Amazon", "https://www.amazon.com/s?k=", true]
+  amazon:   ["Amazon", "https://www.amazon.com/s?tag=editiontracker02-20&k=", true]
 };
 
 const STATUS = {
@@ -416,7 +416,7 @@ function item(i) {
     const [key, state] = Array.isArray(s) ? s : [s, "ok"];
     const [name, url, isSearch] = STORES[key];
     const href = isSearch ? url + encodeURIComponent(i.q) : url;
-    return `<tr><td>${esc(name)}</td><td>${state === "na" ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="noopener">Check stock</a>`}</td></tr>`;
+    return `<tr><td>${esc(name)}</td><td>${state === "na" ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="${key === "amazon" ? "noopener sponsored" : "noopener"}">Check stock</a>`}</td></tr>`;
   }).join("");
   document.title = `${i.name}: price, release date, where to buy | Edition Tracker`;
   $("#app").innerHTML = `<article class="item">

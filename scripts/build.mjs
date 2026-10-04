@@ -59,6 +59,10 @@ const chip = s => `<span class="st" style="--c:var(--c-${s});--t:var(--t-${s})">
 const absUrl = u => u.startsWith("/") ? SITE + u : u;
 const isRaster = u => /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u);
 const artSpec = i => [i.art.type, ...i.art.colors];
+// Every Amazon link carries the Associates tag (replacing any other tag) and is marked sponsored.
+const AMAZON_TAG = config.amazonTag || "";
+const isAmazon = u => { try { return /(^|\.)amazon\.[a-z.]+$/i.test(new URL(u).hostname); } catch { return false; } };
+const tagged = u => { if (!AMAZON_TAG || !isAmazon(u)) return u; const x = new URL(u); x.searchParams.set("tag", AMAZON_TAG); return x.href; };
 // site.config.json "photos" decides where product photos replace the illustrations.
 const PHOTOS = config.photos || "all";
 const photoOnPage = i => Boolean(i.image) && (PHOTOS === "all" || PHOTOS === "pages");
@@ -226,8 +230,8 @@ function offers(i) {
 
 function storeRow(i, s) {
   const st = STORES[s.store];
-  const href = s.affiliateUrl || (st.searchUrl ? st.searchUrl + encodeURIComponent(i.searchQuery) : st.url);
-  const rel = s.affiliateUrl ? "sponsored noopener" : "noopener";
+  const href = tagged(s.affiliateUrl || (st.searchUrl ? st.searchUrl + encodeURIComponent(i.searchQuery) : st.url));
+  const rel = isAmazon(href) ? "noopener sponsored" : s.affiliateUrl ? "sponsored noopener" : "noopener";
   return `<tr><td>${esc(st.name)}</td><td>${!s.listed ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="${rel}">Check stock</a>`}</td></tr>`;
 }
 
@@ -235,7 +239,8 @@ function item(i, ogImage) {
   const n = i.date ? daysOut(i.date) : null;
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
   const showCountdown = i.date && i.status !== "out" && i.status !== "soldout";
-  const hasAffiliate = i.stores.some(s => s.listed && s.affiliateUrl);
+  const hasAmazon = i.stores.some(s => s.listed && (s.store === "amazon" || isAmazon(s.affiliateUrl || "")));
+  const hasAffiliate = hasAmazon || i.stores.some(s => s.listed && s.affiliateUrl);
   const hero = photoOnPage(i)
     ? `<figure class="hero" style="margin:0 0 14px"><div class="art"><img src="${esc(i.image)}" alt="${esc(i.name)}" decoding="async"></div><figcaption>${esc(i.imageCredit)}</figcaption></figure>`
     : `<figure class="hero" style="margin:0 0 14px"><div class="art">${art(artSpec(i))}</div><figcaption>Illustration, not a product photo</figcaption></figure>`;
@@ -256,11 +261,11 @@ function item(i, ogImage) {
     <h2>Where to buy</h2>
     ${i.stores.length ? `<table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
     <p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>` : `<p class="small">Not listed yet</p>`}
-    ${hasAffiliate ? `<p class="small">Some of these are affiliate links, so Edition Tracker may earn a commission if you buy through them. It doesn't change your price.</p>` : ""}
+    ${hasAffiliate ? `<p class="small">Some of these are affiliate links, so Edition Tracker may earn a commission if you buy through them. It doesn't change your price.${hasAmazon ? " As an Amazon Associate I earn from qualifying purchases." : ""}</p>` : ""}
     ${i.timeline.length ? `<h2>Timeline</h2>
     <ul class="tl">${[...i.timeline].sort((a, b) => b.date.localeCompare(a.date)).map(t => `<li><time datetime="${t.date}">${long(t.date)}</time><span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
     <h2>Sources</h2>
-    <ul class="plain src">${i.sources.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.label)}</a></li>`).join("")}</ul>
+    <ul class="plain src">${i.sources.map(s => `<li><a href="${esc(tagged(s.url))}" target="_blank" rel="${isAmazon(s.url) ? "noopener sponsored" : "noopener"}">${esc(s.label)}</a></li>`).join("")}</ul>
   </article>`;
 
   const description = describe(i);

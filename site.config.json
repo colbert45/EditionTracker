@@ -15,5 +15,6 @@
     "cloudflare": {
       "token": ""
     }
-  }
+  },
+  "amazonTag": "editiontracker02-20"
 }

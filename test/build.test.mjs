@@ -50,3 +50,21 @@ test("every page has its own title, description, canonical and Product data", ()
   const sitemap = readFileSync(join(ROOT, "_site/sitemap.xml"), "utf8");
   assert.equal((sitemap.match(/<loc>/g) || []).length, data.items.length + 1);
 });
+
+test("every Amazon link carries the Associates tag and is sponsored", () => {
+  execFileSync("node", ["scripts/build.mjs"], { cwd: ROOT });
+  const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
+  let count = 0;
+  for (const i of data.items) {
+    const html = readFileSync(join(ROOT, "_site", i.id, "index.html"), "utf8");
+    for (const [a] of html.matchAll(/<a [^>]*href="https:\/\/www\.amazon\.[^"]*"[^>]*>/g)) {
+      count++;
+      assert.match(a, /tag=editiontracker02-20/);
+      assert.doesNotMatch(a, /triforcetra08-20/);
+      assert.match(a, /rel="noopener sponsored"/);
+    }
+    if (html.includes("www.amazon.")) assert.match(html, /As an Amazon Associate I earn from qualifying purchases\./);
+  }
+  assert.ok(count > 0, "expected some Amazon links");
+});
+
