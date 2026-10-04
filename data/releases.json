@@ -639,7 +639,7 @@
       "price": "$119.99 to $209.99",
       "releaseDate": "2026-10-20",
       "releaseWindow": null,
-      "preordersOpened": null,
+      "preordersOpened": "2026-08-25",
       "searchQuery": "Razer Xbox 25 Anniversary",
       "image": null,
       "imageCredit": null,
@@ -667,7 +667,12 @@
           "affiliateUrl": null
         }
       ],
-      "timeline": [],
+      "timeline": [
+        {
+          "date": "2026-08-25",
+          "text": "Preorders opened at Razer.com."
+        }
+      ],
       "sources": [
         {
           "label": "TechGenyz (Razer store prices)",
@@ -676,6 +681,10 @@
         {
           "label": "TechSpot",
           "url": "https://techspot.com/news/113624-microsoft-partners-razer-8bitdo-backbone-xbox-25th-anniversary.html"
+        },
+        {
+          "label": "Razer",
+          "url": "https://www.razer.com/newsroom/product-news/xbox-25-anniversary-collection"
         }
       ]
     },
@@ -684,10 +693,10 @@
       "name": "8BitDo X25 Special Edition Charging Dock",
       "category": "xbox",
       "platform": "Xbox controllers",
-      "status": "announced",
+      "status": "preorder",
       "price": "$39.99",
-      "releaseDate": null,
-      "releaseWindow": "TBA",
+      "releaseDate": "2026-10-20",
+      "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "8BitDo X25 charging dock",
       "image": null,
@@ -716,6 +725,10 @@
         {
           "label": "InGame News",
           "url": "https://ingamenews.com/pc-gaming/razer-unveils-xbox-25th-anniversary-accessory-collection/"
+        },
+        {
+          "label": "8BitDo",
+          "url": "https://www.8bitdo.com/ultimate-charging-dock-xbox-25th/"
         }
       ]
     },

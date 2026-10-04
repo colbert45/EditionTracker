@@ -1,0 +1,43 @@
+# Run by hand (Actions tab → Fetch product images → Run workflow). Takes product
+# images from the official pages in config/image-sources.json and opens a pull
+# request with them. Nothing goes live until you merge it.
+name: Fetch product images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm install --no-save sharp
+      - name: Pick a branch
+        run: echo "BRANCH=images/$(date -u +%Y%m%d-%H%M)" >> "$GITHUB_ENV"
+      - name: Fetch images
+        id: fetch
+        run: node scripts/fetch-images.mjs
+      - name: Make sure the site still builds
+        if: steps.fetch.outputs.added != '0'
+        run: npm run validate && npm run build
+      - name: Open a pull request
+        if: steps.fetch.outputs.added != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add static/images data/releases.json
+          git commit -m "Add product images from official pages"
+          git push origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" --title "Product images" --body-file .images-report.md

@@ -1,0 +1,25 @@
+{
+  "_readme": "Official pages to take each release's main product image from (the page's share image). Run the 'Fetch product images' action; it opens a pull request so you can look at every image before it goes live. Items that already have an image are skipped.",
+  "items": {
+    "switch-2-pro-controller-zelda-40th": { "credit": "Image: Nintendo", "pages": ["https://www.nintendo.com/us/store/products/nintendo-switch-2-pro-controller-the-legend-of-zelda-40th-anniversary-edition-127074/"] },
+    "switch-2-carrying-case-zelda-40th": { "credit": "Image: Nintendo", "pages": ["https://www.nintendo.com/us/store/products/nintendo-switch-2-carrying-case-screen-protector-the-legend-of-zelda-40th-anniversary-edition-127073/"] },
+    "ocarina-of-time-remake-foil-first-print": { "credit": "Image: Nintendo", "pages": ["https://www.nintendo.com/us/store/products/the-legend-of-zelda-ocarina-of-time-switch-2/"] },
+    "amiibo-young-link-young-zelda": { "credit": "Image: Nintendo", "pages": ["https://www.nintendo.com/us/store/products/amiibo-young-link-the-legend-of-zelda-ocarina-of-time-series-127006/"] },
+    "lego-zelda-link-epona": { "credit": "Image: LEGO", "pages": ["https://brickset.com/article/134537/lego-the-legend-of-zelda-77094-ocarina-of-time-link-epona-revealed!"] },
+    "xbox-series-x25": { "credit": "Image: Microsoft", "pages": ["https://www.microsoft.com/en-us/d/xbox-series-x25-limited-edition/8wg5vqp0x4h3", "https://news.xbox.com/en-us/2026/06/07/xbox-25th-anniversary-console-controller-x25-xbox-games-showcase-2026/"] },
+    "xbox-x25-controller": { "credit": "Image: Microsoft", "pages": ["https://www.microsoft.com/en-us/d/xbox-wireless-controller-x25-special-edition/8wg5vqp0x4h2"] },
+    "razer-xbox-25-collection": { "credit": "Image: Razer", "pages": ["https://www.razer.com/newsroom/product-news/xbox-25-anniversary-collection", "https://www.razer.com/collabs/xbox-25-anniversary"] },
+    "8bitdo-x25-charging-dock": { "credit": "Image: 8BitDo", "pages": ["https://www.8bitdo.com/ultimate-charging-dock-xbox-25th/", "https://shop.8bitdo.com/products/8bitdo-ultimate-charging-dock-x25"] },
+    "gamesir-x5-lite-xbox-25": { "credit": "Image: GameSir", "pages": ["https://gamesir.com/products/gamesir-x5-lite-for-xbox-25th-anniversary-edition"] },
+    "rog-xbox-ally-x20": { "credit": "Image: ASUS", "pages": ["https://press.asus.com/news/press-releases/rog-xbox-ally-x20-pre-order/", "https://eshop.asus.com/us/rog/rog-xbox-ally-x20-2026.html"] },
+    "dualsense-gta-vi-white": { "credit": "Image: Sony Interactive Entertainment", "pages": ["https://blog.playstation.com/2026/09/03/first-look-at-the-grand-theft-auto-vi-limited-edition-dualsense-wireless-controllers/"] },
+    "dualsense-gta-vi-black": { "credit": "Image: Sony Interactive Entertainment", "pages": ["https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-grand-theft-auto-vi-black-limited-edition-for-ps5-pc-mac-mobile"] },
+    "dualsense-lisa-limited": { "credit": "Image: Sony Interactive Entertainment", "pages": ["https://blog.playstation.com/2026/09/21/lisa-x-playstation-arrives-this-october-first-look-at-the-dualsense-wireless-controller-lisa-limited-edition-and-all-new-merchandise/"] },
+    "ps5-wolverine-battle-yellow": { "credit": "Image: Sony Interactive Entertainment", "pages": ["https://www.playstation.com/ps5/marvels-wolverine-limited-edition-console-bundle-and-accessories"] },
+    "lego-playstation-ps1": { "credit": "Image: LEGO", "pages": ["https://www.lego.com/en-us/product/playstation-72306", "https://www.lego.com/en-us/aboutus/news/2026/september/first-ever-lego-playstation-set-revealed"] },
+    "sonic-35th-porcelain-statue": { "credit": "Image: Sega, via VGC", "pages": ["https://www.videogameschronicle.com/news/sega-is-releasing-a-porcelain-sonic-35th-anniversary-statue-limited-to-50-pieces-and-costing-6300-each/"] },
+    "gears-of-war-e-day-controller": { "credit": "Image: Microsoft", "pages": ["https://news.xbox.com/en-us/2026/08/12/gears-of-war-eday-xbox-controllers/"] },
+    "thec64-spectrum-handheld-collectors-editions": { "credit": "Image: Blaze Entertainment", "pages": ["https://funstockusa.com/products/thec64-handheld-collectors-edition"] },
+    "sonic-35th-legacy-cartridges": { "credit": "Image: iam8bit", "pages": ["https://www.iam8bit.com/products/sonic-the-hedgehog-35th-anniversary-legacy-cartridge-collection"] }
+  }
+}

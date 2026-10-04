@@ -3,3 +3,4 @@ _site/
 .cache/
 .news-state/
 data/last-checked.json
+.images-report.md
