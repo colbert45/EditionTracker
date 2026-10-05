@@ -758,8 +758,8 @@
       "releaseWindow": "TBA",
       "preordersOpened": null,
       "searchQuery": "GameSir X5 Lite Xbox",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/gamesir-x5-lite-xbox-25.jpg",
+      "imageCredit": "Image: GameSir",
       "art": {
         "type": "phonepad",
         "colors": [
@@ -934,8 +934,8 @@
       "releaseWindow": null,
       "preordersOpened": "2026-09-10",
       "searchQuery": "DualSense Grand Theft Auto VI Black Limited Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/dualsense-gta-vi-black.jpg",
+      "imageCredit": "Image: Sony Interactive Entertainment",
       "art": {
         "type": "pad",
         "colors": [
@@ -1546,8 +1546,8 @@
       "releaseWindow": null,
       "preordersOpened": "2026-09-14",
       "searchQuery": "HORI Electric Ocarina of Time Switch 2",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/electric-ocarina-of-time-hori.jpg",
+      "imageCredit": "Image: HORI",
       "art": {
         "type": "ocarina",
         "colors": [
@@ -1596,8 +1596,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "GTA VI Goodtime State Vice City Collection",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/gta-vi-goodtime-state-vice-city-collection.jpg",
+      "imageCredit": "Image: Rockstar Games",
       "art": {
         "type": "cebox",
         "colors": [
@@ -1659,8 +1659,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Final Fantasy VII Revelation Collector's Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/final-fantasy-vii-revelation-collectors-edition.jpg",
+      "imageCredit": "Image: Square Enix",
       "art": {
         "type": "cebox",
         "colors": [
@@ -1720,8 +1720,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Star Wars Galactic Racer Collector's Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/star-wars-galactic-racer-collectors-edition.jpg",
+      "imageCredit": "Image: Electronic Arts",
       "art": {
         "type": "cebox",
         "colors": [
@@ -1843,8 +1843,8 @@
       "releaseWindow": "February 2027",
       "preordersOpened": null,
       "searchQuery": "Metro 2039 Collector's Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/metro-2039-collectors-edition.jpg",
+      "imageCredit": "Image: Deep Silver",
       "art": {
         "type": "cebox",
         "colors": [
