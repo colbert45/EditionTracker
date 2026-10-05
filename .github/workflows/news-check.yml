@@ -6,10 +6,12 @@ name: News check
 on:
   schedule:
     # GitHub schedules run on UTC and can start hours late or be dropped when
-    # GitHub is busy. Several tries from 9am New York time on (summer UTC-4,
-    # winter UTC-5); the first one that runs does the check, and the script
-    # skips the rest of that day's runs.
-    - cron: "3 13,14,16,19,22 * * *"
+    # GitHub is busy, so there's a try every hour. The first one from 9am New
+    # York time that actually runs does the check; the script skips the rest
+    # of that day's runs.
+    # Hourly tries 13:17-23:17 UTC = 9am-7pm New York in summer, 8am-6pm in winter.
+    # Minute 17 avoids the top of the hour, when GitHub drops the most runs.
+    - cron: "17 13-23 * * *"
   workflow_dispatch:
 
 permissions:
