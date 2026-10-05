@@ -596,8 +596,8 @@
       "releaseWindow": null,
       "preordersOpened": "2026-08-26",
       "searchQuery": "Xbox X25 Special Edition Controller",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/xbox-x25-controller.jpg",
+      "imageCredit": "Image: Microsoft",
       "art": {
         "type": "pad",
         "colors": [
@@ -1659,8 +1659,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Final Fantasy VII Revelation Collector's Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/final-fantasy-vii-revelation-collectors-edition.jpg",
+      "imageCredit": "Image: Square Enix",
       "art": {
         "type": "cebox",
         "colors": [
@@ -1777,8 +1777,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Assassin's Creed Black Flag Resynced Collector's Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/assassins-creed-black-flag-resynced-collectors-edition.jpg",
+      "imageCredit": "Image: Ubisoft",
       "art": {
         "type": "cebox",
         "colors": [
