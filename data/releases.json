@@ -1653,7 +1653,7 @@
       "name": "Final Fantasy VII Revelation Collector's Edition",
       "category": "games",
       "platform": "Multi-platform",
-      "status": "preorder",
+      "status": "soldout",
       "price": "$349.99",
       "releaseDate": "2027-04-08",
       "releaseWindow": null,
@@ -1671,7 +1671,7 @@
       },
       "notes": [
         "The final part of the Final Fantasy VII remake trilogy. The Collector's Edition centers on a statue of Cloud, Zack and Sephiroth, and includes the physical Deluxe Edition and the Story Expansion Pass.",
-        "Limited quantities, sold only through the Square Enix Store."
+        "Limited quantities, sold only through the Square Enix Store, and it sold out within days. Square Enix says there are no plans to restock."
       ],
       "inTheBox": [
         "Full game (physical Deluxe Edition)",
@@ -1688,7 +1688,12 @@
           "affiliateUrl": null
         }
       ],
-      "timeline": [],
+      "timeline": [
+        {
+          "date": "2026-10-05",
+          "text": "Sold out on the Square Enix Store, with no restock planned."
+        }
+      ],
       "sources": [
         {
           "label": "Square Enix press",
@@ -1697,6 +1702,10 @@
         {
           "label": "The PC Enthusiast",
           "url": "https://thepcenthusiast.com/final-fantasy-vii-revelation-collectors-edition-preorder/"
+        },
+        {
+          "label": "TheGamer",
+          "url": "https://www.thegamer.com/final-fantasy-7-revelation-collectors-edition-sold-out-already/"
         }
       ]
     },

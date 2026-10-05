@@ -15,7 +15,7 @@ const sources = JSON.parse(readFileSync(process.env.IMAGE_SOURCES_FILE || join(R
 const data = JSON.parse(readFileSync(DATA, "utf8"));
 const sharp = (await import("sharp")).default;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const get = (url, accept) => fetch(url, { headers: { "user-agent": UA, accept }, redirect: "follow", signal: AbortSignal.timeout(20000) });
+const get = (url, accept) => fetch(url, { headers: { "user-agent": UA, accept }, redirect: "follow", signal: AbortSignal.timeout(45000) });
 
 const robots = new Map();
 async function allowed(url) {
@@ -57,7 +57,7 @@ const rows = [];
 for (const [id, s] of Object.entries(sources)) {
   const item = data.items.find(i => i.id === id);
   if (!item) { rows.push([id, "skipped", "not on the site"]); continue; }
-  if (item.image) { rows.push([id, "skipped", "already has an image"]); continue; }
+  if (item.image && !s.replace) { rows.push([id, "skipped", "already has an image"]); continue; }
   let done = false, errors = [];
   for (const page of s.pages) {
     try {
@@ -72,7 +72,7 @@ for (const [id, s] of Object.entries(sources)) {
     } catch (e) { errors.push(`${new URL(page).hostname}: ${e.message}`); }
     await sleep(1000);
   }
-  if (!done) rows.push([id, "failed", errors.join("; ")]);
+  if (!done) rows.push([id, item.image ? "kept the current image" : "failed", errors.join("; ")]);
   console.log(id, done ? "added" : "failed " + errors.join("; "));
 }
 
