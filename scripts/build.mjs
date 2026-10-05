@@ -83,7 +83,30 @@ const fontFaces = FONTS.map(([fam, w, file]) =>
 const CSS = `${fontFaces}\n${read("lib/design.css")}
 .thumb img,.hero .art img{display:block;width:100%;height:100%;object-fit:contain}
 .hero .art img{border-radius:4px}
-[hidden]{display:none!important}`;
+[hidden]{display:none!important}
+.mast nav{display:flex;gap:16px;margin-left:auto;margin-right:18px;font-size:.92rem;font-weight:600}
+.mast nav a{text-decoration:none}
+.mast nav a:hover{text-decoration:underline}
+.feature{display:grid;grid-auto-flow:column;grid-auto-columns:94%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:4px 0 22px;padding-bottom:8px;scrollbar-width:thin}
+.fcard{scroll-snap-align:start;position:relative;overflow:hidden;display:grid;grid-template-columns:1.15fr 1fr;align-items:center;gap:20px;padding:24px 26px;border-radius:8px;background:#16181D;border:1px solid var(--line);color:#ECEEF2;text-decoration:none;min-height:230px}
+.fcard::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 28% 55%,var(--glow) 0%,transparent 62%);opacity:.45}
+.fart{position:relative;aspect-ratio:200/120;width:100%}
+.fart svg{display:block;width:100%;height:100%}
+.ftxt{position:relative;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.fkick{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#A2A8B5}
+.fname{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:clamp(1.6rem,4.2vw,2.3rem);line-height:1.02;letter-spacing:-.01em}
+.fmeta{color:#A2A8B5;font-size:.95rem}
+.fwhen{font-weight:600;font-variant-numeric:tabular-nums}
+.fwhen span{color:#A2A8B5;font-weight:500}
+.fcard:hover .fname{text-decoration:underline}
+.search{display:block;width:100%;max-width:380px;font:inherit;font-size:.98rem;padding:8px 14px;margin:0 0 12px;border:1.5px solid var(--line);border-radius:999px;background:transparent;color:var(--ink)}
+.search:focus{outline:3px solid var(--red);outline-offset:1px}
+.cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+@media (max-width:600px){
+  .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
+  .fart{max-width:300px}
+  .mast nav{margin-right:0}
+}`;
 
 const PRELOAD = ["barlow-latin-400-normal", "barlow-latin-600-normal", "barlow-condensed-latin-800-normal"]
   .map(f => `<link rel="preload" href="/fonts/${f}.woff2" as="font" type="font/woff2" crossorigin>`).join("\n");
@@ -131,6 +154,7 @@ ${ogImage.startsWith(SITE + "/og/") ? `<meta property="og:image:width" content="
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="alternate" type="application/rss+xml" title="${esc(NAME)}: new and updated releases" href="${SITE}/feed.xml">
 ${PRELOAD}
 <style>
 ${CSS}
@@ -142,12 +166,14 @@ ${analytics()}
 <div class="wrap">
   <header class="mast">
     <a class="logo" href="/"><span class="tag" aria-hidden="true"></span><b>edition tracker</b></a>
+    <nav aria-label="Site"><a href="/calendar/">Calendar</a><a href="/feed.xml">RSS</a></nav>
     <span class="updated" id="updated">Updated ${long(HEADER_DATE)}</span>
   </header>
   <main id="app">${body}</main>
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
     <p>Spotted something I missed? It'll be added once there's a source.</p>
+    <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> for new and updated releases</p>
   </footer>
 </div>
 ${script ? `<script>\n${script}\n</script>\n` : ""}</body>
@@ -163,7 +189,8 @@ function thumb(i) {
 function rowHTML(i) {
   let sub = "";
   if (i.date && !isOut(i)) { const n = daysOut(i.date); sub = n === 0 ? "today" : n === 1 ? "tomorrow" : `in ${n} days`; }
-  return `<li data-i="${i.n}" data-cat="${esc(i.category)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}><a href="${esc(i.path)}">
+  const q = [i.name, i.platform, CATS[i.category], STATUS[i.status], i.searchQuery].join(" ").toLowerCase();
+  return `<li data-i="${i.n}" data-q="${esc(q)}" data-cat="${esc(i.category)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}><a href="${esc(i.path)}">
     <span class="thumb">${thumb(i)}</span>
     <span class="nm">${esc(i.name)}<span class="pf">${esc(i.platform)}, ${esc(i.price)}</span></span>
     <span class="dt">${i.date ? (isOut(i) ? long(i.date) : short(i.date)) : esc(i.when || "TBA")}${sub ? `<span>${sub}</span>` : ""}</span>
@@ -175,6 +202,20 @@ function section(key, title, note, list, alwaysShow) {
     <ul class="list">${list.length ? list.map(rowHTML).join("") : `<li><p class="empty">Nothing here right now.</p></li>`}</ul></section>`;
 }
 
+function featureCard(i) {
+  let when = i.date ? long(i.date) : (i.when || "TBA"), sub = "";
+  if (i.date && !isOut(i)) { const n = daysOut(i.date); sub = n === 0 ? "out today" : n === 1 ? "out tomorrow" : `in ${n} days`; }
+  return `<a class="fcard" href="${esc(i.path)}" style="--glow:${esc(i.art.colors[0])}">
+    <span class="fart">${art(artSpec(i))}</span>
+    <span class="ftxt">
+      <span class="fkick">${esc(CATS[i.category])}</span>
+      <span class="fname">${esc(i.name)}</span>
+      <span class="fmeta">${esc(i.platform)}, ${esc(i.price)}</span>
+      <span class="fwhen"${i.date && !isOut(i) ? ` data-date="${i.date}"` : ""}>${esc(when)}${sub ? ` <span>${sub}</span>` : ""}</span>
+      ${chip(i.status)}
+    </span></a>`;
+}
+
 function home() {
   const byDate = (a, b) => (a.date || "9999").localeCompare(b.date || "9999");
   const coming = ITEMS.filter(i => i.status !== "rumor" && !isOut(i)).sort(byDate);
@@ -182,8 +223,12 @@ function home() {
   const out = ITEMS.filter(i => i.status !== "rumor" && isOut(i)).sort((a, b) => byDate(b, a));
   const chips = [["all", "Everything"]].concat(Object.entries(CATS))
     .map(([k, v]) => `<button type="button" data-cat="${esc(k)}" aria-pressed="${k === "all"}">${esc(v)}</button>`).join("");
+  const featuredIds = Array.isArray(data.featured) && data.featured.length ? data.featured : coming.filter(i => i.date).slice(0, 4).map(i => i.id);
+  const featured = featuredIds.map(id => ITEMS.find(i => i.id === id)).filter(Boolean);
   const body = `
     <div class="lede"><p>Special edition consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. Updated daily as news drops.</p></div>
+    ${featured.length ? `<div class="feature" aria-label="Featured releases">${featured.map(featureCard).join("")}</div>` : ""}
+    <input class="search" type="search" placeholder="Search releases" aria-label="Search releases" autocomplete="off">
     <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
     ${section("coming", "Coming up", "", coming, true)}
     ${section("rumors", "Rumors and leaks", "not confirmed", rumors)}
@@ -285,6 +330,30 @@ function item(i, ogImage) {
   });
 }
 
+function calendar() {
+  const byDate = (a, b) => a.date.localeCompare(b.date);
+  const dated = ITEMS.filter(i => i.status !== "rumor" && i.date && !isOut(i)).sort(byDate);
+  const months = new Map();
+  for (const i of dated) {
+    const m = fmt(i.date, { month: "long", year: "numeric" });
+    if (!months.has(m)) months.set(m, []);
+    months.get(m).push(i);
+  }
+  const undated = ITEMS.filter(i => i.status !== "rumor" && !i.date);
+  const list = l => `<ul class="list">${l.map(rowHTML).join("")}</ul>`;
+  const body = `<article>
+    <a class="back" href="/">Back to all releases</a>
+    <div class="lede"><p>Every confirmed special edition with a release date, month by month. Rumors aren't included until they're announced.</p></div>
+    ${[...months].map(([m, l]) => `<h2 class="sec">${esc(m)} <small>${l.length} release${l.length === 1 ? "" : "s"}</small></h2>${list(l)}`).join("")}
+    ${undated.length ? `<h2 class="sec">Date not announced yet</h2>${list(undated)}` : ""}
+  </article>`;
+  return page({ title: `Release calendar: special edition consoles, games and collectibles | ${NAME}`,
+    description: `Upcoming special and limited edition consoles, controllers, games and collectibles by release month, with prices and where to buy.`,
+    path: "/calendar/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body,
+    jsonld: [{ "@context": "https://schema.org", "@type": "ItemList", name: "Upcoming special edition releases",
+      itemListElement: dated.map((i, k) => ({ "@type": "ListItem", position: k + 1, url: i.url, name: i.name })) }] });
+}
+
 function notFound() {
   const body = `<article class="item">
     <a class="back" href="/">Back to all releases</a>
@@ -341,6 +410,7 @@ for (const i of ITEMS) {
 }
 
 write("404.html", notFound());
+write("calendar/index.html", calendar());
 write("favicon.svg", faviconSvg);
 write("favicon.ico", ico(toPng(faviconSvg.replace(/<style>.*<\/style>/, "").replace("<path ", `<path fill="#D7263D" `), 32)));
 write("apple-touch-icon.png", toPng(appleSvg, 180));
@@ -350,8 +420,33 @@ const lastmod = i => [...i.timeline.map(t => t.date), i.pre].filter(d => d && d 
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${SITE}/</loc><lastmod>${data.updated}</lastmod></url>
+  <url><loc>${SITE}/calendar/</loc><lastmod>${data.updated}</lastmod></url>
 ${ITEMS.map(i => `  <url><loc>${esc(i.url)}</loc><lastmod>${lastmod(i)}</lastmod></url>`).join("\n")}
 </urlset>
+`);
+// RSS feed: one entry per release, newest change first. The guid changes with each
+// update, so feed readers, Discord bots and email tools see updated releases as new.
+const rfc822 = d => new Date(d + "T12:00:00Z").toUTCString();
+const feedItems = [...ITEMS].sort((a, b) => lastmod(b).localeCompare(lastmod(a)) || a.n - b.n);
+write("feed.xml", `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>${esc(NAME)}</title>
+  <link>${SITE}/</link>
+  <atom:link href="${SITE}/feed.xml" rel="self" type="application/rss+xml"/>
+  <description>New and updated special edition consoles, games, controllers and collectibles.</description>
+  <language>en-us</language>
+  <lastBuildDate>${rfc822(HEADER_DATE)}</lastBuildDate>
+${feedItems.map(i => `  <item>
+    <title>${esc(i.name)}${i.status === "rumor" ? " (rumor)" : ""}</title>
+    <link>${esc(i.url)}</link>
+    <guid isPermaLink="false">${esc(i.url)}#${lastmod(i)}-${esc(i.status)}</guid>
+    <pubDate>${rfc822(lastmod(i))}</pubDate>
+    <category>${esc(CATS[i.category])}</category>
+    <description>${esc((i.timeline.length ? [...i.timeline].sort((a, b) => b.date.localeCompare(a.date))[0].text + " " : "") + describe(i))}</description>
+  </item>`).join("\n")}
+</channel>
+</rss>
 `);
 write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 write("CNAME", new URL(SITE).hostname + "\n");
