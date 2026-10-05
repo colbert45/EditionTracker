@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-03",
+  "updated": "2026-10-05",
   "featured": [
     "switch-2-zelda-40th",
     "xbox-series-x25",
@@ -11,6 +11,7 @@
     "playstation": "PlayStation",
     "xbox": "Xbox",
     "pc": "PC & handhelds",
+    "games": "Game editions",
     "retro": "Retro & other",
     "collect": "Collectibles"
   },
@@ -81,6 +82,14 @@
     "iam8bit": {
       "name": "iam8bit",
       "url": "https://www.iam8bit.com/"
+    },
+    "rockstar": {
+      "name": "Rockstar Store",
+      "url": "https://store.rockstargames.com/"
+    },
+    "squareenix": {
+      "name": "Square Enix Store",
+      "url": "https://store.na.square-enix-games.com/"
     }
   },
   "items": [
@@ -1523,6 +1532,340 @@
         {
           "label": "GamingBible",
           "url": "https://www.gamingbible.com/news/zelda-majora-mask-remake-rumours-fans-unconvinced-949462-20260722"
+        }
+      ]
+    },
+    {
+      "id": "electric-ocarina-of-time-hori",
+      "name": "Electric Ocarina of Time (HORI)",
+      "category": "nintendo",
+      "platform": "Nintendo Switch 2",
+      "status": "preorder",
+      "price": "$49.99",
+      "releaseDate": "2026-11-05",
+      "releaseWindow": null,
+      "preordersOpened": "2026-09-14",
+      "searchQuery": "HORI Electric Ocarina of Time Switch 2",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "ocarina",
+        "colors": [
+          "#2F6FD0",
+          "#C9A23A",
+          "#173E7A"
+        ]
+      },
+      "notes": [
+        "A real, playable ocarina from HORI, licensed by Nintendo, that works with the Ocarina of Time remake. Free Play mode lets you play notes yourself, and Auto-Play plays any of the game's 12 songs at the press of a button.",
+        "It comes out the same day as the game. The first batch at My Nintendo Store sold out within minutes of preorders opening, so watch for restocks."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-14",
+          "text": "Preorders opened at My Nintendo Store at $49.99 and sold out quickly."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/09/zelda-ocarina-of-time-electric-ocarina-nintendo-store-pre-orders-now-live-us"
+        },
+        {
+          "label": "Notebookcheck",
+          "url": "https://www.notebookcheck.net/Hori-s-electric-Ocarina-of-Time-is-now-available-to-pre-order.1399682.0.html"
+        }
+      ]
+    },
+    {
+      "id": "gta-vi-goodtime-state-vice-city-collection",
+      "name": "GTA VI: The Goodtime State Vice City Collection",
+      "category": "games",
+      "platform": "Merch box (game not included)",
+      "status": "preorder",
+      "price": "$399.99",
+      "releaseDate": "2026-11-19",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "GTA VI Goodtime State Vice City Collection",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "cebox",
+        "colors": [
+          "#E0479E",
+          "#3BB6D9",
+          "#F2C318"
+        ]
+      },
+      "notes": [
+        "Rockstar's collector's box for GTA VI, themed around Macca the Gator, a TV show in the game. It's all merch: the game itself isn't included, so you'll need to buy that separately.",
+        "Only sold through the Rockstar Store, while supplies last. Arrives Nov 19, the day GTA VI comes out."
+      ],
+      "inTheBox": [
+        "Macca the Gator figure",
+        "Oakley Frogskins sunglasses",
+        "Leonida Keys crossbody bag",
+        "New Era 9FORTY snapback hat",
+        "Macca the Gator magnetic mirror",
+        "Chunkee the Manatee shot glass",
+        "Vice City swizzle spoon and razor blade keychain",
+        "Enamel pin set, sticker pack, and a double-sided poster with a map of Leonida"
+      ],
+      "stores": [
+        {
+          "store": "rockstar",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-01",
+          "text": "Revealed at $399.99, with preorders open on the Rockstar Store."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Rockstar Newswire",
+          "url": "https://www.rockstargames.com/newswire/article/9k2a49ook82o57/pre-order-the-goodtime-state-vice-city-collection-now-while-supplies-l"
+        },
+        {
+          "label": "GameSpot",
+          "url": "https://www.gamespot.com/articles/gta-6-400-collectors-edition-comes-with-everything-except-the-game/"
+        },
+        {
+          "label": "Forbes",
+          "url": "https://www.forbes.com/sites/brianmazique/2026/10/01/rockstars-400-gta-6-vice-city-collectables-set-revealed---heres-what-you-get/"
+        }
+      ]
+    },
+    {
+      "id": "final-fantasy-vii-revelation-collectors-edition",
+      "name": "Final Fantasy VII Revelation Collector's Edition",
+      "category": "games",
+      "platform": "Multi-platform",
+      "status": "preorder",
+      "price": "$349.99",
+      "releaseDate": "2027-04-08",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Final Fantasy VII Revelation Collector's Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "cebox",
+        "colors": [
+          "#1B2A4A",
+          "#C9A23A",
+          "#8E9AAF"
+        ]
+      },
+      "notes": [
+        "The final part of the Final Fantasy VII remake trilogy. The Collector's Edition centers on a statue of Cloud, Zack and Sephiroth, and includes the physical Deluxe Edition and the Story Expansion Pass.",
+        "Limited quantities, sold only through the Square Enix Store."
+      ],
+      "inTheBox": [
+        "Full game (physical Deluxe Edition)",
+        "Cloud, Zack and Sephiroth statue",
+        "120-page hardcover art book",
+        "Mini soundtrack CD",
+        "SteelBook case",
+        "Story Expansion Pass (two story DLCs planned)"
+      ],
+      "stores": [
+        {
+          "store": "squareenix",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Square Enix press",
+          "url": "https://press.na.square-enix.com/FINAL-FANTASY-VII-REVELATION-RELEASES-APRIL-8-2027-ON-PHYSICAL-AND-DIG"
+        },
+        {
+          "label": "The PC Enthusiast",
+          "url": "https://thepcenthusiast.com/final-fantasy-vii-revelation-collectors-edition-preorder/"
+        }
+      ]
+    },
+    {
+      "id": "star-wars-galactic-racer-collectors-edition",
+      "name": "Star Wars: Galactic Racer Collector's Edition",
+      "category": "games",
+      "platform": "PS5, Xbox Series X|S, PC",
+      "status": "soldout",
+      "price": "$159.99",
+      "releaseDate": "2026-10-06",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Star Wars Galactic Racer Collector's Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "cebox",
+        "colors": [
+          "#2B2B2E",
+          "#E8B53A",
+          "#C8102E"
+        ]
+      },
+      "notes": [
+        "Comes with a metal model of Kor Sarun's Darc X landspeeder, plus the game in a steel case and all the digital Deluxe content.",
+        "Reported sold out, with resale listings around $230."
+      ],
+      "inTheBox": [
+        "Full game in a steel case",
+        "Metal Darc X landspeeder model",
+        "80-page art book",
+        "Two pilot patches",
+        "Kestar's banner",
+        "Digital Deluxe content"
+      ],
+      "stores": [
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "amazon",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Operation Sports",
+          "url": "https://www.operationsports.com/star-wars-galactic-racer-release-date-editions-game-modes-and-everything-we-know/"
+        },
+        {
+          "label": "Resell Calendar",
+          "url": "https://resellcalendar.com/news/news/star-wars-galactic-racer-collector-edition-reseller-sold-out/"
+        }
+      ]
+    },
+    {
+      "id": "assassins-creed-black-flag-resynced-collectors-edition",
+      "name": "Assassin's Creed Black Flag Resynced Collector's Edition",
+      "category": "games",
+      "platform": "PS5, Xbox Series X|S",
+      "status": "out",
+      "price": "$199.99",
+      "releaseDate": "2026-07-09",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Assassin's Creed Black Flag Resynced Collector's Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "cebox",
+        "colors": [
+          "#1F2A36",
+          "#C9A23A",
+          "#8B1E1E"
+        ]
+      },
+      "notes": [
+        "The remake of Black Flag, with a 12-inch statue of Edward Kenway on the deck of the Jackdaw as the centerpiece."
+      ],
+      "inTheBox": [
+        "Full game (physical disc)",
+        "Edward Kenway figure, 12 in",
+        "Leather logbook",
+        "Metal Assassin brooch",
+        "SteelBook, cloth world map and sea shanty sheet",
+        "Blackbeard's Crimson Pack (digital)"
+      ],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "bestbuy",
+          "listed": true,
+          "affiliateUrl": null
+        },
+        {
+          "store": "gamestop",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-09",
+          "text": "Released."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Ubisoft News",
+          "url": "https://news.ubisoft.com/en-us/article/4WSO7FBW76v05UxZSqG5L8/assassins-creed-black-flag-resynced-out-july-9-everything-you-need-to-know"
+        },
+        {
+          "label": "GameSpot",
+          "url": "https://www.gamespot.com/articles/assassins-creed-black-flag-resynced-buying-guide/1100-6539598/"
+        }
+      ]
+    },
+    {
+      "id": "metro-2039-collectors-edition",
+      "name": "Metro 2039 Collector's Edition",
+      "category": "games",
+      "platform": "Xbox Series X|S, PC",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "February 2027",
+      "preordersOpened": null,
+      "searchQuery": "Metro 2039 Collector's Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "cebox",
+        "colors": [
+          "#3A3F3A",
+          "#B8BEC6",
+          "#C8102E"
+        ]
+      },
+      "notes": [
+        "The centerpiece is a replica of the Stranger's battle-scarred Spartan helmet, built from the in-game model. It's the only confirmed item so far.",
+        "Deep Silver hasn't announced the price, the full contents or where to buy it. Preorders are due later this year."
+      ],
+      "inTheBox": [
+        "Spartan helmet replica"
+      ],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-08-25",
+          "text": "Revealed at Gamescom with the Spartan helmet."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech Times",
+          "url": "https://www.techtimes.com/articles/325503/20260825/metro-2039-collectors-edition-spartan-helmet-revealed-gamescom-2026-register-free.htm"
+        },
+        {
+          "label": "Xbox",
+          "url": "https://www.xbox.com/en-US/games/metro-2039"
         }
       ]
     }
