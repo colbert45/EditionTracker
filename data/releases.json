@@ -1659,8 +1659,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Final Fantasy VII Revelation Collector's Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/final-fantasy-vii-revelation-collectors-edition.jpg",
+      "imageCredit": "Image: Square Enix",
       "art": {
         "type": "cebox",
         "colors": [
