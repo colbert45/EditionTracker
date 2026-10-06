@@ -16,10 +16,6 @@ const read = p => readFileSync(join(ROOT, p), "utf8");
 const config = JSON.parse(read("site.config.json"));
 const data = JSON.parse(read("data/releases.json"));
 const SITE = config.siteUrl.replace(/\/$/, "");
-// The header date is the later of the last data change and the last news check.
-let lastChecked = null;
-try { lastChecked = JSON.parse(read("data/last-checked.json")).lastChecked; } catch {}
-const HEADER_DATE = [data.updated, lastChecked].filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d || "")).sort().pop();
 const NAME = config.siteName;
 
 const { errors, warnings } = validate(data, { staticDir: STATIC });
@@ -37,6 +33,9 @@ const short = d => fmt(d, { month: "short", day: "numeric" });
 const long = d => fmt(d, { month: "short", day: "numeric", year: "numeric" });
 // "Today" for the build is the US Eastern date; the page script re-checks with the visitor's own date.
 const TODAY = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+// The header shows the day the site was built (New York time). It's rebuilt just after
+// midnight every night, after each news check and on every change.
+const HEADER_DATE = TODAY;
 const daysOut = d => Math.round((toDate(d) - toDate(TODAY)) / 86400000);
 
 const CATS = data.categories;
