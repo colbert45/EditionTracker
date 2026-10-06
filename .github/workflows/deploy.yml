@@ -7,10 +7,7 @@ on:
   push:
     branches: [main]
   schedule:
-    # Just after midnight New York time, so the header shows the new day.
-    # 4:07 UTC is 12:07am in summer, 5:07 UTC is 12:07am in winter. GitHub
-    # often starts schedules late, so there are a couple of extra tries.
-    - cron: "7 4,5,6 * * *"
+    - cron: "7 5 * * *" # daily, about 1am US Eastern
   workflow_dispatch:
 
 permissions:
@@ -34,6 +31,8 @@ jobs:
       - run: npm ci
       - run: npm run validate
       - run: npm test
+      - name: Get the last news check date
+        run: git fetch --depth=1 origin status && git show FETCH_HEAD:last-checked.json > data/last-checked.json || echo "No news check recorded yet"
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

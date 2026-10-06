@@ -1,4 +1,5 @@
-# Checks news and subreddit feeds once a day (from 9am New York time) and opens (or adds to) one
+# Checks news and subreddit feeds twice a day, once in the morning (12:00am-11:59am
+# New York time) and once in the afternoon (12:00pm-11:59pm), and opens (or adds to) one
 # pull request with proposed edits to data/releases.json. It never pushes to main:
 # nothing goes live until you merge the pull request.
 name: News check
@@ -6,12 +7,11 @@ name: News check
 on:
   schedule:
     # GitHub schedules run on UTC and can start hours late or be dropped when
-    # GitHub is busy, so there's a try every hour. The first one from 9am New
-    # York time that actually runs does the check; the script skips the rest
-    # of that day's runs.
-    # Hourly tries 13:17-23:17 UTC = 9am-7pm New York in summer, 8am-6pm in winter.
+    # GitHub is busy, so there's a try every hour. The first try that actually
+    # runs in each half of the New York day does the check; the script skips
+    # the rest of that half-day's tries.
     # Minute 17 avoids the top of the hour, when GitHub drops the most runs.
-    - cron: "17 13-23 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -25,24 +25,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  when:
-    runs-on: ubuntu-latest
-    outputs:
-      run: ${{ steps.hour.outputs.run }}
-    steps:
-      - id: hour
-        run: |
-          HOUR=$(TZ=America/New_York date +%H)
-          if [ "${{ github.event_name }}" != "schedule" ] || [ "$((10#$HOUR))" -ge 9 ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "It's ${HOUR}:00 in New York, before 9am. Skipping this run."
-            echo "run=false" >> "$GITHUB_OUTPUT"
-          fi
-
   check:
-    needs: when
-    if: needs.when.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -94,7 +77,7 @@ jobs:
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
           REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
           NEWS_MODEL: ${{ vars.NEWS_MODEL }}
-          ONCE_PER_DAY: ${{ github.event_name == 'schedule' }}
+          ONCE_PER_HALF_DAY: ${{ github.event_name == 'schedule' }}
         run: node scripts/news-check.mjs
 
       - name: Make sure the site still builds with the edits

@@ -27,6 +27,9 @@ const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, "utf8
 state.seen ??= {};      // link -> ISO date first seen
 state.http ??= {};      // feed url -> { etag, lastModified }
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+// "2026-10-06 AM" or "2026-10-06 PM", New York time. Scheduled runs check once per half-day.
+const nyHour = +new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", hourCycle: "h23" });
+const halfDay = `${today} ${nyHour < 12 ? "AM" : "PM"}`;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const log = (...a) => console.log(...a);
 
@@ -38,6 +41,7 @@ function summary(md) {
 }
 function saveState() {
   state.lastCheck = today;
+  state.lastHalfDay = halfDay;
   // Forget links after 30 days so the file stays small.
   const cutoff = Date.now() - 30 * 86400000;
   for (const [k, v] of Object.entries(state.seen)) if (Date.parse(v) < cutoff) delete state.seen[k];
@@ -165,9 +169,10 @@ async function askClaude(data, headlines) {
 }
 
 // ---------- main ----------
-// Scheduled runs fire several times a day as backups; only the first one per New York day checks.
-if (process.env.ONCE_PER_DAY === "true" && state.lastCheck === today) {
-  log(`Already checked today (${today}), skipping this run.`);
+// Scheduled runs fire every hour as backups; only the first one in each half of the
+// New York day (12am-11:59am, 12pm-11:59pm) checks.
+if (process.env.ONCE_PER_HALF_DAY === "true" && state.lastHalfDay === halfDay) {
+  log(`Already checked this half of the day (${halfDay}), skipping this run.`);
   output("changed", "false");
   process.exit(0);
 }
