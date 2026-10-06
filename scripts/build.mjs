@@ -145,6 +145,12 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .alert-btn:hover{filter:brightness(1.08)}
 .alert-me{display:inline-block;padding:4px 12px;border:1.5px solid var(--red);border-radius:999px;font-size:.88rem;font-weight:700;color:var(--red);text-decoration:none;white-space:nowrap}
 .alert-me:hover{background:var(--red);color:#fff}
+.note .big{font-size:1.15rem;max-width:56ch}
+.steps{list-style:none;padding:0}
+.steps li{margin:0 0 10px;padding-left:16px;border-left:3px solid var(--red)}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:26px}
+.btn{display:inline-block;padding:10px 22px;border-radius:999px;background:var(--red);color:#fff;font-weight:700;text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
 .cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
@@ -464,6 +470,40 @@ function calendar() {
       itemListElement: dated.map((i, k) => ({ "@type": "ListItem", position: k + 1, url: i.url, name: i.name })) }] });
 }
 
+// Where Buttondown sends people after they subscribe (before confirming) and after they
+// confirm. Set both under Buttondown > Settings > Subscribing > Redirects.
+function subscribed() {
+  const body = `<article class="item note">
+    <h1>Check your email</h1>
+    <p class="big">One more step: open the email from <b>Edition Tracker</b> (hello@editiontracker.com) and tap <b>Confirm</b>. Nothing gets sent until you do.</p>
+    <ul class="plain steps">
+      <li><b>Don't see it?</b> Give it a minute, then check Spam or Promotions.</li>
+      <li><b>Typo in your email?</b> Just <a href="/#alerts">sign up again</a>.</li>
+    </ul>
+    <p><a class="back" href="/">Back to all releases</a></p>
+  </article>`;
+  return page({ title: `Check your email | ${NAME}`, description: "Confirm your Edition Tracker subscription.", path: "/subscribed/",
+    ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body, noindex: true });
+}
+
+function welcome() {
+  const body = `<article class="item note">
+    <h1>You're in.</h1>
+    <p class="big">Thanks for subscribing to Edition Tracker. Here's what lands in your inbox:</p>
+    <ul class="plain steps">
+      <li><b>Alerts</b> for the consoles and releases you picked, when something's announced, gets a release date, opens preorders or sells out.</li>
+      <li><b>A short weekly roundup</b> of everything new, so you don't miss what you didn't pick.</li>
+    </ul>
+    <h2>Make sure they reach you</h2>
+    <p>Add <b>hello@editiontracker.com</b> to your contacts. Preorders can sell out within hours, so you don't want an alert sitting in Spam.</p>
+    <h2>Change your picks anytime</h2>
+    <p>Every email has a link at the bottom to add or remove consoles and releases, or unsubscribe. Or tap <b>Alert me about this</b> on any release page.</p>
+    <p class="cta"><a class="btn" href="/">Browse the releases</a> <a class="back" href="/calendar/">Release calendar</a></p>
+  </article>`;
+  return page({ title: `Welcome | ${NAME}`, description: "You're subscribed to Edition Tracker.", path: "/welcome/",
+    ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body, noindex: true });
+}
+
 function notFound() {
   const body = `<article class="item">
     <a class="back" href="/">Back to all releases</a>
@@ -520,6 +560,9 @@ for (const i of ITEMS) {
 }
 
 write("404.html", notFound());
+write("subscribed/index.html", subscribed());
+write("welcome/index.html", welcome());
+write("feed.xsl", read("lib/feed.xsl"));
 write("calendar/index.html", calendar());
 write("favicon.svg", faviconSvg);
 write("favicon.ico", ico(toPng(faviconSvg.replace(/<style>.*<\/style>/, "").replace("<path ", `<path fill="#D7263D" `), 32)));
@@ -539,6 +582,7 @@ ${ITEMS.map(i => `  <url><loc>${esc(i.url)}</loc><lastmod>${lastmod(i)}</lastmod
 const rfc822 = d => new Date(d + "T12:00:00Z").toUTCString();
 const feedItems = [...ITEMS].sort((a, b) => lastmod(b).localeCompare(lastmod(a)) || a.n - b.n);
 write("feed.xml", `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/feed.xsl"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>${esc(NAME)}</title>
