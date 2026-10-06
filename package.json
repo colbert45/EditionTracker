@@ -2,7 +2,7 @@
   "name": "edition-tracker",
   "version": "1.0.0",
   "scripts": {
-    "test": "node --test",
+    "test": "node --test --test-concurrency=1",
     "build": "node scripts/build.mjs",
     "validate": "node scripts/validate.mjs",
     "serve": "node scripts/serve.mjs",
