@@ -70,3 +70,15 @@ jobs:
       - name: Send alerts for this change
         if: github.event_name == 'push'
         run: node scripts/alerts.mjs send "${{ github.event.before }}"
+      # Posts release news to Bluesky and X (when their keys are set). A failed post
+      # doesn't fail the deploy; check this step's log if a post is missing.
+      - name: Post to social media
+        if: github.event_name == 'push'
+        continue-on-error: true
+        env:
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: node scripts/social.mjs "${{ github.event.before }}"

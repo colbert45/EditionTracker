@@ -19,5 +19,9 @@
   "amazonTag": "editiontracker02-20",
   "newsletter": {
     "buttondown": "editiontracker"
+  },
+  "social": {
+    "bluesky": "editiontracker.bsky.social",
+    "x": "editiontracker"
   }
 }

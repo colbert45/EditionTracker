@@ -21,6 +21,10 @@ let lastChecked = null;
 try { lastChecked = JSON.parse(read("data/last-checked.json")).lastChecked; } catch {}
 const HEADER_DATE = [data.updated, lastChecked].filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d || "")).sort().pop();
 const NAME = config.siteName;
+const SOCIAL = [
+  config.social?.bluesky && ["Bluesky", `https://bsky.app/profile/${config.social.bluesky}`],
+  config.social?.x && ["X", `https://x.com/${config.social.x}`]
+].filter(Boolean);
 
 const { errors, warnings } = validate(data, { staticDir: STATIC });
 warnings.forEach(w => console.warn("warning:", w));
@@ -264,9 +268,10 @@ ${analytics()}
   ${noindex ? "" : signup(alertItem)}
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
-    <p>Spotted something I missed? <a href="/contact/">Send a tip</a>. It'll be added once there's a source.</p>
+    <p>Spotted something I missed? <a href="mailto:tips@editiontracker.com">Send a tip</a> to tips@editiontracker.com. It'll be added once there's a source.</p>
     <p>Some links are affiliate links, so Edition Tracker may earn a commission at no cost to you. As an Amazon Associate I earn from qualifying purchases.</p>
     <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> · <a href="/contact/">Contact</a> · <a href="/privacy/">Privacy and cookies</a></p>
+    ${SOCIAL.length ? `<p>Follow: ${SOCIAL.map(([n, u]) => `<a href="${esc(u)}" rel="me noopener">${n}</a>`).join(" · ")}</p>` : ""}
   </footer>
 </div>
 ${script || alertsHref ? `<script>\n${[script, alertsHref && !noindex ? ALERTS_JS : ""].filter(Boolean).join("\n")}\n</script>\n` : ""}</body>
@@ -349,7 +354,7 @@ function home() {
     ${section("rumors", "Rumors and leaks", "not confirmed", rumors)}
     ${section("out", "Already out", "", out)}`;
   const jsonld = [
-    { "@context": "https://schema.org", "@type": "WebSite", name: NAME, url: SITE + "/" },
+    { "@context": "https://schema.org", "@type": "WebSite", name: NAME, url: SITE + "/", ...(SOCIAL.length ? { sameAs: SOCIAL.map(([, u]) => u) } : {}) },
     { "@context": "https://schema.org", "@type": "ItemList", name: "Special edition releases",
       itemListElement: [...coming, ...rumors, ...out].map((i, k) => ({ "@type": "ListItem", position: k + 1, url: i.url, name: i.name })) }
   ];
@@ -526,9 +531,9 @@ function privacy() {
 function contact() {
   const body = `<article class="item note">
     <h1>Contact</h1>
-    <p class="big">Email <a href="mailto:hello@editiontracker.com"><b>hello@editiontracker.com</b></a> for anything: tips, corrections, partnerships or questions about your alerts.</p>
+    <p class="big">Email <a href="mailto:hello@editiontracker.com"><b>hello@editiontracker.com</b></a> for corrections, partnerships or questions about your alerts.</p>
     <ul class="plain steps">
-      <li><b>Spotted an edition that's missing?</b> Send a link to the announcement or store page. It'll be added once there's a source.</li>
+      <li><b>Spotted an edition that's missing?</b> Send a link to the announcement or store page to <a href="mailto:tips@editiontracker.com"><b>tips@editiontracker.com</b></a>. It'll be added once there's a source.</li>
       <li><b>Something wrong on a page?</b> Tell me which release and what's off.</li>
       <li><b>Want alerts?</b> Use the form below, or tap <b>Alert me about this</b> on any release page.</li>
     </ul>
