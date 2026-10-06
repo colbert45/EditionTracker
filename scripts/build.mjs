@@ -101,6 +101,16 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .fcard:hover .fname{text-decoration:underline}
 .search{display:block;width:100%;max-width:380px;font:inherit;font-size:.98rem;padding:8px 14px;margin:0 0 12px;border:1.5px solid var(--line);border-radius:999px;background:transparent;color:var(--ink)}
 .search:focus{outline:3px solid var(--red);outline-offset:1px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.signup{margin:28px 0 8px;padding:20px 22px;border:1.5px solid var(--line);border-radius:8px;background:var(--row)}
+.signup h2{margin:0 0 4px;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:1.5rem;line-height:1.1}
+.signup p{margin:0 0 12px;color:var(--soft)}
+.signup form{display:flex;flex-wrap:wrap;gap:8px}
+.signup input{flex:1 1 220px;min-width:0;font:inherit;font-size:1rem;padding:9px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink)}
+.signup input:focus{outline:3px solid var(--red);outline-offset:1px}
+.signup button{font:inherit;font-weight:700;font-size:1rem;padding:9px 20px;border:0;border-radius:999px;background:var(--red);color:#fff;cursor:pointer}
+.signup button:hover{filter:brightness(1.08)}
+.signup small{display:block;margin-top:8px;color:var(--soft);font-size:.82rem}
 .cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
@@ -121,6 +131,23 @@ function analytics() {
   if (a.provider === "cloudflare" && a.cloudflare?.token)
     return `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: a.cloudflare.token })}'></script>`;
   return "";
+}
+
+// Newsletter signup (Buttondown's embed form). Shown on every indexed page.
+function signup() {
+  const user = config.newsletter?.buttondown;
+  if (!/^[a-z0-9_-]+$/i.test(user || "")) return "";
+  return `<section class="signup" aria-labelledby="signup-h">
+    <h2 id="signup-h">Get the weekly drop list</h2>
+    <p>New editions, preorder dates and price changes, once a week. No spam.</p>
+    <form action="https://buttondown.com/api/emails/embed-subscribe/${user}" method="post" target="_blank">
+      <label for="signup-email" class="sr-only">Email address</label>
+      <input id="signup-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+      <input type="hidden" name="embed" value="1">
+      <button type="submit">Subscribe</button>
+    </form>
+    <small>Unsubscribe anytime. Powered by Buttondown.</small>
+  </section>`;
 }
 
 const minifyJs = s => s.replace(/^\s*\/\/.*$/gm, "").replace(/\n\s*\n/g, "\n").trim();
@@ -170,6 +197,7 @@ ${analytics()}
     <span class="updated" id="updated">Updated ${long(HEADER_DATE)}</span>
   </header>
   <main id="app">${body}</main>
+  ${noindex ? "" : signup()}
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
     <p>Spotted something I missed? It'll be added once there's a source.</p>
