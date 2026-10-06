@@ -87,8 +87,29 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .mast nav{display:flex;gap:16px;margin-left:auto;margin-right:18px;font-size:.92rem;font-weight:600}
 .mast nav a{text-decoration:none}
 .mast nav a:hover{text-decoration:underline}
-.feature{display:grid;grid-auto-flow:column;grid-auto-columns:94%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:4px 0 22px;padding-bottom:8px;scrollbar-width:thin}
-.fcard{scroll-snap-align:start;position:relative;overflow:hidden;display:grid;grid-template-columns:1.15fr 1fr;align-items:center;gap:20px;padding:24px 26px;border-radius:8px;background:#16181D;border:1px solid var(--line);color:#ECEEF2;text-decoration:none;min-height:230px}
+.logo b{font-size:2.05rem}
+.tag{width:32px;height:22px}
+.tag::after{top:8px;right:6px}
+.hero-top{margin:26px 0 20px}
+.hero-h{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:clamp(2.6rem,8.5vw,4.6rem);line-height:.95;letter-spacing:-.015em;margin:0 0 12px;text-transform:uppercase}
+.hero-h em{font-style:normal;color:var(--red)}
+.hero-sub{margin:0 0 16px;font-size:1.12rem;color:var(--soft);max-width:56ch}
+.stats{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.stats li{padding:5px 12px;border:1.5px solid var(--line);border-radius:999px;font-size:.92rem;color:var(--soft)}
+.stats b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.carousel{position:relative;margin:4px 0 26px}
+.feature{display:grid;grid-auto-flow:column;grid-auto-columns:100%;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:8px}
+.feature::-webkit-scrollbar{display:none}
+.fphoto{aspect-ratio:16/11;background:#fff;border-radius:6px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.fphoto img{display:block;width:100%;height:100%;object-fit:contain}
+.cnav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px}
+.cnav>button{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);background:transparent;color:var(--ink);font-size:1.5rem;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0 0 3px}
+.cnav>button:hover{border-color:var(--ink)}
+.dots{display:flex;gap:8px}
+.dots button{width:10px;height:10px;border-radius:999px;border:0;padding:0;background:var(--line);cursor:pointer;transition:width .25s,background .25s}
+.dots button[aria-current="true"]{width:28px;background:var(--red)}
+.cnav button:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.fcard{scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:grid;grid-template-columns:1.15fr 1fr;align-items:center;gap:20px;padding:24px 26px;border-radius:8px;background:#16181D;border:1px solid var(--line);color:#ECEEF2;text-decoration:none;min-height:230px}
 .fcard::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 28% 55%,var(--glow) 0%,transparent 62%);opacity:.45}
 .fart{position:relative;aspect-ratio:200/120;width:100%}
 .fart svg{display:block;width:100%;height:100%}
@@ -115,6 +136,8 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
   .fart{max-width:300px}
+  .fphoto{max-width:none}
+  .logo b{font-size:1.7rem}
   .mast nav{margin-right:0}
 }`;
 
@@ -233,8 +256,11 @@ function section(key, title, note, list, alwaysShow) {
 function featureCard(i) {
   let when = i.date ? long(i.date) : (i.when || "TBA"), sub = "";
   if (i.date && !isOut(i)) { const n = daysOut(i.date); sub = n === 0 ? "out today" : n === 1 ? "out tomorrow" : `in ${n} days`; }
+  const pic = photoInList(i)
+    ? `<span class="fart fphoto"><img src="${esc(i.image)}" alt="" decoding="async"${i.n ? ' loading="lazy"' : ""}></span>`
+    : `<span class="fart">${art(artSpec(i))}</span>`;
   return `<a class="fcard" href="${esc(i.path)}" style="--glow:${esc(i.art.colors[0])}">
-    <span class="fart">${art(artSpec(i))}</span>
+    ${pic}
     <span class="ftxt">
       <span class="fkick">${esc(CATS[i.category])}</span>
       <span class="fname">${esc(i.name)}</span>
@@ -253,9 +279,28 @@ function home() {
     .map(([k, v]) => `<button type="button" data-cat="${esc(k)}" aria-pressed="${k === "all"}">${esc(v)}</button>`).join("");
   const featuredIds = Array.isArray(data.featured) && data.featured.length ? data.featured : coming.filter(i => i.date).slice(0, 4).map(i => i.id);
   const featured = featuredIds.map(id => ITEMS.find(i => i.id === id)).filter(Boolean);
+  for (const i of coming) if (featured.length < 6 && i.date && photoInList(i) && !featured.includes(i)) featured.push(i);
+  const count = s => ITEMS.filter(i => i.status === s).length;
+  const thisMonth = coming.filter(i => i.date && i.date.slice(0, 7) === TODAY.slice(0, 7)).length;
   const body = `
-    <div class="lede"><p>Special edition consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. Updated daily as news drops.</p></div>
-    ${featured.length ? `<div class="feature" aria-label="Featured releases">${featured.map(featureCard).join("")}</div>` : ""}
+    <div class="hero-top">
+      <h1 class="hero-h">Every special edition, <em>tracked.</em></h1>
+      <p class="hero-sub">Consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. Updated daily as news drops.</p>
+      <ul class="stats">
+        <li><b>${ITEMS.length}</b> tracked</li>
+        <li><b>${count("preorder")}</b> preorders open</li>
+        ${thisMonth ? `<li><b>${thisMonth}</b> out this month</li>` : ""}
+        <li><b>${count("rumor")}</b> rumors</li>
+      </ul>
+    </div>
+    ${featured.length ? `<section class="carousel" aria-roledescription="carousel" aria-label="Featured releases">
+      <div class="feature">${featured.map((it, k) => featureCard({ ...it, n: k })).join("")}</div>
+      ${featured.length > 1 ? `<div class="cnav">
+        <button type="button" class="cprev" aria-label="Previous">&#8249;</button>
+        <span class="dots">${featured.map((it, k) => `<button type="button" aria-label="Show ${esc(it.name)}"${k ? "" : ' aria-current="true"'}></button>`).join("")}</span>
+        <button type="button" class="cnext" aria-label="Next">&#8250;</button>
+      </div>` : ""}
+    </section>` : ""}
     <input class="search" type="search" placeholder="Search releases" aria-label="Search releases" autocomplete="off">
     <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
     ${section("coming", "Coming up", "", coming, true)}
