@@ -20,7 +20,11 @@ const API = "https://api.buttondown.com/v1";
 async function bd(method, path, body) {
   const res = await fetch(API + path, {
     method,
-    headers: { Authorization: `Token ${KEY}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Token ${KEY}`, "Content-Type": "application/json",
+      // Buttondown refuses to send email through the API without this opt-in header.
+      ...(method === "POST" && path === "/emails" ? { "X-Buttondown-Live-Dangerously": "true" } : {})
+    },
     body: body ? JSON.stringify(body) : undefined
   });
   const text = await res.text();
