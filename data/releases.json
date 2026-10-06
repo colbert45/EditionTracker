@@ -1188,9 +1188,7 @@
         "Made with Lisa from BLACKPINK. Chroma Pearl finish with her eyes and bangs on the touchpad, plus stars and an \"LL\" monogram. It's part of a wider Lisa x PlayStation merch line.",
         "Sony says stock will be very limited, so expect it to go fast."
       ],
-      "inTheBox": [
-        "DualSense wireless controller"
-      ],
+      "inTheBox": [],
       "stores": [
         {
           "store": "psdirect",
@@ -1307,13 +1305,9 @@
         ]
       },
       "notes": [
-        "Made in Japan by two porcelain kilns working together.",
-        "Only 50 will be made.",
-        "I don't know yet how sales will work or when it ships."
+        "Made in Japan by two porcelain kilns working together, and only 50 will be made. There's no word yet on how sales will work or when it ships."
       ],
-      "inTheBox": [
-        "Porcelain Sonic statue"
-      ],
+      "inTheBox": [],
       "stores": [],
       "timeline": [
         {
@@ -1443,13 +1437,13 @@
     },
     {
       "id": "sonic-35th-legacy-cartridges",
-      "name": "Sonic 1 & 2 35th Anniversary Legacy Cartridges (Genesis)",
+      "name": "Sonic 1 & 2 35th Anniversary Legacy Cartridges",
       "category": "retro",
       "platform": "Sega Genesis",
       "status": "preorder",
       "price": "$99.99 each",
       "releaseDate": null,
-      "releaseWindow": "Shipping in waves into early 2027",
+      "releaseWindow": "Late 2026 to early 2027",
       "preordersOpened": null,
       "searchQuery": "Sonic 35th Anniversary Legacy Cartridge",
       "image": "/images/sonic-35th-legacy-cartridges.jpg",

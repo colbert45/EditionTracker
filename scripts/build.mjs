@@ -361,9 +361,20 @@ function home() {
 // ---------- release pages ----------
 const STATUS_PHRASE = { rumor: "rumored, not confirmed", announced: "announced", preorder: "preorders open", out: "out now", soldout: "sold out" };
 
+// The "Preorders" fact on a release page.
+function preorders(i) {
+  if (i.status === "soldout") return "Sold out";
+  if (i.status === "preorder") return i.pre ? `Open since ${short(i.pre)}` : "Open";
+  if (i.status === "out") return i.pre ? `Opened ${long(i.pre)}` : "Closed";
+  return "Not yet";
+}
+
+// Seasons and phrases read lowercase mid-sentence ("expected spring 2027"); months and quarters don't.
+const midSentence = w => /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Q\d|TBA)/.test(w) ? w : w.charAt(0).toLowerCase() + w.slice(1);
+
 function releasePhrase(i) {
   if (i.date) return isOut(i) ? `released ${long(i.date)}` : `out ${long(i.date)}`;
-  return i.when && i.when !== "TBA" ? `expected ${i.when}` : "release date TBA";
+  return i.when && i.when !== "TBA" ? `expected ${midSentence(i.when)}` : "release date TBA";
 }
 
 function describe(i) {
@@ -395,6 +406,9 @@ function storeRow(i, s) {
 // Item alerts make sense until it's out, or while it's sold out (restocks).
 const wantsAlert = i => i.status === "soldout" || !isOut(i);
 
+// Short enough that Google shows it whole (about 60 characters).
+const itemTitle = i => { const t = `${i.name}: release date and price | ${NAME}`; return t.length <= 62 ? t : `${i.name} | ${NAME}`; };
+
 function item(i, ogImage) {
   const n = i.date ? daysOut(i.date) : null;
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
@@ -412,7 +426,7 @@ function item(i, ogImage) {
     <dl class="facts">
       <div><dt>Price</dt><dd>${esc(i.price)}</dd></div>
       <div><dt>Release</dt><dd>${esc(when(i))}</dd></div>
-      <div><dt>Preorders opened</dt><dd>${i.pre ? long(i.pre) : "No"}</dd></div>
+      <div><dt>Preorders</dt><dd>${preorders(i)}</dd></div>
       <div><dt>Category</dt><dd>${esc(CATS[i.category])}</dd></div>
     </dl>
     ${showCountdown ? `<p class="countdown" data-release="${i.date}"${cd && !isOut(i) ? "" : " hidden"}>${cd && !isOut(i) ? cd : ""}</p>` : ""}
@@ -420,7 +434,7 @@ function item(i, ogImage) {
     ${i.inTheBox.length ? `<h2>What's in the box</h2><ul class="plain">${i.inTheBox.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
     <h2>Where to buy</h2>
     ${i.stores.length ? `<table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
-    <p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>` : `<p class="small">Not listed yet</p>`}
+    ${i.stores.some(s => s.listed) ? `<p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>` : ""}` : `<p class="small">Not listed yet</p>`}
     ${hasAffiliate ? `<p class="small">Some of these are affiliate links, so Edition Tracker may earn a commission if you buy through them. It doesn't change your price.${hasAmazon ? " As an Amazon Associate I earn from qualifying purchases." : ""}</p>` : ""}
     ${i.timeline.length ? `<h2>Timeline</h2>
     <ul class="tl">${[...i.timeline].sort((a, b) => b.date.localeCompare(a.date)).map(t => `<li><time datetime="${t.date}">${long(t.date)}</time><span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
@@ -439,7 +453,7 @@ function item(i, ogImage) {
     { "@type": "ListItem", position: 1, name: NAME, item: SITE + "/" },
     { "@type": "ListItem", position: 2, name: i.name, item: i.url }] };
   return page({
-    title: `${i.name}: price, release date, where to buy | ${NAME}`,
+    title: itemTitle(i),
     description, path: i.path, ogImage, ogAlt: photoOnPage(i) ? i.name : `${i.name} (illustration)`,
     jsonld: [product, crumbs], body, script: ITEM_JS, alertItem: wantsAlert(i) ? i : null
   });
@@ -462,7 +476,7 @@ function calendar() {
     ${[...months].map(([m, l]) => `<h2 class="sec">${esc(m)} <small>${l.length} release${l.length === 1 ? "" : "s"}</small></h2>${list(l)}`).join("")}
     ${undated.length ? `<h2 class="sec">Date not announced yet</h2>${list(undated)}` : ""}
   </article>`;
-  return page({ title: `Release calendar: special edition consoles, games and collectibles | ${NAME}`,
+  return page({ title: `Special edition release calendar | ${NAME}`,
     description: `Upcoming special and limited edition consoles, controllers, games and collectibles by release month, with prices and where to buy.`,
     path: "/calendar/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body,
     jsonld: [{ "@context": "https://schema.org", "@type": "ItemList", name: "Upcoming special edition releases",
