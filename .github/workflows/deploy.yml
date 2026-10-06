@@ -48,3 +48,25 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # Emails alert subscribers about what changed, once the new pages are live.
+  # Needs the BUTTONDOWN_API_KEY repository secret (and Buttondown's Tags add-on);
+  # without the secret it only logs what it would have sent.
+  # Put [no alerts] in a commit message to skip sending for that push.
+  alerts:
+    needs: deploy
+    runs-on: ubuntu-latest
+    env:
+      BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Make sure every alert tag exists in Buttondown
+        run: node scripts/alerts.mjs sync-tags
+      - name: Send alerts for this change
+        if: github.event_name == 'push'
+        run: node scripts/alerts.mjs send "${{ github.event.before }}"

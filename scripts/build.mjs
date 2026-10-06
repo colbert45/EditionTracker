@@ -84,10 +84,10 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .thumb img,.hero .art img{display:block;width:100%;height:100%;object-fit:contain}
 .hero .art img{border-radius:4px}
 [hidden]{display:none!important}
-.mast nav{display:flex;gap:16px;margin-left:auto;margin-right:18px;font-size:.92rem;font-weight:600}
+.mast nav{display:flex;align-items:center;gap:16px;margin-left:auto;margin-right:18px;font-size:.92rem;font-weight:600}
 .mast nav a{text-decoration:none}
 .mast nav a:hover{text-decoration:underline}
-.logo b{font-size:2.05rem}
+.logo b{font-size:2.05rem;white-space:nowrap}
 .tag{width:32px;height:22px}
 .tag::after{top:8px;right:6px}
 .hero-top{margin:26px 0 20px}
@@ -123,22 +123,45 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .search{display:block;width:100%;max-width:380px;font:inherit;font-size:.98rem;padding:8px 14px;margin:0 0 12px;border:1.5px solid var(--line);border-radius:999px;background:transparent;color:var(--ink)}
 .search:focus{outline:3px solid var(--red);outline-offset:1px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-.signup{margin:28px 0 8px;padding:20px 22px;border:1.5px solid var(--line);border-radius:8px;background:var(--row)}
+.signup{margin:28px 0 8px;padding:20px 22px;border:1.5px solid var(--line);border-radius:8px;background:var(--row);scroll-margin-top:16px}
 .signup h2{margin:0 0 4px;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:1.5rem;line-height:1.1}
 .signup p{margin:0 0 12px;color:var(--soft)}
-.signup form{display:flex;flex-wrap:wrap;gap:8px}
-.signup input{flex:1 1 220px;min-width:0;font:inherit;font-size:1rem;padding:9px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink)}
-.signup input:focus{outline:3px solid var(--red);outline-offset:1px}
+.signup .row{display:flex;flex-wrap:wrap;gap:8px}
+.signup input[type=email]{flex:1 1 220px;min-width:0;font:inherit;font-size:1rem;padding:9px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink)}
+.signup input[type=email]:focus{outline:3px solid var(--red);outline-offset:1px}
 .signup button{font:inherit;font-weight:700;font-size:1rem;padding:9px 20px;border:0;border-radius:999px;background:var(--red);color:#fff;cursor:pointer}
 .signup button:hover{filter:brightness(1.08)}
 .signup small{display:block;margin-top:8px;color:var(--soft);font-size:.82rem}
+.picks{border:0;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.picks legend{padding:0;margin:0 0 6px;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft)}
+.pick{position:relative;cursor:pointer}
+.pick input{position:absolute;opacity:0;width:1px;height:1px}
+.pick span{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);font-size:.94rem;font-weight:600;line-height:1.2}
+.pick span::before{content:"";width:14px;height:14px;border:1.5px solid var(--soft);border-radius:4px;flex-shrink:0}
+.pick input:checked+span{border-color:var(--red);color:var(--ink)}
+.pick input:checked+span::before{background:var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;border-color:var(--red)}
+.pick input:focus-visible+span{outline:3px solid var(--red);outline-offset:2px}
+.alert-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px 6px 11px;border-radius:999px;background:var(--red);color:#fff;white-space:nowrap;text-decoration:none!important}
+.alert-btn:hover{filter:brightness(1.08)}
+.alert-me{display:inline-block;padding:4px 12px;border:1.5px solid var(--red);border-radius:999px;font-size:.88rem;font-weight:700;color:var(--red);text-decoration:none;white-space:nowrap}
+.alert-me:hover{background:var(--red);color:#fff}
 .cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
   .fart{max-width:300px}
   .fphoto{max-width:none}
-  .logo b{font-size:1.7rem}
-  .mast nav{margin-right:0}
+  .logo b{font-size:1.5rem}
+  .tag{width:26px;height:18px}
+  .tag::after{top:6px;right:5px}
+  .mast nav{margin-right:0;gap:12px;align-items:center}
+  .mast nav .rss{display:none}
+  .alert-btn{padding:5px 11px 5px 9px;font-size:.88rem}
+}
+@media (max-width:380px){
+  .logo{gap:7px}
+  .logo b{font-size:1.32rem}
+  .mast nav{gap:9px;font-size:.88rem}
+  .alert-btn{padding:5px 9px 5px 8px}
 }`;
 
 const PRELOAD = ["barlow-latin-400-normal", "barlow-latin-600-normal", "barlow-condensed-latin-800-normal"]
@@ -156,28 +179,39 @@ function analytics() {
   return "";
 }
 
-// Newsletter signup (Buttondown's embed form). Shown on every indexed page.
-function signup() {
-  const user = config.newsletter?.buttondown;
-  if (!/^[a-z0-9_-]+$/i.test(user || "")) return "";
-  return `<section class="signup" aria-labelledby="signup-h">
-    <h2 id="signup-h">Get the weekly drop list</h2>
-    <p>New editions, preorder dates and price changes, once a week. No spam.</p>
-    <form action="https://buttondown.com/api/emails/embed-subscribe/${user}" method="post" target="_blank">
-      <label for="signup-email" class="sr-only">Email address</label>
-      <input id="signup-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
-      <input type="hidden" name="embed" value="1">
-      <button type="submit">Subscribe</button>
+// Alerts signup (Buttondown's embed form). Shown on every indexed page; the header
+// "Get alerts" button jumps here. Each box adds a Buttondown tag that scripts/alerts.mjs
+// uses to email only the people who asked (see lib/alerts.js).
+const BD_USER = /^[a-z0-9_-]+$/i.test(config.newsletter?.buttondown || "") ? config.newsletter.buttondown : "";
+function signup(it = null) {
+  if (!BD_USER) return "";
+  const box = (tag, label, checked) => `<label class="pick"><input type="checkbox" name="tag" value="${esc(tag)}"${checked ? " checked" : ""}><span>${esc(label)}</span></label>`;
+  return `<section class="signup" id="alerts" aria-labelledby="signup-h">
+    <h2 id="signup-h">Get alerts</h2>
+    <p>Pick what you want to hear about. You'll get an email when it's announced, gets a date, opens preorders or sells out, plus the weekly roundup.</p>
+    <form action="https://buttondown.com/api/emails/embed-subscribe/${BD_USER}" method="post" target="_blank">
+      ${it ? `<fieldset class="picks"><legend>This release</legend>${box(`item:${it.id}`, it.name, true)}</fieldset>` : ""}
+      <fieldset class="picks"><legend>${it ? "Also tell me about" : "Tell me about"}</legend>${Object.entries(CATS).map(([k, v]) => box(`type:${k}`, v, false)).join("")}</fieldset>
+      <div class="row">
+        <label for="signup-email" class="sr-only">Email address</label>
+        <input id="signup-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        <input type="hidden" name="embed" value="1">
+        <button type="submit">Subscribe</button>
+      </div>
     </form>
-    <small>Unsubscribe anytime. Powered by Buttondown.</small>
+    <small>Unsubscribe or change your picks anytime. Powered by Buttondown.</small>
   </section>`;
 }
+
+// Jumping to the form puts the cursor in the email box.
+const ALERTS_JS = `document.addEventListener("click",e=>{const a=e.target.closest('a[href="#alerts"]');const f=document.getElementById("signup-email");if(!a||!f)return;e.preventDefault();document.getElementById("alerts").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});setTimeout(()=>f.focus({preventScroll:true}),450);history.replaceState(null,"","#alerts")});`;
 
 const minifyJs = s => s.replace(/^\s*\/\/.*$/gm, "").replace(/\n\s*\n/g, "\n").trim();
 const HOME_JS = minifyJs(read("lib/client-home.js"));
 const ITEM_JS = minifyJs(read("lib/client-item.js"));
 
-function page({ title, description, path, ogImage, ogAlt, jsonld = [], body, script = "", noindex = false }) {
+function page({ title, description, path, ogImage, ogAlt, jsonld = [], body, script = "", noindex = false, alertItem = null }) {
+  const alertsHref = BD_USER ? (noindex ? "/#alerts" : "#alerts") : "";
   const url = SITE + path;
   return `<!DOCTYPE html>
 <html lang="en">
@@ -216,18 +250,18 @@ ${analytics()}
 <div class="wrap">
   <header class="mast">
     <a class="logo" href="/"><span class="tag" aria-hidden="true"></span><b>edition tracker</b></a>
-    <nav aria-label="Site"><a href="/calendar/">Calendar</a><a href="/feed.xml">RSS</a></nav>
+    <nav aria-label="Site"><a href="/calendar/">Calendar</a><a class="rss" href="/feed.xml">RSS</a>${alertsHref ? `<a class="alert-btn" href="${alertsHref}"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1Z"/></svg>Get alerts</a>` : ""}</nav>
     <span class="updated" id="updated">Updated ${long(HEADER_DATE)}</span>
   </header>
   <main id="app">${body}</main>
-  ${noindex ? "" : signup()}
+  ${noindex ? "" : signup(alertItem)}
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
     <p>Spotted something I missed? It'll be added once there's a source.</p>
     <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> for new and updated releases</p>
   </footer>
 </div>
-${script ? `<script>\n${script}\n</script>\n` : ""}</body>
+${script || alertsHref ? `<script>\n${[script, alertsHref && !noindex ? ALERTS_JS : ""].filter(Boolean).join("\n")}\n</script>\n` : ""}</body>
 </html>
 `;
 }
@@ -353,6 +387,9 @@ function storeRow(i, s) {
   return `<tr><td>${esc(st.name)}</td><td>${!s.listed ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="${rel}">Check stock</a>`}</td></tr>`;
 }
 
+// Item alerts make sense until it's out, or while it's sold out (restocks).
+const wantsAlert = i => i.status === "soldout" || !isOut(i);
+
 function item(i, ogImage) {
   const n = i.date ? daysOut(i.date) : null;
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
@@ -365,7 +402,7 @@ function item(i, ogImage) {
   const body = `<article class="item">
     <a class="back" href="/">Back to all releases</a>
     <h1>${esc(i.name)}</h1>
-    <div class="sub"><span>${esc(i.platform)}</span>${chip(i.status)}</div>
+    <div class="sub"><span>${esc(i.platform)}</span>${chip(i.status)}${BD_USER && wantsAlert(i) ? `<a class="alert-me" href="#alerts">${i.status === "soldout" ? "Alert me on restock" : "Alert me about this"}</a>` : ""}</div>
     ${hero}
     <dl class="facts">
       <div><dt>Price</dt><dd>${esc(i.price)}</dd></div>
@@ -399,7 +436,7 @@ function item(i, ogImage) {
   return page({
     title: `${i.name}: price, release date, where to buy | ${NAME}`,
     description, path: i.path, ogImage, ogAlt: photoOnPage(i) ? i.name : `${i.name} (illustration)`,
-    jsonld: [product, crumbs], body, script: ITEM_JS
+    jsonld: [product, crumbs], body, script: ITEM_JS, alertItem: wantsAlert(i) ? i : null
   });
 }
 
