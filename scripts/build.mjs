@@ -194,10 +194,11 @@ function signup(it = null) {
   const box = (tag, label, checked) => `<label class="pick"><input type="checkbox" name="tag" value="${esc(tag)}"${checked ? " checked" : ""}><span>${esc(label)}</span></label>`;
   return `<section class="signup" id="alerts" aria-labelledby="signup-h">
     <h2 id="signup-h">Get alerts</h2>
-    <p>Pick what you want to hear about. You'll get an email when it's announced, gets a date, opens preorders or sells out, plus the weekly roundup.</p>
+    <p>Pick what you want to hear about. You'll get an email when it's announced, gets a date, opens preorders or sells out. The weekly roundup is optional.</p>
     <form action="https://buttondown.com/api/emails/embed-subscribe/${BD_USER}" method="post" target="_blank">
       ${it ? `<fieldset class="picks"><legend>This release</legend>${box(`item:${it.id}`, it.name, true)}</fieldset>` : ""}
       <fieldset class="picks"><legend>${it ? "Also tell me about" : "Tell me about"}</legend>${Object.entries(CATS).map(([k, v]) => box(`type:${k}`, v, false)).join("")}</fieldset>
+      <fieldset class="picks"><legend>Also send me</legend>${box("roundup", "Weekly roundup of everything new", true)}</fieldset>
       <div class="row">
         <label for="signup-email" class="sr-only">Email address</label>
         <input id="signup-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
@@ -506,7 +507,7 @@ function welcome() {
     <p class="big">Thanks for subscribing to Edition Tracker. Here's what lands in your inbox:</p>
     <ul class="plain steps">
       <li><b>Alerts</b> for the consoles and releases you picked, when something's announced, gets a release date, opens preorders or sells out.</li>
-      <li><b>A short weekly roundup</b> of everything new, so you don't miss what you didn't pick.</li>
+      <li><b>A short weekly roundup</b> of everything new, if you left that box ticked, so you don't miss what you didn't pick.</li>
     </ul>
     <h2>Make sure they reach you</h2>
     <p>Add <b>hello@editiontracker.com</b> to your contacts. Preorders can sell out within hours, so you don't want an alert sitting in Spam.</p>

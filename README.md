@@ -15,6 +15,8 @@ After each change to `main` goes live, `scripts/alerts.mjs` compares the old and
 - Status change, new release date, preorders opening: that release's subscribers and its category's.
 - Price change or new timeline entry: that release's subscribers.
 
+The form also has a "Weekly roundup" box (tag `roundup`), ticked by default. Every Thursday the **Weekly roundup** action drafts an email in Buttondown listing everything that changed in the last 7 days, addressed only to subscribers with that tag. It stays a draft until you send it from Buttondown. Subscribers can untick it later from the manage link in any email.
+
 It needs the `BUTTONDOWN_API_KEY` repository secret and Buttondown's Tags add-on. Put `[no alerts]` in a commit message to skip a push, and anything that changes more than 8 releases at once is treated as a bulk edit and not sent.
 
 Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store.

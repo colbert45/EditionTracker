@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { planAlerts, emailBody } from "../lib/alerts.js";
+import { planAlerts, emailBody, roundupEmail } from "../lib/alerts.js";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const base = () => JSON.parse(readFileSync(ROOT + "data/releases.json", "utf8"));
@@ -68,4 +68,17 @@ test("built pages carry the alert form with the right tags", async () => {
   const page = readFileSync(ROOT + `_site/${it.id}/index.html`, "utf8");
   assert.match(page, new RegExp(`name="tag" value="item:${it.id}" checked`));
   assert.match(page, /class="alert-me" href="#alerts"/);
+  // The weekly roundup is its own opt-out box, ticked by default.
+  assert.match(home, /name="tag" value="roundup" checked/);
+});
+
+test("the roundup lists new releases and updates in one email", () => {
+  const old = base(), now = base();
+  const c = now.items.find(i => i.category === "games");
+  now.items.push({ ...c, id: "new-a", name: "New A", status: "announced" });
+  now.items[0].price = "$1.00";
+  const r = roundupEmail(planAlerts(old, now, SITE), now.categories);
+  assert.equal(r.subject, "This week on Edition Tracker: 1 new, 1 updated");
+  assert.match(r.body, /## New releases[\s\S]*New A[\s\S]*## Updates[\s\S]*Price:/);
+  assert.equal(r.count, 2);
 });

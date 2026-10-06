@@ -1,0 +1,31 @@
+# Drafts the weekly roundup in Buttondown every Thursday morning: everything that
+# changed on the site in the last 7 days, addressed only to subscribers who kept
+# the "Weekly roundup" box ticked. It's a draft: nothing is sent until you open it
+# in Buttondown (Emails > Drafts), check it and click Send.
+name: Weekly roundup
+
+on:
+  schedule:
+    # 13:17 UTC Thursday = 9:17am New York in summer, 8:17am in winter.
+    - cron: "17 13 * * 4"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  roundup:
+    runs-on: ubuntu-latest
+    env:
+      BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Make sure the roundup tag exists in Buttondown
+        run: node scripts/alerts.mjs sync-tags
+      - name: Draft this week's roundup
+        run: node scripts/alerts.mjs roundup

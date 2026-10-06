@@ -1,12 +1,13 @@
 // Buttondown alerts.
 //   node scripts/alerts.mjs sync-tags          make sure every type:/item: tag exists in Buttondown
 //   node scripts/alerts.mjs send <before-sha>   email subscribers about what changed since <before-sha>
+//   node scripts/alerts.mjs roundup             draft this week's roundup in Buttondown (you review and send it)
 // Needs BUTTONDOWN_API_KEY. Without it, or with --dry-run, it only prints what it would do.
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { planAlerts, emailBody, typeTag, itemTag } from "../lib/alerts.js";
+import { planAlerts, emailBody, typeTag, itemTag, roundupEmail, ROUNDUP_TAG } from "../lib/alerts.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = p => readFileSync(join(ROOT, p), "utf8");
@@ -49,6 +50,10 @@ function wantedTags() {
     name: typeTag(k), color: "#D7263D", subscriber_editable: true,
     description: `Alerts for every ${v} release`, public_description: `${v} alerts`
   }));
+  t.push({
+    name: ROUNDUP_TAG, color: "#1E7A4C", subscriber_editable: true,
+    description: "Gets the weekly roundup", public_description: "Weekly roundup of everything new"
+  });
   for (const i of data.items) t.push({
     name: itemTag(i.id), color: "#2563A8", subscriber_editable: true,
     description: `Alerts for ${i.name}`, public_description: `Alerts: ${i.name}`
@@ -97,7 +102,29 @@ async function send(beforeSha) {
   }
 }
 
+// The weekly roundup: everything that changed in the last 7 days, as a Buttondown draft
+// addressed only to subscribers with the roundup tag. Nothing is sent until you send it.
+async function roundup() {
+  const git = (...a) => execFileSync("git", a, { cwd: ROOT, encoding: "utf8" }).trim();
+  const base = git("rev-list", "-1", "--before=7 days ago", "HEAD") || git("rev-list", "--max-parents=0", "HEAD").split("\n").pop();
+  let oldData;
+  try { oldData = JSON.parse(git("show", `${base}:data/releases.json`)); } catch { oldData = { items: [] }; }
+  const alerts = planAlerts(oldData, data, config.siteUrl);
+  if (!alerts.length) { console.log("Nothing changed this week. No roundup drafted."); return; }
+  const { subject, body, count } = roundupEmail(alerts, data.categories);
+  console.log(`${DRY ? "Would draft" : "Drafting"} "${subject}" (${count} releases) for subscribers tagged ${ROUNDUP_TAG}`);
+  if (DRY) { console.log("\n" + body); return; }
+  const tag = (await allTags()).get(ROUNDUP_TAG);
+  if (!tag) { console.log(`No "${ROUNDUP_TAG}" tag in Buttondown yet. Run sync-tags first.`); return; }
+  const email = await bd("POST", "/emails", {
+    subject, body, status: "draft",
+    filters: { predicate: "and", groups: [], filters: [{ field: "subscriber.tags", operator: "contains", value: tag.id }] }
+  });
+  console.log(`Draft created${email?.id ? ` (${email.id})` : ""}. Review and send it from Buttondown > Emails > Drafts.`);
+}
+
 const [cmd, arg] = process.argv.slice(2).filter(a => a !== "--dry-run");
 if (cmd === "sync-tags") await syncTags();
 else if (cmd === "send") await send(arg);
-else { console.error("Usage: node scripts/alerts.mjs sync-tags | send <before-sha> [--dry-run]"); process.exit(1); }
+else if (cmd === "roundup") await roundup();
+else { console.error("Usage: node scripts/alerts.mjs sync-tags | send <before-sha> | roundup [--dry-run]"); process.exit(1); }
