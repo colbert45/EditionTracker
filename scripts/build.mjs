@@ -264,8 +264,9 @@ ${analytics()}
   ${noindex ? "" : signup(alertItem)}
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
-    <p>Spotted something I missed? It'll be added once there's a source.</p>
-    <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> for new and updated releases</p>
+    <p>Spotted something I missed? <a href="/contact/">Send a tip</a>. It'll be added once there's a source.</p>
+    <p>Some links are affiliate links, so Edition Tracker may earn a commission at no cost to you. As an Amazon Associate I earn from qualifying purchases.</p>
+    <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> · <a href="/contact/">Contact</a> · <a href="/privacy/">Privacy and cookies</a></p>
   </footer>
 </div>
 ${script || alertsHref ? `<script>\n${[script, alertsHref && !noindex ? ALERTS_JS : ""].filter(Boolean).join("\n")}\n</script>\n` : ""}</body>
@@ -501,6 +502,41 @@ function subscribed() {
     ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body, noindex: true });
 }
 
+// Privacy and contact pages, linked from every footer.
+function privacy() {
+  const body = `<article class="item note">
+    <h1>Privacy and cookies</h1>
+    <p class="big">Edition Tracker doesn't have accounts and doesn't sell your data. Here's everything it collects, and why.</p>
+    <h2>If you sign up for alerts</h2>
+    <p>Your email address and the boxes you tick (the releases and categories you picked, and whether you want the weekly roundup) are stored by <a href="https://buttondown.com" rel="noopener">Buttondown</a>, which sends the emails. They're only used to send you what you asked for. Every email has a link to change your picks or unsubscribe, and you can email <a href="mailto:hello@editiontracker.com">hello@editiontracker.com</a> to have your address deleted.</p>
+    <h2>Analytics and cookies</h2>
+    <p>The site uses Google Analytics to count visits and see which pages are popular. It sets cookies (named <code>_ga</code> and <code>_ga_…</code>) and Google receives your IP address, browser and the pages you view. Edition Tracker only sees totals, never who you are. You can block these cookies in your browser settings or with <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">Google's opt-out add-on</a>, and the site works the same without them. There are no other cookies and no ads.</p>
+    <h2>Affiliate links</h2>
+    <p>Some "Check stock" links are affiliate links. As an Amazon Associate I earn from qualifying purchases. It doesn't change your price. Once you click through, the store's own privacy policy and cookies apply.</p>
+    <h2>Hosting</h2>
+    <p>The site is hosted on GitHub Pages, which may log your IP address for security. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.</p>
+    <h2>Questions</h2>
+    <p>Email <a href="mailto:hello@editiontracker.com">hello@editiontracker.com</a>.</p>
+    <p class="small">Last updated October 6, 2026.</p>
+  </article>`;
+  return page({ title: `Privacy and cookies | ${NAME}`, description: "What Edition Tracker collects, which cookies it uses, and how to opt out.",
+    path: "/privacy/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body });
+}
+
+function contact() {
+  const body = `<article class="item note">
+    <h1>Contact</h1>
+    <p class="big">Email <a href="mailto:hello@editiontracker.com"><b>hello@editiontracker.com</b></a> for anything: tips, corrections, partnerships or questions about your alerts.</p>
+    <ul class="plain steps">
+      <li><b>Spotted an edition that's missing?</b> Send a link to the announcement or store page. It'll be added once there's a source.</li>
+      <li><b>Something wrong on a page?</b> Tell me which release and what's off.</li>
+      <li><b>Want alerts?</b> Use the form below, or tap <b>Alert me about this</b> on any release page.</li>
+    </ul>
+  </article>`;
+  return page({ title: `Contact | ${NAME}`, description: "Send Edition Tracker a tip, a correction or a question.",
+    path: "/contact/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body });
+}
+
 function welcome() {
   const body = `<article class="item note">
     <h1>You're in.</h1>
@@ -577,6 +613,8 @@ for (const i of ITEMS) {
 write("404.html", notFound());
 write("subscribed/index.html", subscribed());
 write("welcome/index.html", welcome());
+write("privacy/index.html", privacy());
+write("contact/index.html", contact());
 write("feed.xsl", read("lib/feed.xsl"));
 write("calendar/index.html", calendar());
 write("favicon.svg", faviconSvg);
