@@ -21,8 +21,10 @@ const MAX_POSTS = 8; // a bigger batch than this is almost always a bulk edit, n
 
 const bsky = { handle: config.social?.bluesky, password: env.BLUESKY_APP_PASSWORD };
 const x = { key: env.X_API_KEY, secret: env.X_API_SECRET, token: env.X_ACCESS_TOKEN, tokenSecret: env.X_ACCESS_TOKEN_SECRET };
-const useBsky = !DRY && bsky.handle && bsky.password;
-const useX = !DRY && x.key && x.secret && x.token && x.tokenSecret;
+// --only bluesky or --only x limits a run to one platform.
+const only = (() => { const i = process.argv.indexOf("--only"); return i > 0 ? (process.argv[i + 1] || "").toLowerCase() : ""; })();
+const useBsky = !DRY && (!only || only === "bluesky") && bsky.handle && bsky.password;
+const useX = !DRY && (!only || only === "x") && x.key && x.secret && x.token && x.tokenSecret;
 
 async function request(url, opts) {
   const res = await fetch(url, opts);
