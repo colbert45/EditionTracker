@@ -1,0 +1,36 @@
+# Posts one message of your own to Bluesky (and X, once its keys are set).
+# Actions tab > Post to social > Run workflow, type the message, click Run.
+# A link in the message becomes the preview card; without one, it links the homepage.
+name: Post to social
+
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: "What to post (up to 280 characters)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    env:
+      BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_SECRET: ${{ secrets.X_API_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+      TEXT: ${{ inputs.text }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build the site (for the preview image)
+        run: npm run build
+      - name: Post
+        run: node scripts/social.mjs --text "$TEXT" --image _site/og/home.png

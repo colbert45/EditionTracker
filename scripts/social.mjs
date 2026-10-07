@@ -1,5 +1,6 @@
 // Social posts.
 //   node scripts/social.mjs <before-sha> [--dry-run]   post what changed since <before-sha>
+//   node scripts/social.mjs --text "..." [--image path] [--dry-run]   post one message of your own
 // Posts to Bluesky when BLUESKY_APP_PASSWORD is set, and to X when the four X_* keys are set.
 // Without them, or with --dry-run, it only prints what it would post.
 // [no alerts] or [no posts] in a commit message skips posting for that push.
@@ -41,10 +42,10 @@ async function bskyPost(p) {
   const auth = { Authorization: `Bearer ${session.accessJwt}` };
   // Link card with the product photo, when there's a local one.
   let thumb;
-  const local = p.image && p.image.startsWith("/") ? join(ROOT, "static", p.image) : null;
+  const local = p.imageFile || (p.image && p.image.startsWith("/") ? join(ROOT, "static", p.image) : null);
   if (local && existsSync(local)) {
     const up = await request(`${BSKY}/com.atproto.repo.uploadBlob`, {
-      method: "POST", headers: { ...auth, "Content-Type": "image/jpeg" }, body: readFileSync(local)
+      method: "POST", headers: { ...auth, "Content-Type": local.endsWith(".png") ? "image/png" : "image/jpeg" }, body: readFileSync(local)
     });
     thumb = up.blob;
   }
@@ -85,7 +86,28 @@ async function xPost(p) {
 }
 
 // ---------- main ----------
-const beforeSha = process.argv.slice(2).find(a => !a.startsWith("--"));
+const arg = name => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : undefined; };
+
+// One message of your own (the "Post to social" action).
+const ownText = arg("--text");
+if (ownText !== undefined) {
+  const text = ownText.trim();
+  if (!text) { console.log("Nothing to post."); process.exit(1); }
+  if (text.length > 280) { console.log(`Too long for X: ${text.length} characters (limit 280).`); process.exit(1); }
+  const url = (text.match(/https?:\/\/\S+/) || [])[0] || config.siteUrl;
+  const p = { text, url, title: config.siteName, description: "Special edition consoles, controllers, games and collectibles: release dates, prices and where to buy.", imageFile: arg("--image") };
+  if (!text.includes(url)) p.text = `${text}\n${url}`;
+  console.log(`${useBsky || useX ? "Posting" : "Dry run, would post"}:\n${p.text}`);
+  let failed = 0;
+  for (const [name, on, fn] of [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]]) {
+    if (!on) continue;
+    try { await fn(p); console.log(`  posted to ${name}`); }
+    catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }
+  }
+  process.exit(failed ? 1 : 0);
+}
+
+const beforeSha = process.argv[2] && !process.argv[2].startsWith("--") ? process.argv[2] : undefined;
 if (!beforeSha || /^0+$/.test(beforeSha)) { console.log("No previous commit to compare with. Nothing to post."); process.exit(0); }
 const msg = execFileSync("git", ["log", "--format=%B", `${beforeSha}..HEAD`], { cwd: ROOT, encoding: "utf8" });
 if (/\[no (alerts|posts)\]/i.test(msg)) { console.log("A commit says [no alerts] or [no posts]. Not posting."); process.exit(0); }
