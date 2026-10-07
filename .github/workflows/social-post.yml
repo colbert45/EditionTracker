@@ -9,6 +9,11 @@ on:
       text:
         description: "What to post (up to 280 characters)"
         required: true
+      where:
+        description: "Where to post"
+        type: choice
+        options: [both, bluesky, x]
+        default: both
 
 permissions:
   contents: read
@@ -23,6 +28,7 @@ jobs:
       X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
       X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
       TEXT: ${{ inputs.text }}
+      WHERE: ${{ inputs.where }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -33,4 +39,6 @@ jobs:
       - name: Build the site (for the preview image)
         run: npm run build
       - name: Post
-        run: node scripts/social.mjs --text "$TEXT" --image _site/og/home.png
+        run: |
+          if [ "$WHERE" = "both" ]; then ONLY=""; else ONLY="--only $WHERE"; fi
+          node scripts/social.mjs --text "$TEXT" --image _site/og/home.png $ONLY
