@@ -1913,6 +1913,48 @@
           "url": "https://www.nintendolife.com/news/2026/10/rise-of-the-tomb-raider-switch-2-limited-run-physical-release-announced"
         }
       ]
+    },
+    {
+      "id": "superstation-one-transparent-collection",
+      "name": "SuperStation One Transparent Collection",
+      "category": "retro",
+      "platform": "FPGA console (PS1 compatible)",
+      "status": "preorder",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": "2026-10-07",
+      "searchQuery": "SuperStation One transparent limited edition RetroRemake",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "tower",
+        "colors": [
+          "#d9e3e8",
+          "#2e9e6b",
+          "#e85d9a"
+        ]
+      },
+      "notes": [
+        "A limited run of frosted transparent shells for RetroRemake's SuperStation One FPGA console.",
+        "RetroRemake says it won't make these shell colors again once the preorders are filled.",
+        "Smoke (black) and Watermelon (pink) sold out first. Emerald (green) was still listed when Time Extension reported it.",
+        "It's sold through RetroRemake directly. I haven't seen a price or ship date in the coverage yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-07",
+          "text": "Preorders opened at RetroRemake. Smoke and Watermelon sold out quickly."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/news/2026/10/limited-edition-superstation-one-transparent-collection-is-now-available-to-pre-order-but-move-fast"
+        }
+      ]
     }
   ]
 }
