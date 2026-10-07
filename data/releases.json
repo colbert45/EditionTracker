@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-05",
+  "updated": "2026-10-07",
   "featured": [
     "switch-2-zelda-40th",
     "xbox-series-x25",
@@ -1869,6 +1869,48 @@
         {
           "label": "Xbox",
           "url": "https://www.xbox.com/en-US/games/metro-2039"
+        }
+      ]
+    },
+    {
+      "id": "rise-of-the-tomb-raider-switch-2-lrg-collectors-edition",
+      "name": "Rise of the Tomb Raider (Switch 2) Limited Run Collector's Edition",
+      "category": "games",
+      "platform": "Nintendo Switch 2",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Rise of the Tomb Raider Switch 2 Limited Run collector's edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#1f2a36",
+          "#cfd8dc",
+          "#8b5a2b"
+        ]
+      },
+      "notes": [
+        "Limited Run Games is handling the physical Switch 2 release. There is a standard edition and a collector's edition.",
+        "Preorders are set to open on October 9, 2026 at Limited Run Games.",
+        "I haven't seen a price or a contents list for the collector's edition yet.",
+        "Limited Run isn't one of the stores I track, so I've left the store list empty."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-07",
+          "text": "Limited Run announced a physical release with standard and collector's editions. Preorders open Oct 9."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/rise-of-the-tomb-raider-switch-2-limited-run-physical-release-announced"
         }
       ]
     }
