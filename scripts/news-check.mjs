@@ -132,6 +132,7 @@ Rules:
 - Copy prices exactly as the source states them. Never round or estimate; if the source only gives an approximate price, use "TBA".
 - Use null for every field you are not changing. Dates are YYYY-MM-DD; only use a releaseDate when an exact day is confirmed, otherwise use releaseWindow like "Spring 2027" or "TBA". Prices are US dollars written like "$84.99", or "TBA".
 - Write notes, timeline text and summaries in your own words, in the site's voice: plain, short sentences, first person where natural ("I haven't seen Nintendo confirm..."), no hype, no marketing language, never copy sentences from the source.
+- Notes and timeline text are published on the site for readers. Only write about the release itself. Never mention the news check, headlines, feeds, sources you did or didn't read, which stores are tracked, or fields you left empty.
 - For a new item, pick the closest artType illustration and three hex colors matching the edition (main body, accent, detail). Pick stores that will plausibly carry it.
 - If nothing qualifies, return an empty proposals list. Fewer, solid proposals are better than many weak ones.`;
 
