@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-05",
+  "updated": "2026-10-07",
   "featured": [
     "switch-2-zelda-40th",
     "xbox-series-x25",
@@ -90,6 +90,15 @@
     "squareenix": {
       "name": "Square Enix Store",
       "url": "https://store.na.square-enix-games.com/"
+    },
+    "limitedrun": {
+      "name": "Limited Run Games",
+      "url": "https://limitedrungames.com/",
+      "searchUrl": "https://limitedrungames.com/search?q="
+    },
+    "retroremake": {
+      "name": "RetroRemake",
+      "url": "https://retroremake.co/"
     }
   },
   "items": [
@@ -1869,6 +1878,118 @@
         {
           "label": "Xbox",
           "url": "https://www.xbox.com/en-US/games/metro-2039"
+        }
+      ]
+    },
+    {
+      "id": "rise-of-the-tomb-raider-switch-2-lrg-collectors-edition",
+      "name": "Rise of the Tomb Raider: 20 Year Celebration Collector's Edition (Switch 2)",
+      "category": "games",
+      "platform": "Nintendo Switch 2",
+      "status": "announced",
+      "price": "$99.99",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Rise of the Tomb Raider 20 Year Celebration Switch 2",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#1f2a36",
+          "#cfd8dc",
+          "#8b5a2b"
+        ]
+      },
+      "notes": [
+        "A physical Switch 2 release from Limited Run Games, based on the 20 Year Celebration version with the Season Pass content, including the Baba Yaga and Cold Darkness Awakened DLC.",
+        "There is also a $49.99 standard edition with the game, a case and an eight-page booklet.",
+        "Preorders run from October 9 to November 15, 2026 on the Limited Run Games store. It is an open preorder, so there is no fixed stock limit. No ship date yet."
+      ],
+      "inTheBox": [
+        "Rise of the Tomb Raider: 20 Year Celebration (Switch 2 game card and case)",
+        "Collector's edition box",
+        "SteelCase",
+        "Trinity cloth patch",
+        "Light-up Divine Source replica desk ornament"
+      ],
+      "stores": [
+        {
+          "store": "limitedrun",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-07",
+          "text": "Limited Run Games announced standard ($49.99) and collector's ($99.99) editions. Preorders open Oct 9 and close Nov 15."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/rise-of-the-tomb-raider-switch-2-limited-run-physical-release-announced"
+        },
+        {
+          "label": "Limited Run Games",
+          "url": "https://limitedrungames.com/products/switch-2-limited-run-8-rise-of-the-tomb-raider-20-year-celebration-collectors-edition"
+        }
+      ]
+    },
+    {
+      "id": "superstation-one-transparent-collection",
+      "name": "SuperStation One Transparent Collection",
+      "category": "retro",
+      "platform": "FPGA console (PS1 compatible)",
+      "status": "preorder",
+      "price": "$249",
+      "releaseDate": null,
+      "releaseWindow": "December 2026",
+      "preordersOpened": "2026-10-07",
+      "searchQuery": "SuperStation One transparent limited edition RetroRemake",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "tower",
+        "colors": [
+          "#d9e3e8",
+          "#2e9e6b",
+          "#e85d9a"
+        ]
+      },
+      "notes": [
+        "A limited run of frosted transparent shells for RetroRemake's SuperStation One, an FPGA console that plays PS1 games.",
+        "RetroRemake says these colors won't be made again once they're gone, and it's one per order. Smoke (black) and Watermelon (pink) sold out within hours. Emerald, Frost and Atomic Purple were still listed early on.",
+        "This batch drops the built-in Wi-Fi, Bluetooth and NFC of earlier ones and comes with a 16GB microSD card instead of 64GB. Shipping and any customs fees are extra."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "retroremake",
+          "listed": true,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-07",
+          "text": "Preorders opened at RetroRemake for $249, expected to ship in December. Smoke and Watermelon sold out within hours."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/news/2026/10/limited-edition-superstation-one-transparent-collection-is-now-available-to-pre-order-but-move-fast"
+        },
+        {
+          "label": "RetroRemake",
+          "url": "https://retroremake.co/products/superstation%e1%b5%92%e2%81%bf%e1%b5%89-transparent-collection-preorder"
+        },
+        {
+          "label": "Notebookcheck",
+          "url": "https://www.notebookcheck.net/PS1-inspired-FPGA-console-starts-selling-out-despite-losing-Wi-Fi-NFC-and-75-of-bundled-storage.1418360.0.html"
         }
       ]
     }
