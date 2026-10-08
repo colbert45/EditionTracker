@@ -619,6 +619,8 @@ write("404.html", notFound());
 write("subscribed/index.html", subscribed());
 write("welcome/index.html", welcome());
 write("privacy/index.html", privacy());
+// Proves to Bluesky that @editiontracker.com is this site's account.
+if (/^did:[a-z]+:[a-z0-9]+$/i.test(config.social?.blueskyDid || "")) write(".well-known/atproto-did", config.social.blueskyDid);
 write("contact/index.html", contact());
 write("feed.xsl", read("lib/feed.xsl"));
 write("calendar/index.html", calendar());

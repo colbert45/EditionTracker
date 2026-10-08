@@ -20,7 +20,8 @@ const env = process.env;
 const DRY = process.argv.includes("--dry-run");
 const MAX_POSTS = 8; // a bigger batch than this is almost always a bulk edit, not news
 
-const bsky = { handle: config.social?.bluesky, password: env.BLUESKY_APP_PASSWORD };
+// Logs in with the account's permanent ID when there is one, so a handle change never breaks posting.
+const bsky = { handle: config.social?.blueskyDid || config.social?.bluesky, password: env.BLUESKY_APP_PASSWORD };
 const x = { key: env.X_API_KEY, secret: env.X_API_SECRET, token: env.X_ACCESS_TOKEN, tokenSecret: env.X_ACCESS_TOKEN_SECRET };
 // --only bluesky or --only x limits a run to one platform.
 const only = (() => { const i = process.argv.indexOf("--only"); return i > 0 ? (process.argv[i + 1] || "").toLowerCase() : ""; })();

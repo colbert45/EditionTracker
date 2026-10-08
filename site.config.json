@@ -21,7 +21,8 @@
     "buttondown": "editiontracker"
   },
   "social": {
-    "bluesky": "editiontracker.bsky.social",
-    "x": "editiontracker"
+    "bluesky": "editiontracker.com",
+    "x": "editiontracker",
+    "blueskyDid": "did:plc:lh2jnxw3w43w4zx6b5fdc7np"
   }
 }
