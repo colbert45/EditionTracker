@@ -1,0 +1,54 @@
+# Scheduled social posts, no merge needed:
+#   - "Out today: ..." for every release whose date is today
+#   - "Coming out this week: ..." on Thursdays, linking the release calendar
+# GitHub can start schedules late or drop them, so there's a try every hour
+# from 9am New York time; the first one that runs each day posts, and a
+# marker saved in the Actions cache stops the rest from posting again.
+name: Scheduled posts
+
+on:
+  schedule:
+    - cron: "23 13-21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: day
+        run: |
+          echo "date=$(TZ=America/New_York date +%F)" >> "$GITHUB_OUTPUT"
+          echo "hour=$(TZ=America/New_York date +%H)" >> "$GITHUB_OUTPUT"
+      - id: done
+        uses: actions/cache/restore@v4
+        with:
+          path: .posted
+          key: scheduled-posts-${{ steps.day.outputs.date }}
+          lookup-only: true
+      - name: Post
+        id: post
+        if: steps.done.outputs.cache-hit != 'true' && (github.event_name != 'schedule' || steps.day.outputs.hour >= 9)
+        env:
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: node scripts/social.mjs --scheduled
+      # Saved even if one platform failed, so a later try never double-posts.
+      - name: Remember today is done
+        if: always() && steps.post.conclusion != 'skipped'
+        run: mkdir -p .posted && date > .posted/done
+      - if: always() && steps.post.conclusion != 'skipped'
+        uses: actions/cache/save@v4
+        with:
+          path: .posted
+          key: scheduled-posts-${{ steps.day.outputs.date }}

@@ -1,6 +1,7 @@
 // Social posts.
 //   node scripts/social.mjs <before-sha> [--dry-run]   post what changed since <before-sha>
 //   node scripts/social.mjs --text "..." [--image path] [--dry-run]   post one message of your own
+//   node scripts/social.mjs --scheduled [--dry-run]   today's "Out today" posts, plus "Coming out this week" on Thursdays
 // Posts to Bluesky when BLUESKY_APP_PASSWORD is set, and to X when the four X_* keys are set.
 // Without them, or with --dry-run, it only prints what it would post.
 // [no alerts] or [no posts] in a commit message skips posting for that push.
@@ -9,7 +10,7 @@ import { execFileSync } from "node:child_process";
 import { createHmac, randomBytes } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { socialPosts } from "../lib/social.js";
+import { socialPosts, outTodayPosts, weekAheadPost } from "../lib/social.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = p => readFileSync(join(ROOT, p), "utf8");
@@ -89,6 +90,28 @@ async function xPost(p) {
 
 // ---------- main ----------
 const arg = name => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : undefined; };
+
+// Scheduled posts (the "Scheduled posts" action): release-day posts, and the week ahead on Thursdays.
+if (process.argv.includes("--scheduled")) {
+  const today = arg("--date") || new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const weekday = new Date(today + "T12:00:00Z").getUTCDay(); // 4 = Thursday
+  const posts = outTodayPosts(data, today, config.siteUrl);
+  const week = weekday === 4 ? weekAheadPost(data, today, config.siteUrl) : null;
+  if (week) posts.unshift(week);
+  if (!posts.length) { console.log(`Nothing to post for ${today}.`); process.exit(0); }
+  if (posts.length > MAX_POSTS) { console.log(`${posts.length} posts at once looks wrong. Not posting.`); process.exit(1); }
+  if (!useBsky && !useX) console.log("Dry run (no Bluesky or X keys, or --dry-run). Would post:");
+  let failed = 0;
+  for (const p of posts) {
+    console.log(`\n---\n${p.text}`);
+    for (const [name, on, fn] of [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]]) {
+      if (!on) continue;
+      try { await fn(p); console.log(`  posted to ${name}`); }
+      catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }
+    }
+  }
+  process.exit(failed ? 1 : 0);
+}
 
 // One message of your own (the "Post to social" action).
 const ownText = arg("--text");
