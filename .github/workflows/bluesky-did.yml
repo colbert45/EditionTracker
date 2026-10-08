@@ -1,0 +1,10 @@
+# One-off: prints the Bluesky account's permanent ID (DID). Removed after use.
+name: Bluesky DID
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  did:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -sS "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=editiontracker.bsky.social"
