@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-07",
+  "updated": "2026-10-08",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -1991,6 +1991,89 @@
         {
           "label": "Notebookcheck",
           "url": "https://www.notebookcheck.net/PS1-inspired-FPGA-console-starts-selling-out-despite-losing-Wi-Fi-NFC-and-75-of-bundled-storage.1418360.0.html"
+        }
+      ]
+    },
+    {
+      "id": "atari-800xl-full-size-replica",
+      "name": "Atari 800XL Full-Size Replica",
+      "category": "retro",
+      "platform": "Retro home computer",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "2027",
+      "preordersOpened": null,
+      "searchQuery": "Atari 800XL full size replica",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "keyboard",
+        "colors": [
+          "#D8D0C0",
+          "#2B2B2B",
+          "#C58A3A"
+        ]
+      },
+      "notes": [
+        "A full-sized take on the 1983 Atari 800XL home computer.",
+        "It comes with 25 games built in, and you can load more over USB.",
+        "I haven't seen a price or a firm date yet. It's due sometime in 2027."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-08",
+          "text": "Announced for 2027. 25 games built in, more via USB."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/a-full-sized-replica-of-the-atari-800xl-home-computer-is-coming-next-year/"
+        }
+      ]
+    },
+    {
+      "id": "pokemon-30th-santa-cruz-blind-bag-decks",
+      "name": "Pokémon 30th Anniversary Santa Cruz Blind Bag Skateboard Decks",
+      "category": "collect",
+      "platform": "Skateboard decks",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "October 2026",
+      "preordersOpened": null,
+      "searchQuery": "Pokemon Santa Cruz blind bag skateboard deck 30th anniversary",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#FFCB05",
+          "#3B4CCA",
+          "#E3350D"
+        ]
+      },
+      "notes": [
+        "Pokémon and Santa Cruz are doing blind bag skateboard decks again, this time for the 30th anniversary.",
+        "Every deck shows one of 30 Trading Card Game cards on a background matching its type.",
+        "There are three rarer chase decks. You don't know which deck you get until you open it.",
+        "I haven't seen a price yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-08",
+          "text": "Announced for October as part of the 30th anniversary."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/pokemon-blind-bag-skateboard-decks-return-in-new-santa-cruz-collaboration"
         }
       ]
     }
