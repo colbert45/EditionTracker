@@ -155,6 +155,7 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .cta{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:26px}
 .btn{display:inline-block;padding:10px 22px;border-radius:999px;background:var(--red);color:#fff;font-weight:700;text-decoration:none}
 .btn:hover{filter:brightness(1.08)}
+@media (max-width:600px){.mast{flex-wrap:wrap;row-gap:4px}.mast .updated{display:block;order:3;flex-basis:100%;font-size:.8rem}}
 .cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
@@ -269,7 +270,7 @@ ${analytics()}
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
     <p>Spotted something I missed? <a href="mailto:tips@editiontracker.com">Send a tip</a> to tips@editiontracker.com. It'll be added once there's a source.</p>
-    <p>Some links are affiliate links, so Edition Tracker may earn a commission at no cost to you. As an Amazon Associate I earn from qualifying purchases.</p>
+    <p>Some links are affiliate links, so Edition Tracker may earn a commission at no cost to you. As an Amazon Associate I earn from qualifying purchases. Any commissions go toward running the site.</p>
     <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> · <a href="/contact/">Contact</a> · <a href="/privacy/">Privacy and cookies</a></p>
     ${SOCIAL.length ? `<p>Follow: ${SOCIAL.map(([n, u]) => `<a href="${esc(u)}" rel="me noopener">${n}</a>`).join(" · ")}</p>` : ""}
   </footer>
@@ -443,7 +444,7 @@ function item(i, ogImage) {
     <h2>Where to buy</h2>
     ${i.stores.length ? `<table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
     ${i.stores.some(s => s.listed) ? `<p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>` : ""}` : `<p class="small">Not listed yet</p>`}
-    ${hasAffiliate ? `<p class="small">Some of these are affiliate links, so Edition Tracker may earn a commission if you buy through them. It doesn't change your price.${hasAmazon ? " As an Amazon Associate I earn from qualifying purchases." : ""}</p>` : ""}
+    ${hasAffiliate ? `<p class="small">Some of these are affiliate links, so Edition Tracker may earn a commission if you buy through them. It doesn't change your price.${hasAmazon ? " As an Amazon Associate I earn from qualifying purchases." : ""} Any commissions go toward running the site.</p>` : ""}
     ${i.timeline.length ? `<h2>Timeline</h2>
     <ul class="tl">${[...i.timeline].sort((a, b) => b.date.localeCompare(a.date)).map(t => `<li><time datetime="${t.date}">${long(t.date)}</time><span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
     <h2>Sources</h2>
@@ -517,7 +518,7 @@ function privacy() {
     <h2>Analytics and cookies</h2>
     <p>The site uses Google Analytics to count visits and see which pages are popular. It sets cookies (named <code>_ga</code> and <code>_ga_…</code>) and Google receives your IP address, browser and the pages you view. Edition Tracker only sees totals, never who you are. You can block these cookies in your browser settings or with <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">Google's opt-out add-on</a>, and the site works the same without them. There are no other cookies and no ads.</p>
     <h2>Affiliate links</h2>
-    <p>Some "Check stock" links are affiliate links. As an Amazon Associate I earn from qualifying purchases. It doesn't change your price. Once you click through, the store's own privacy policy and cookies apply.</p>
+    <p>Some "Check stock" links are affiliate links. As an Amazon Associate I earn from qualifying purchases. It doesn't change your price, and any commissions go toward running the site. Once you click through, the store's own privacy policy and cookies apply.</p>
     <h2>Hosting</h2>
     <p>The site is hosted on GitHub Pages, which may log your IP address for security. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.</p>
     <h2>Questions</h2>
