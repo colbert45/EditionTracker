@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-08",
+  "updated": "2026-10-09",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -126,7 +126,8 @@
       },
       "notes": [
         "Nintendo's first special edition Switch 2. Green and gold console, green Joy-Con, and a black dock with a gold Triforce. It's only $20 more than a regular Switch 2, which is a big part of why it went fast.",
-        "Preorders sold out at Nintendo, Best Buy and Target within about a day, with resellers asking $800 and up. If you missed it, keep an eye out for restocks before Oct 29."
+        "Preorders sold out at Nintendo, Best Buy and Target within about a day, with resellers asking $800 and up. If you missed it, keep an eye out for restocks before Oct 29.",
+        "Best Buy plans to hold back a limited number of units for in-store sale at its Ocarina of Time midnight launch in the US."
       ],
       "inTheBox": [
         "Switch 2 console with green Joy-Con",
@@ -174,6 +175,10 @@
         {
           "date": "2026-09-09",
           "text": "Reported sold out at Nintendo, Best Buy and Target."
+        },
+        {
+          "date": "2026-10-09",
+          "text": "Best Buy will sell limited extra units in stores at its Ocarina of Time midnight launch."
         }
       ],
       "sources": [
@@ -188,6 +193,10 @@
         {
           "label": "LevelUp",
           "url": "https://www.levelup.com/en/news/nintendo-switch-2-will-get-a-the-legend-of-zelda-ocarina-of-time-remake-edition-but-it-wont-include-the-game/"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/best-buy-to-offer-additional-switch-2-zelda-units-in-store-at-midnight-launch"
         }
       ]
     },
@@ -213,7 +222,8 @@
         ]
       },
       "notes": [
-        "The matching Pro Controller, sold on its own. There's also a version that comes with a display stand. It comes out Oct 29, the same day as the console."
+        "The matching Pro Controller, sold on its own. There's also a version that comes with a display stand. It comes out Oct 29, the same day as the console.",
+        "Best Buy plans limited in-store stock at its Ocarina of Time midnight launch in the US."
       ],
       "inTheBox": [],
       "stores": [
@@ -246,6 +256,10 @@
         {
           "date": "2026-10-03",
           "text": "Retailers list Oct 29 as the release date, alongside the console."
+        },
+        {
+          "date": "2026-10-09",
+          "text": "Best Buy will sell limited extra controllers in stores at its Ocarina of Time midnight launch."
         }
       ],
       "sources": [
@@ -256,6 +270,10 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/09/the-zelda-ocarina-of-time-special-edition-switch-2-console-and-pro-controller-launch-this-october"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/best-buy-to-offer-additional-switch-2-zelda-units-in-store-at-midnight-launch"
         }
       ]
     },
@@ -2074,6 +2092,48 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/pokemon-blind-bag-skateboard-decks-return-in-new-santa-cruz-collaboration"
+        }
+      ]
+    },
+    {
+      "id": "lego-pokemon-mystery-bags",
+      "name": "LEGO Pokémon Mystery Bags",
+      "category": "collect",
+      "platform": "LEGO",
+      "status": "rumor",
+      "price": "$12.99",
+      "releaseDate": null,
+      "releaseWindow": "March 2027",
+      "preordersOpened": null,
+      "searchQuery": "LEGO Pokémon mystery bag",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#E3350D",
+          "#FFCB05",
+          "#FFFFFF"
+        ]
+      },
+      "notes": [
+        "This is a rumor from a LEGO leaker. LEGO and Nintendo haven't announced it.",
+        "The rumored price is $12.99 per bag, with a March 1, 2027 date. I'd treat both as unconfirmed.",
+        "These would be blind bags tied to the new Pokémon LEGO line. No photos yet."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "lego",
+          "listed": false,
+          "affiliateUrl": null
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/rumour-pokemon-themed-mystery-lego-bags-are-supposedly-on-the-way"
         }
       ]
     }
