@@ -21,7 +21,7 @@ It needs the `BUTTONDOWN_API_KEY` repository secret and Buttondown's Tags add-on
 
 ## Social posts
 
-After each change to `main` goes live, `scripts/social.mjs` posts release news to Bluesky and X: new releases, and big changes (preorders opening, a release date, out now, sold out). Posts are built from the data with fixed wording and link to the release page. Price changes, timeline notes and rumors aren't posted. `[no alerts]` or `[no posts]` in a commit message skips posting, and so does any change touching more than 8 releases.
+After each change to `main` goes live, `scripts/social.mjs` posts release news to Bluesky and X: new releases, and big changes (preorders opening, a release date, out now, sold out). Posts are built from the data with fixed wording and link to the release page. Price changes, timeline notes and rumors aren't posted, except timeline notes about stock (a restock, extra units, a new wave), which are posted as "Stock news". `[no alerts]` or `[no posts]` in a commit message skips posting, and so does any change touching more than 8 releases.
 
 The **Scheduled posts** action also posts "Out today" for each release on its release day, and on Thursdays a "Coming out this week" list linking the calendar. It tries hourly from 9am New York time and posts once a day. The **Post to social** action posts a message of your own.
 

@@ -25,7 +25,7 @@ test("preorders opening makes a post with the link", () => {
 test("a price change or timeline note alone isn't posted", () => {
   const old = base(), now = base();
   now.items[0].price = "$1.00";
-  now.items[0].timeline.push({ date: "2026-10-06", text: "Restock at Target." });
+  now.items[0].timeline.push({ date: "2026-10-06", text: "Shown in a new trailer." });
   assert.deepEqual(socialPosts(old, now, SITE), []);
 });
 
@@ -67,4 +67,18 @@ test("the week-ahead post lists this week's dates, fits, and links the calendar"
   assert.match(p.text, /\+ \d+ more/);
   assert.ok(p.text.length <= MAX_LENGTH);
   assert.equal(weekAheadPost(d, "1999-01-01", SITE), null);
+});
+
+test("a restock note is posted as stock news; other notes aren't", () => {
+  const old = base(), now = base();
+  const it = now.items.find(i => i.status === "preorder" && i.releaseDate);
+  it.timeline.push({ date: "2026-10-09", text: "Best Buy will sell limited extra units in stores at launch." });
+  const [p, ...rest] = socialPosts(old, now, SITE);
+  assert.equal(rest.length, 0);
+  assert.ok(p.text.startsWith(`Stock news: ${it.name}`));
+  assert.match(p.text, /\nBest Buy will sell limited extra units in stores at launch\.\n/);
+  assert.ok(p.text.length <= MAX_LENGTH);
+  const old2 = base(), now2 = base();
+  now2.items[0].timeline.push({ date: "2026-10-09", text: "Shown in a new trailer." });
+  assert.deepEqual(socialPosts(old2, now2, SITE), []);
 });
