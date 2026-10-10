@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-09",
+  "updated": "2026-10-10",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -1905,11 +1905,11 @@
       "name": "Rise of the Tomb Raider: 20 Year Celebration Collector's Edition (Switch 2)",
       "category": "games",
       "platform": "Nintendo Switch 2",
-      "status": "announced",
+      "status": "preorder",
       "price": "$99.99",
       "releaseDate": null,
       "releaseWindow": "TBA",
-      "preordersOpened": null,
+      "preordersOpened": "2026-10-09",
       "searchQuery": "Rise of the Tomb Raider 20 Year Celebration Switch 2",
       "image": null,
       "imageCredit": null,
@@ -1944,6 +1944,10 @@
         {
           "date": "2026-10-07",
           "text": "Limited Run Games announced standard ($49.99) and collector's ($99.99) editions. Preorders open Oct 9 and close Nov 15."
+        },
+        {
+          "date": "2026-10-09",
+          "text": "Preorders opened at Limited Run Games. They close Nov 15 at 11:59pm ET."
         }
       ],
       "sources": [
@@ -1954,6 +1958,10 @@
         {
           "label": "Limited Run Games",
           "url": "https://limitedrungames.com/products/switch-2-limited-run-8-rise-of-the-tomb-raider-20-year-celebration-collectors-edition"
+        },
+        {
+          "label": "Noisy Pixel",
+          "url": "https://noisypixel.net/rise-of-the-tomb-raider-20-year-collection-switch-2-physical-editions/"
         }
       ]
     },
