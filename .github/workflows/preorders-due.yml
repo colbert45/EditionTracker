@@ -1,0 +1,41 @@
+# Once a day: releases whose announced preorder date has arrived get a pull request
+# switching them to "Preorders open". It never merges; you review and merge it.
+name: Preorder dates
+
+on:
+  schedule:
+    - cron: "37 13,17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  due:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: scheduled/preorders-open
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: due
+        run: node scripts/preorders-due.mjs
+      - name: Open or update the pull request
+        if: steps.due.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add data/releases.json
+          git commit -m "Preorders open: ${{ steps.due.outputs.names }}"
+          git push --force origin "HEAD:$BRANCH"
+          PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -z "$PR" ]; then
+            gh pr create --base main --head "$BRANCH" --title "Preorders open: ${{ steps.due.outputs.names }}" --body-file .scheduled/pr-body.md
+          else
+            gh pr edit "$PR" --title "Preorders open: ${{ steps.due.outputs.names }}" --body-file .scheduled/pr-body.md
+          fi

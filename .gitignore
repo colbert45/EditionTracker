@@ -4,3 +4,4 @@ _site/
 .news-state/
 data/last-checked.json
 .images-report.md
+.scheduled/

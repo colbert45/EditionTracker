@@ -5,6 +5,10 @@ Source for [editiontracker.com](https://editiontracker.com): special edition con
 - `data/releases.json` holds every release. The site is built from it and published with GitHub Pages.
 - A scheduled news check reads public news feeds and proposes updates as pull requests. Nothing is published until a pull request is reviewed and merged.
 
+## Preorder dates
+
+A release can carry `preordersStart`, the date its preorders are announced to open (the news check fills it in). The release page shows "Opens <date>". On that day the **Preorder dates** action opens a pull request switching it to "Preorders open"; it never merges, so check the store and merge it yourself.
+
 ## Alerts
 
 Every page has a "Get alerts" form (Buttondown). Each box a subscriber ticks becomes a Buttondown tag: `type:nintendo`, `type:playstation` and so on for a whole category, or `item:<id>` for one release.

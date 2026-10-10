@@ -375,7 +375,7 @@ function preorders(i) {
   if (i.status === "soldout") return "Sold out";
   if (i.status === "preorder") return i.pre ? `Open since ${short(i.pre)}` : "Open";
   if (i.status === "out") return i.pre ? `Opened ${long(i.pre)}` : "Closed";
-  return "Not yet";
+  return i.preordersStart ? `Opens ${long(i.preordersStart)}` : "Not yet";
 }
 
 // Seasons and phrases read lowercase mid-sentence ("expected spring 2027"); months and quarters don't.
