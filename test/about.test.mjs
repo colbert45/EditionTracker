@@ -31,3 +31,18 @@ test("the total line only shows when one is written", () => {
   assert.doesNotMatch(page(buildCopy({ costs: { ...costs, total: null } }), "about"), /<p><b>/);
   assert.match(page(buildCopy({ costs: { ...costs, total: "About $20 a month right now." } }), "about"), /<p><b>About \$20 a month right now\.<\/b><\/p>/);
 });
+
+test("a Discord invite link shows in the footer only when it's a real invite link", () => {
+  const cfg = readReal("site.config.json");
+  const follow = html => (html.match(/<p>Follow: [^<]*(?:<a [^>]*>[^<]*<\/a>[^<]*)*<\/p>/) || [""])[0];
+  const none = page(buildCopy({ config: { ...cfg, social: { ...cfg.social, discord: "" } } }), "about");
+  assert.doesNotMatch(follow(none), /Discord/);
+  const set = page(buildCopy({ config: { ...cfg, social: { ...cfg.social, discord: "https://discord.gg/abc123" } } }), "about");
+  assert.match(follow(set), /<a href="https:\/\/discord.gg\/abc123" rel="me noopener">Discord<\/a>/);
+  assert.match(follow(set), /Bluesky/); // the others stay
+  // It isn't claimed as the site's own profile in the page data.
+  assert.doesNotMatch(set, /"sameAs":\[[^\]]*discord/);
+  for (const bad of ["https://example.com/abc", "http://discord.gg/abc", "https://discord.gg/abc/def", "javascript:alert(1)", "https://discord.gg/<b>"]) {
+    assert.doesNotMatch(follow(page(buildCopy({ config: { ...cfg, social: { ...cfg.social, discord: bad } } }), "about")), /Discord/, bad);
+  }
+});

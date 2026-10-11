@@ -26,6 +26,10 @@ const SOCIAL = [
   config.social?.bluesky && ["Bluesky", `https://bsky.app/profile/${config.social.bluesky}`],
   config.social?.x && ["X", `https://x.com/${config.social.x}`]
 ].filter(Boolean);
+// The Discord invite link goes in the footer when it's set. Only a real invite link is used, and it
+// isn't listed as the site's own profile (invites can expire).
+const DISCORD = /^https:\/\/(?:discord\.gg|discord\.com\/invite)\/[\w-]+$/.test(config.social?.discord || "") ? ["Discord", config.social.discord] : null;
+const FOLLOW = DISCORD ? [...SOCIAL, DISCORD] : SOCIAL;
 
 const { errors, warnings } = validate(data, { staticDir: STATIC });
 warnings.forEach(w => console.warn("warning:", w));
@@ -305,7 +309,7 @@ ${analytics()}
     <p>Spotted something I missed? <a href="mailto:tips@editiontracker.com">Send a tip</a> to tips@editiontracker.com. It'll be added once there's a source.</p>
     <p>No ads. No affiliate links. I don't get paid when you click or buy. <a href="/about/">What it costs to run</a>.</p>
     <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> · <a href="/about/">About</a> · <a href="/contact/">Contact</a> · <a href="/privacy/">Privacy and cookies</a></p>
-    ${SOCIAL.length ? `<p>Follow: ${SOCIAL.map(([n, u]) => `<a href="${esc(u)}" rel="me noopener">${n}</a>`).join(" · ")}</p>` : ""}
+    ${FOLLOW.length ? `<p>Follow: ${FOLLOW.map(([n, u]) => `<a href="${esc(u)}" rel="me noopener">${n}</a>`).join(" · ")}</p>` : ""}
   </footer>
 </div>
 ${script || alertsHref ? `<script>\n${[script, alertsHref && !noindex ? ALERTS_JS : ""].filter(Boolean).join("\n")}\n</script>\n` : ""}</body>

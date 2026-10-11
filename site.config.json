@@ -23,6 +23,8 @@
     "bluesky": "editiontracker.com",
     "x": "editiontracker",
     "blueskyDid": "did:plc:lh2jnxw3w43w4zx6b5fdc7np",
+    "_discord": "Your Discord server's invite link (https://discord.gg/...). It's shown in the footer once it's filled in.",
+    "discord": "",
     "_restockToX": "Restock posts go to Bluesky, and to Discord once DISCORD_WEBHOOK_URL is set. Set this to true to post them to X as well (X charges $0.20 for every post that has a link).",
     "restockToX": false
   },
