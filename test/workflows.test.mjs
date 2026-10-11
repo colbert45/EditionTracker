@@ -87,9 +87,9 @@ test("in all three phone workflows, an expression is only ever an env value or a
   }
 });
 
-test("post-restock posts to Bluesky and Discord after the email, never to X, and a failed post doesn't fail the run", () => {
+test("post-restock posts to Bluesky, X and Discord after the email, and a failed post doesn't fail the run", () => {
   const yml = FLOWS["post-restock"];
-  const step = yml.slice(yml.indexOf("- name: Post to Bluesky and Discord"), yml.indexOf("- name: Redeploy the site"));
+  const step = yml.slice(yml.indexOf("- name: Post to Bluesky, X and Discord"), yml.indexOf("- name: Redeploy the site"));
   // It still runs if the email step failed (the restock is saved either way), and only for a real restock.
   assert.match(step, /if: \$\{\{ !cancelled\(\) && steps\.record\.outputs\.alert == 'true' \}\}/);
   assert.match(step, /continue-on-error: true/);
@@ -97,7 +97,8 @@ test("post-restock posts to Bluesky and Discord after the email, never to X, and
   assert.match(step, /DISCORD_WEBHOOK_URL: \$\{\{ secrets\.DISCORD_WEBHOOK_URL \}\}/);
   assert.match(step, /BEFORE: \$\{\{ steps\.record\.outputs\.before \}\}/);
   assert.match(step, /run: node scripts\/social\.mjs "\$BEFORE"/);
-  assert.doesNotMatch(step, /X_API|X_ACCESS/); // no X keys here: restocks only reach X if the config says so, from the deploy
+  // The X keys are here so a restock logged from the phone reaches X; whether it does is up to restockToX in the config.
+  for (const key of ["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_TOKEN_SECRET"]) assert.match(step, new RegExp(`${key}: \\$\\{\\{ secrets\\.${key} \\}\\}`));
   assert.ok(yml.indexOf("alerts.mjs send") < yml.indexOf("scripts/social.mjs") && yml.indexOf("scripts/social.mjs") < yml.indexOf("gh workflow run"));
   // The deploy's own social step gets the Discord link too, so a restock merged from the news check is posted.
   const deploy = wf("deploy");

@@ -127,10 +127,10 @@ const NO_LINK = /https?:|www\.|\beditiontracker\.com|\b[a-z0-9-]+\.(com|org|net|
 const newRelease = d => d.items.push({ ...JSON.parse(JSON.stringify(OTHER)), id: "brand-new-test", name: "Brand New Test Edition", category: "nintendo", platform: "Nintendo Switch 2", status: "announced", price: "$59.99", releaseDate: null, releaseWindow: "2099", timeline: [] });
 
 test("a post to X has no link in it, and the same post on Bluesky keeps its link", () => {
-  const { dir, start } = repoWithRestock(undefined, newRelease);
+  const { dir, start } = repoWithRestock(undefined, newRelease, c => { c.social.restockToX = false; });
   const r = sendFor(dir, start);
   assert.equal(r.status, 0, r.stderr + r.stdout);
-  // One post to X: the new release. The restock isn't posted to X unless the config says so.
+  // One post to X: the new release. With restocks switched off for X, the restock isn't posted there.
   assert.deepEqual(r.x, ["New: Brand New Test Edition\nNintendo Switch 2 · $59.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2"]);
   assert.doesNotMatch(r.x[0], NO_LINK);
   // Bluesky gets both, with the link in the text, as a clickable part of it, and as the preview card.
@@ -144,17 +144,32 @@ test("a post to X has no link in it, and the same post on Bluesky keeps its link
   assert.match(r.stdout, /On X, without the link:\n    New: Brand New Test Edition\n    Nintendo Switch 2 · \$59\.99 · Expected 2099\n    Details: editiontracker dot com\n    #Nintendo #Switch2/);
 });
 
-test("restocks reach X only when the config says so, and still without a link", () => {
-  const off = repoWithRestock();
+test("restocks reach X when the config says so, still without a link, and not when it says no", () => {
+  const off = repoWithRestock(undefined, undefined, c => { c.social.restockToX = false; });
   assert.deepEqual(sendFor(off.dir, off.start).x, []);
   assert.doesNotMatch(social(off.dir, off.start).stdout, /On X/); // and the log doesn't pretend they will
   const on = repoWithRestock(undefined, undefined, c => { c.social.restockToX = true; });
   const r = sendFor(on.dir, on.start);
   assert.equal(r.x.length, 1);
   assert.equal(r.x[0].split("\n")[0], `Back in stock: ${on.name} at Best Buy`);
-  assert.match(r.x[0], /\nStore links: editiontracker dot com\n#/);
+  assert.match(r.x[0], /\nStore links: editiontracker dot com\n#Restock\b/);
   assert.doesNotMatch(r.x[0], NO_LINK);
   assert.ok(r.bluesky[0].text.endsWith(`https://editiontracker.com/${PICK.id}/`));
+  // The log shows it, too.
+  assert.match(r.stdout, /On X, without the link:\n    Back in stock: /);
+});
+
+test("a refused post to X shows as a warning on the Actions run page, and Bluesky still gets the restock", () => {
+  const { dir, start } = repoWithRestock(undefined, undefined, c => { c.social.restockToX = true; });
+  const r = sendFor(dir, start, [], { FAKE_FETCH_FAIL: "api.x.com", GITHUB_ACTIONS: "true" });
+  assert.equal(r.status, 1); // the step fails (the workflow lets it), so nobody thinks it worked
+  assert.match(r.stdout, /X failed: POST https:\/\/api\.x\.com\/2\/tweets: 403/);
+  assert.match(r.stdout, /::warning title=The post to X failed::POST https:\/\/api\.x\.com\/2\/tweets: 403/);
+  assert.equal(r.bluesky.length, 1);
+  // Outside Actions it's only a line in the log.
+  const plain = sendFor(dir, start, [], { FAKE_FETCH_FAIL: "api.x.com", GITHUB_ACTIONS: "" });
+  assert.match(plain.stdout, /X failed: /);
+  assert.doesNotMatch(plain.stdout, /::warning/);
 });
 
 test("a message typed by hand goes to X with its links taken out", () => {

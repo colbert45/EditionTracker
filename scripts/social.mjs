@@ -6,7 +6,7 @@
 // Posts to X never have a link in them (X charges $0.20 for a post with one, about 1.5 cents without): they name the
 // site in words and carry hashtags instead. See lib/xpost.js. Bluesky and Discord posts keep their links.
 // Restock posts go to Bluesky and, when DISCORD_WEBHOOK_URL is set, to a Discord channel. They go to X
-// only if site.config.json has social.restockToX: true.
+// when site.config.json has social.restockToX: true (it does).
 // Without the keys, or with --dry-run, it only prints what it would post.
 // [no alerts] or [no posts] in a commit message skips posting for that push.
 import { readFileSync, existsSync } from "node:fs";
@@ -49,6 +49,13 @@ const targets = p => p.restock
 const goesToX = p => (!only || only === "x") && (!p.restock || restockToX);
 const xBlock = p => p.xText && goesToX(p) ? `  On X, without the link:\n${p.xText.split("\n").map(l => `    ${l}`).join("\n")}` : "";
 const show = p => { console.log(`\n---\n${p.text}`); if (xBlock(p)) console.log(xBlock(p)); };
+
+// A failed post is logged, and inside GitHub Actions it's also shown as a warning on the run page, because the step
+// that posts is allowed to fail without failing the run (the restock is saved and emailed either way).
+function fail(name, e) {
+  console.log(`  ${name} failed: ${e.message}`);
+  if (env.GITHUB_ACTIONS === "true") console.log(`::warning title=The post to ${name} failed::${String(e.message).replace(/\s+/g, " ").slice(0, 300).replace(/%/g, "%25")}`);
+}
 
 async function request(url, opts) {
   const res = await fetch(url, opts);
@@ -132,7 +139,7 @@ if (process.argv.includes("--scheduled")) {
     for (const [name, on, fn] of targets(p)) {
       if (!on) continue;
       try { await fn(p); console.log(`  posted to ${name}`); }
-      catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }
+      catch (e) { failed++; fail(name, e); }
     }
   }
   process.exit(failed ? 1 : 0);
@@ -155,7 +162,7 @@ if (ownText !== undefined) {
   for (const [name, on, fn] of targets(p)) {
     if (!on) continue;
     try { await fn(p); console.log(`  posted to ${name}`); }
-    catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }
+    catch (e) { failed++; fail(name, e); }
   }
   process.exit(failed ? 1 : 0);
 }
@@ -182,7 +189,7 @@ for (const p of posts) {
   for (const [name, on, fn] of targets(p)) {
     if (!on) continue;
     try { await fn(p); console.log(`  posted to ${name}`); }
-    catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }
+    catch (e) { failed++; fail(name, e); }
   }
 }
 if (failed) process.exit(1);

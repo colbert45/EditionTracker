@@ -176,6 +176,7 @@ test("stock news, release day, restocks and the week ahead all have a version fo
   // A restock says where the links are
   const { posts: [restock], it: restocked } = restockPosts([BB]);
   assert.equal(restock.xText.split("\n").at(-2), "Store links: editiontracker dot com");
+  assert.match(restock.xText.split("\n").at(-1), /^#Restock( #[A-Za-z0-9]+)*$/); // the hashtag people watching for stock follow
   assert.equal(restock.xText.split("\n")[0], `Back in stock: ${restocked.name} at Best Buy`);
   // Release day
   const d = base();

@@ -18,7 +18,7 @@ const git = (cwd, ...args) => execFileSync("git", ["-c", "user.name=test", "-c",
 const { item: PICK, other: OTHER } = pickItems(plainData());
 const BB = "https://www.bestbuy.com/site/example/6000000.p?skuId=6000000";
 
-function setup(edit) {
+function setup(edit, editConfig) {
   const dir = mkdtempSync(join(tmpdir(), "et-restock-"));
   const origin = join(dir, "origin.git"), work = join(dir, "work");
   git(dir, "init", "--bare", "-q", "-b", "main", origin);
@@ -27,7 +27,10 @@ function setup(edit) {
   const data = plainData();
   if (edit) edit(data);
   writeFileSync(join(work, "data/releases.json"), JSON.stringify(data, null, 2) + "\n");
-  copyFileSync(join(ROOT, "site.config.json"), join(work, "site.config.json"));
+  const config = JSON.parse(readFileSync(join(ROOT, "site.config.json"), "utf8"));
+  config.social.restockToX = true; // pinned, so these tests don't depend on what the live config says
+  if (editConfig) editConfig(config);
+  writeFileSync(join(work, "site.config.json"), JSON.stringify(config, null, 2));
   git(work, "add", ".");
   git(work, "commit", "-q", "-m", "Start");
   git(work, "remote", "add", "origin", origin);
@@ -85,11 +88,31 @@ test("a dry run changes nothing and shows the email", () => {
   assert.equal(r.status, 0, r.stderr);
   assert.equal(head(s), s.start);
   assert.equal(git(s.work, "status", "--porcelain"), "");
-  assert.match(r.stdout, /DRY RUN: nothing was changed/);
+  assert.match(r.stdout, /DRY RUN: nothing was changed, committed, sent or posted/);
   assert.match(r.stdout, new RegExp(`Subject: Back in stock: ${PICK.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} at Best Buy`));
   assert.match(r.stdout, /Go to the listing/);
   assert.deepEqual(r.outputs, { changed: "false" });
-  assert.match(r.summary, /Dry run: nothing was changed or sent/);
+  assert.match(r.summary, /Dry run: nothing was changed, sent or posted/);
+  // It shows the posts too: Bluesky with its link, and X with none.
+  assert.match(r.stdout, new RegExp(`The posts that would go out[^\\n]*\\n\\nOn Bluesky:\\nBack in stock: ${PICK.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} at Best Buy\\n[^\\n]*\\nhttps://editiontracker.com/${PICK.id}/\\n\\nOn X, with no link:\\nBack in stock: [^\\n]*\\n[^\\n]*\\nStore links: editiontracker dot com\\n#Restock`));
+  assert.match(r.summary, /The posts that would go out/);
+  assert.equal(head(s), s.start);
+});
+
+test("a dry run doesn't show an X post when restocks are kept off X", () => {
+  const s = setup(undefined, c => { c.social.restockToX = false; });
+  const r = run(s, { RESTOCK_DRY_RUN: "true" });
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /On Bluesky:/);
+  assert.doesNotMatch(r.stdout, /On X/);
+});
+
+test("a dry run of sold out again has no posts", () => {
+  const s = setup();
+  assert.equal(run(s).status, 0);
+  const r = run(s, { RESTOCK_ACTION: "soldout", RESTOCK_DRY_RUN: "true" }, { date: "2026-10-10" });
+  assert.equal(r.status, 0, r.stderr);
+  assert.doesNotMatch(r.stdout, /The posts that would go out/);
 });
 
 test("bad input stops with the reason in plain words and nothing is saved", () => {

@@ -3,16 +3,17 @@
 // What to do comes from the environment, which the workflows fill in from the form:
 //   RESTOCK_ACTION   restock (default) or soldout
 //   RESTOCK_ITEM, RESTOCK_RETAILER, RESTOCK_LINK, RESTOCK_SOURCE   the form boxes
-//   RESTOCK_DRY_RUN  true = change nothing, just show what would happen (and the email)
+//   RESTOCK_DRY_RUN  true = change nothing, just show what would happen (the email and the posts)
 // It edits data/releases.json, checks it, commits to main and pushes. If main moved in the
-// meantime it starts again from the latest main, up to 3 times. It sends no email itself:
-// the workflow runs `alerts.mjs send` next, then asks for a fresh deploy.
+// meantime it starts again from the latest main, up to 3 times. It sends no email or post itself:
+// the workflow runs `alerts.mjs send` and `social.mjs` next, then asks for a fresh deploy.
 import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { applyRestock, applySoldOut, InputError } from "../lib/restock.js";
 import { planAlerts, emailBody } from "../lib/alerts.js";
+import { socialPosts } from "../lib/social.js";
 import { validate } from "../lib/validate.js";
 
 const ROOT = process.env.RESTOCK_ROOT || join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -23,7 +24,8 @@ const today = arg("--date") || new Date().toLocaleDateString("en-CA", { timeZone
 const action = (env.RESTOCK_ACTION || "restock").toLowerCase();
 const dry = /^(true|1|yes)$/i.test(env.RESTOCK_DRY_RUN || "");
 const branch = env.RESTOCK_BRANCH || "main";
-const siteUrl = JSON.parse(readFileSync(join(ROOT, "site.config.json"), "utf8")).siteUrl;
+const config = JSON.parse(readFileSync(join(ROOT, "site.config.json"), "utf8"));
+const siteUrl = config.siteUrl;
 
 const readData = () => JSON.parse(readFileSync(DATA, "utf8"));
 const output = (k, v) => { if (env.GITHUB_OUTPUT) appendFileSync(env.GITHUB_OUTPUT, `${k}=${v}\n`); };
@@ -76,14 +78,22 @@ if (dry) {
   const mail = action === "restock"
     ? planAlerts(before, r.data, siteUrl).map(a => `To: ${a.tags.join(" or ")}\nSubject: ${a.subject}\n\n${emailBody(a, r.data.categories)}`).join("\n\n---\n\n")
     : "";
+  // The posts that go out right after the email: Bluesky with its link, and X with no link (when restocks go to X).
+  const posts = action === "restock"
+    ? socialPosts(before, r.data, siteUrl, { today }).map(p => [
+      `On Bluesky:\n${p.text}`,
+      config.social?.restockToX === true && p.xText ? `On X, with no link:\n${p.xText}` : null
+    ].filter(Boolean).join("\n\n")).join("\n\n---\n\n")
+    : "";
   const text = [
-    "DRY RUN: nothing was changed, committed or sent.", "",
+    "DRY RUN: nothing was changed, committed, sent or posted.", "",
     describe(r).replace(/\*\*/g, ""), "",
     `Status: ${before.items.find(i => i.id === r.item.id).status} -> ${r.item.status}`,
-    mail ? `\nThe email people would get:\n\n${mail}` : "\nNo email goes out for this."
+    mail ? `\nThe email people would get:\n\n${mail}` : "\nNo email goes out for this.",
+    posts ? `\nThe posts that would go out (Discord too, if it's set up):\n\n${posts}` : ""
   ].join("\n");
   console.log(text);
-  summary(`### Dry run: nothing was changed or sent\n\n${describe(r)}\n\n${mail ? "The email people would get:\n\n```\n" + mail + "\n```" : "No email goes out for this."}`);
+  summary(`### Dry run: nothing was changed, sent or posted\n\n${describe(r)}\n\n${mail ? "The email people would get:\n\n```\n" + mail + "\n```" : "No email goes out for this."}${posts ? "\n\nThe posts that would go out (Discord too, if it's set up):\n\n```\n" + posts + "\n```" : ""}`);
   output("changed", "false");
   process.exit(0);
 }

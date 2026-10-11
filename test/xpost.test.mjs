@@ -89,6 +89,21 @@ test("a post's text for X has no link, names the site, and ends with the hashtag
   for (const t of [xTextFor(post, SITE, { tags: ["#Nintendo"] }), xTextFor(odd, SITE)]) assert.doesNotMatch(t, /https?:|\.com|\.org/);
 });
 
+test("when space is tight the hashtags go one at a time before the site's line does", () => {
+  const url = "https://editiontracker.com/x/";
+  const tags = ["#Restock", "#Nintendo", "#Switch2"];
+  const post = n => ({ text: `${"x".repeat(n)}\nline\n${url}`, url });
+  const last = n => xTextFor(post(n), SITE, { call: "Store links", tags }).split("\n").slice(2); // what comes after the two body lines
+  assert.deepEqual(last(211), ["Store links: editiontracker dot com", "#Restock #Nintendo #Switch2"]); // 280 exactly
+  assert.deepEqual(last(212), ["Store links: editiontracker dot com", "#Restock #Nintendo"]);
+  assert.deepEqual(last(221), ["Store links: editiontracker dot com", "#Restock"]);
+  assert.deepEqual(last(231), ["Store links: editiontracker dot com"]);
+  assert.deepEqual(last(240), []);
+  for (const n of [211, 212, 221, 231, 240]) assert.ok(xLength(xTextFor(post(n), SITE, { call: "Store links", tags })) <= X_LIMIT, n);
+  // Even the body alone too long: it's shortened rather than failing.
+  assert.ok(xLength(xTextFor(post(400), SITE, { tags })) <= X_LIMIT);
+});
+
 test("a message typed by hand loses its links and names the site", () => {
   assert.equal(xCustom("Big news today", SITE), "Big news today\neditiontracker dot com");
   assert.equal(xCustom("Big news, see https://editiontracker.com/calendar/", SITE), "Big news, see editiontracker dot com"); // already names it
