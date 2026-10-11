@@ -5,7 +5,8 @@
 import { readFileSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { robotsAllows, decode } from "../lib/feeds.js";
+import { robotsAllows } from "../lib/feeds.js";
+import { shareImage, productImage } from "../lib/images.js";
 import { validate } from "../lib/validate.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -28,21 +29,8 @@ async function allowed(url) {
   return robotsAllows(robots.get(u.origin), UA, u.pathname + u.search);
 }
 
-function shareImage(html, base) {
-  for (const re of [/<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]*>/i, /<meta[^>]+name=["']twitter:image["'][^>]*>/i]) {
-    const tag = html.match(re)?.[0];
-    const content = tag?.match(/content=["']([^"']+)["']/i)?.[1];
-    if (content) return new URL(decode(content), base).href;
-  }
-  return null;
-}
-
-async function imageFrom(page) {
-  if (!(await allowed(page))) throw new Error("robots.txt disallows");
-  const r = await get(page, "text/html");
-  if (!r.ok) throw new Error(`page HTTP ${r.status}`);
-  const src = shareImage(await r.text(), r.url);
-  if (!src) throw new Error("no share image on page");
+// Downloads one picture and shrinks it. Pictures under 300px wide are refused: they'd look blurry.
+async function download(src) {
   const img = await get(src, "image/*");
   if (!img.ok) throw new Error(`image HTTP ${img.status}`);
   const buf = Buffer.from(await img.arrayBuffer());
@@ -50,6 +38,21 @@ async function imageFrom(page) {
   if (!meta.width || meta.width < 300) throw new Error(`image too small (${meta.width}px)`);
   const out = await sharp(buf).resize({ width: 1000, withoutEnlargement: true }).flatten({ background: "#ffffff" }).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
   return { out, src, width: meta.width, height: meta.height };
+}
+
+// The page's share image, or failing that (or if it's tiny) the product picture in its structured data.
+async function imageFrom(page) {
+  if (!(await allowed(page))) throw new Error("robots.txt disallows");
+  const r = await get(page, "text/html");
+  if (!r.ok) throw new Error(`page HTTP ${r.status}`);
+  const html = await r.text();
+  const candidates = [...new Set([shareImage(html, r.url), productImage(html, r.url)].filter(Boolean))];
+  if (!candidates.length) throw new Error("no share image on page");
+  const problems = [];
+  for (const src of candidates) {
+    try { return await download(src); } catch (e) { problems.push(e.message); }
+  }
+  throw new Error(problems.join(", "));
 }
 
 mkdirSync(join(ROOT, "static/images"), { recursive: true });
