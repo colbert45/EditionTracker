@@ -34,6 +34,22 @@ When something comes back in stock at a store, log it by hand. A release can car
 - **Sold out again** (also under Actions) switches a release back to "Sold out" so the page stops saying "Back in stock". It emails nobody.
 - The news check never sets "Back in stock" itself. It can add a timeline note about a restock, and you decide whether to log it.
 
+## Prices and resellers
+
+A release page with one plain price shows "MSRP $519.99. Don't pay more." A price range, TBA and rumors get no MSRP line. If `price` isn't the MSRP (a bundle, say), set `msrp` on the release: `"msrp": "$149.99"`.
+
+To show what resellers are asking, fill in `resale` by hand from the listings you looked at:
+
+```json
+"resale": { "low": "$800", "high": "$1,000", "checked": "2026-10-09", "where": "eBay" }
+```
+
+The page shows "Resellers are asking $800 to $1,000 on eBay (checked Oct 9, 2026). That's 54% to 92% over MSRP." The percentages are worked out from the MSRP, and only shown when the price is over it. `high` and `where` are optional. A check older than 30 days says "may be out of date". Leave `resale` out and nothing shows. Only enter what you actually saw.
+
+## No ads, no affiliate links
+
+The site has neither, and the validator rejects an `affiliateUrl`. What it costs to run is on the About page, from `data/costs.json` (a row with an empty `price` is hidden, so fill in "Domain name" when you know it). To show a tip link on the About page, set `support.url` in `site.config.json`; leave it empty and no link shows.
+
 ## Social posts
 
 After each change to `main` goes live, `scripts/social.mjs` posts release news to Bluesky and X: new releases, and big changes (preorders opening, a release date, out now, sold out). Posts are built from the data with fixed wording and link to the release page. Price changes, timeline notes and rumors aren't posted, except timeline notes about stock (a restock, extra units, a new wave), which are posted as "Stock news". `[no alerts]` or `[no posts]` in a commit message skips posting, and so does any change touching more than 8 releases.

@@ -7,6 +7,7 @@ import { createHash } from "node:crypto";
 import { art } from "../lib/art.js";
 import { validate } from "../lib/validate.js";
 import { itemCardSvg, homeCardSvg, toPng } from "../lib/og.js";
+import { msrpText, dollars } from "../lib/msrp.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "_site");
@@ -162,6 +163,13 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .costs td:first-child{font-weight:600}
 .costs td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:14px}
 .costs .what{display:block;margin-top:2px;color:var(--soft);font-size:.9rem;font-weight:400}
+.pledge{margin:0 0 16px;padding-left:12px;border-left:4px solid var(--red);font-size:1.08rem}
+.msrp{margin:0 0 14px;padding:12px 16px;border-left:4px solid var(--red);border-radius:0 6px 6px 0;background:var(--row)}
+.msrp p{margin:0}
+.msrp .mline{font-size:1.25rem;line-height:1.3}
+.msrp .mline b{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:1.45rem;letter-spacing:.01em}
+.msrp .resale{margin-top:6px;color:var(--soft);font-size:.98rem}
+.msrp .resale b{color:var(--ink)}
 .cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
@@ -342,6 +350,7 @@ function home() {
     <div class="hero-top">
       <h1 class="hero-h">Every special edition, <em>tracked.</em></h1>
       <p class="hero-sub">Consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. Updated daily as news drops.</p>
+      <p class="pledge"><b>Restock alerts at MSRP.</b> No bots, no markups.</p>
       <ul class="stats">
         <li><b>${ITEMS.length}</b> tracked</li>
         ${count("restock") ? `<li><b>${count("restock")}</b> back in stock</li>` : ""}
@@ -421,6 +430,27 @@ function storeRow(i, s) {
   return `<tr><td>${esc(st.name)}</td><td>${!s.listed ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="noopener">Check stock</a>`}</td></tr>`;
 }
 
+// "MSRP $519.99. Don't pay more." and, when it has been filled in by hand, what resellers are asking
+// and how far over MSRP that is. Nothing is shown for a price that isn't one plain amount.
+const percentOver = (price, msrp) => Math.round((price / msrp - 1) * 100);
+function priceCheck(i) {
+  const msrp = msrpText(i), r = i.resale;
+  if (!msrp && !r) return "";
+  const out = [];
+  if (msrp) out.push(`<p class="mline"><b>MSRP ${esc(msrp)}.</b> Don't pay more.</p>`);
+  if (r) {
+    const base = msrp ? dollars(msrp) : null;
+    const low = dollars(r.low), high = r.high ? dollars(r.high) : null;
+    const range = high && high !== low ? `${r.low} to ${r.high}` : r.low;
+    let over = "";
+    if (base && low > base) over = ` That's ${percentOver(low, base)}%${high && high > low ? ` to ${percentOver(high, base)}%` : ""} over MSRP.`;
+    else if (base && high > base) over = ` That's up to ${percentOver(high, base)}% over MSRP.`;
+    const stale = daysOut(r.checked) < -30 ? ", may be out of date" : "";
+    out.push(`<p class="resale">Resellers are asking <b>${esc(range)}</b>${r.where ? ` on ${esc(r.where)}` : ""} (checked ${long(r.checked)}${stale}).${over}</p>`);
+  }
+  return `<div class="msrp">${out.join("")}</div>`;
+}
+
 // Item alerts make sense until it's out, or while it's sold out (restocks).
 const wantsAlert = i => i.status === "soldout" || i.status === "restock" || !isOut(i);
 
@@ -439,6 +469,7 @@ function item(i, ogImage) {
     <h1>${esc(i.name)}</h1>
     <div class="sub"><span>${esc(i.platform)}</span>${chip(i.status)}${BD_USER && wantsAlert(i) ? `<a class="alert-me" href="#alerts">${i.status === "soldout" || i.status === "restock" ? "Alert me on restock" : "Alert me about this"}</a>` : ""}</div>
     ${hero}
+    ${priceCheck(i)}
     <dl class="facts">
       <div><dt>Price</dt><dd>${esc(i.price)}</dd></div>
       <div><dt>Release</dt><dd>${esc(when(i))}</dd></div>

@@ -3,14 +3,18 @@ import assert from "node:assert/strict";
 import { buildCopy, readReal, page } from "./helpers/build-copy.mjs";
 
 test("the About page lists the cost rows that have a price, and the footer links to it", () => {
-  const costs = readReal("data/costs.json");
+  // Start from the real rows, but with the domain row blank, so this keeps passing once its price is filled in.
+  const real = readReal("data/costs.json");
+  const costs = { ...real, items: real.items.map(r => r.name === "Domain name" ? { ...r, price: "" } : r) };
   const dir = buildCopy({ costs });
   const html = page(dir, "about");
   assert.match(html, /<h1>About Edition Tracker<\/h1>/);
   assert.match(html, /No ads\. No affiliate links\./);
   for (const r of costs.items.filter(r => r.price.trim())) assert.ok(html.includes(r.price.replace(/&/g, "&amp;")), r.name);
-  // A row without a price (like the domain, until it's filled in) isn't shown.
+  // A row without a price isn't shown.
   assert.doesNotMatch(html, /Domain name/);
+  const priced = buildCopy({ costs: { ...real, items: real.items.map(r => r.name === "Domain name" ? { ...r, price: "$12 a year" } : r) } });
+  assert.match(page(priced, "about"), /Domain name[\s\S]*\$12 a year/);
   assert.match(page(dir, "."), /href="\/about\/">About<\/a>/);
 });
 
