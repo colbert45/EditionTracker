@@ -78,6 +78,18 @@ The **Scheduled posts** action also posts "Out today" for each release on its re
 
 Bluesky needs the `BLUESKY_APP_PASSWORD` secret (the handle is in `site.config.json`). X needs `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN` and `X_ACCESS_TOKEN_SECRET`. Without them the step only logs what it would post.
 
+## Later (ideas, not built)
+
+- **Retailer alert aggregator.** The site signs up for each official retailer's "notify me when available" on the releases it tracks, using an email address that belongs to the site, so a visitor subscribes once here instead of making an account at five stores. An inbound-mail step would read the retailer's alert and run the same restock flow ("Reported, per <store>'s own alert"). It needs a mailbox that can run code (Cloudflare Email Workers or a Google Apps Script), a GitHub token kept in that service (ask before adding any secret), a reader for each retailer's alert emails (they all look different), and a check that an email really came from the store. What could go wrong:
+  - Many of these alerts are one-time, so someone has to sign up again after each one, per store and per release.
+  - A store's terms may not allow its notify feature to power a public service. Read each store's terms first.
+  - An alert can fire when an outside seller has stock, so an automatic email needs a human check or very careful wording.
+  - A forged email must never be able to trigger a public alert.
+
+  Start with one store, with the alert going to a private channel for a one-tap approval, before anything goes straight to subscribers. Don't say on the site that we do this until it works.
+- **Instant stock checking** (a bot that loads product pages every few minutes) isn't recommended: it's fragile, some stores forbid it, and it clashes with "no bots".
+- **A total line on the About page** ("about $14 to $17 a month before X posts"), if you want one. It's written by hand in `data/costs.json` (`total`), so it would need updating when a cost changes.
+
 Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store.
 
 Fonts: [Barlow](https://github.com/jpt/barlow), under the SIL Open Font License (see `static/fonts/OFL.txt`).
