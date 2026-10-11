@@ -186,6 +186,7 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
   .alert-btn{padding:5px 11px 5px 9px;font-size:.88rem}
 }
 @media (max-width:380px){
+  .costs td:last-child{white-space:normal}
   .logo{gap:7px}
   .logo b{font-size:1.32rem}
   .mast nav{gap:9px;font-size:.88rem}
