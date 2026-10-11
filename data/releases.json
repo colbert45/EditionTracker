@@ -579,8 +579,8 @@
       "releaseWindow": null,
       "preordersOpened": "2026-08-26",
       "searchQuery": "Xbox X25 Special Edition Controller",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/xbox-x25-controller.jpg",
+      "imageCredit": "Image: Microsoft",
       "art": {
         "type": "pad",
         "colors": [
@@ -1067,8 +1067,8 @@
       "releaseWindow": null,
       "preordersOpened": "2026-08-19",
       "searchQuery": "DualSense Wolverine Limited Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/dualsense-wolverine.jpg",
+      "imageCredit": "Image: Sony Interactive Entertainment",
       "art": {
         "type": "pad",
         "colors": [
@@ -1708,8 +1708,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Assassin's Creed Black Flag Resynced Collector's Edition",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/assassins-creed-black-flag-resynced-collectors-edition.jpg",
+      "imageCredit": "Image: Ubisoft",
       "art": {
         "type": "cebox",
         "colors": [
@@ -1817,8 +1817,8 @@
       "releaseWindow": "TBA",
       "preordersOpened": "2026-10-09",
       "searchQuery": "Rise of the Tomb Raider 20 Year Celebration Switch 2",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/rise-of-the-tomb-raider-switch-2-lrg-collectors-edition.jpg",
+      "imageCredit": "Image: Limited Run Games",
       "art": {
         "type": "case",
         "colors": [
@@ -1881,8 +1881,8 @@
       "releaseWindow": "December 2026",
       "preordersOpened": "2026-10-07",
       "searchQuery": "SuperStation One transparent limited edition RetroRemake",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/superstation-one-transparent-collection.jpg",
+      "imageCredit": "Image: RetroRemake",
       "art": {
         "type": "tower",
         "colors": [
@@ -1976,8 +1976,8 @@
       "releaseWindow": "October 2026",
       "preordersOpened": null,
       "searchQuery": "Pokemon Santa Cruz blind bag skateboard deck 30th anniversary",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/pokemon-30th-santa-cruz-blind-bag-decks.jpg",
+      "imageCredit": "Image: Santa Cruz Skateboards",
       "art": {
         "type": "mystery",
         "colors": [
@@ -2059,8 +2059,8 @@
       "releaseWindow": "2026",
       "preordersOpened": null,
       "searchQuery": "Pokémon Red Blue Game Boy Jukebox",
-      "image": null,
-      "imageCredit": null,
+      "image": "/images/pokemon-red-blue-game-boy-jukebox.jpg",
+      "imageCredit": "Image: The Pokémon Company",
       "art": {
         "type": "handheld",
         "colors": [
