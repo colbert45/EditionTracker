@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-10",
+  "updated": "2026-10-11",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2045,6 +2045,46 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/rumour-pokemon-themed-mystery-lego-bags-are-supposedly-on-the-way"
+        }
+      ]
+    },
+    {
+      "id": "pokemon-red-blue-game-boy-jukebox",
+      "name": "Pokémon Red & Blue Game Boy Jukebox",
+      "category": "collect",
+      "platform": "Music player",
+      "status": "out",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "2026",
+      "preordersOpened": null,
+      "searchQuery": "Pokémon Red Blue Game Boy Jukebox",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "handheld",
+        "colors": [
+          "#C4C4C4",
+          "#CC0000",
+          "#3B4CCA"
+        ]
+      },
+      "notes": [
+        "A Game Boy-style jukebox that plays music from Pokémon Red and Blue. It takes you on an audio tour of Kanto.",
+        "It came out earlier this year for Pokémon's 30th anniversary and is sold through the Pokémon Center."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-11",
+          "text": "Back in stock at the Pokémon Center."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/psa-pokemon-red-and-blue-game-boy-jukebox-back-in-stock"
         }
       ]
     }
