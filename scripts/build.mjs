@@ -322,11 +322,12 @@ function thumb(i) {
   return photoInList(i) ? `<img src="${esc(i.image)}" alt="" loading="lazy" decoding="async">` : art(artSpec(i));
 }
 
-function rowHTML(i) {
+// `release` puts the release date in the row even for a restock, for pages (the calendar) that are about release dates.
+function rowHTML(i, release = false) {
   let sub = "";
   if (i.date && !isOut(i)) { const n = daysOut(i.date); sub = n === 0 ? "today" : n === 1 ? "tomorrow" : `in ${n} days`; }
   const q = [i.name, i.platform, CATS[i.category], STATUS[i.status], i.searchQuery].join(" ").toLowerCase();
-  const rs = i.status === "restock" ? lastRestock(i) : null;
+  const rs = !release && i.status === "restock" ? lastRestock(i) : null;
   return `<li data-i="${i.n}" data-q="${esc(q)}" data-cat="${esc(i.category)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}${rs ? ` data-rs="${rs.date}"` : ""}><a href="${esc(i.path)}">
     <span class="thumb">${thumb(i)}</span>
     <span class="nm">${esc(i.name)}<span class="pf">${esc(i.platform)}, ${esc(i.price)}</span></span>
@@ -336,7 +337,7 @@ function rowHTML(i) {
 
 function section(key, title, note, list, alwaysShow) {
   return `<section data-sec="${key}"${!list.length && !alwaysShow ? " hidden" : ""}><h2 class="sec">${title}${note ? ` <small>${note}</small>` : ""}</h2>
-    <ul class="list">${list.length ? list.map(rowHTML).join("") : `<li><p class="empty">Nothing here right now.</p></li>`}</ul></section>`;
+    <ul class="list">${list.length ? list.map(i => rowHTML(i)).join("") : `<li><p class="empty">Nothing here right now.</p></li>`}</ul></section>`;
 }
 
 function featureCard(i) {
@@ -567,7 +568,7 @@ function calendar() {
     months.get(m).push(i);
   }
   const undated = ITEMS.filter(i => i.status !== "rumor" && !i.date);
-  const list = l => `<ul class="list">${l.map(rowHTML).join("")}</ul>`;
+  const list = l => `<ul class="list">${l.map(i => rowHTML(i, true)).join("")}</ul>`;
   const body = `<article>
     <a class="back" href="/">Back to all releases</a>
     <div class="lede"><p>Every confirmed special edition with a release date, month by month. Rumors aren't included until they're announced.</p></div>

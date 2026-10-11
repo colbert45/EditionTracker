@@ -19,6 +19,13 @@ test("parses Atom entries", () => {
   assert.deepEqual(parseFeed(xml)[0], { title: "New DualSense", link: "https://example.com/b", published: "2026-10-01T10:00:00.000Z", summary: "Limited edition" });
 });
 
+test("a link with a line break inside it stays on one line", () => {
+  const xml = `<rss><channel><item><title>Odd link</title><link>https://example.com/a)
+## Heading</link></item></channel></rss>`;
+  const [e] = parseFeed(xml);
+  assert.equal(e.link, "https://example.com/a)%20##%20Heading");
+});
+
 test("robots.txt rules", () => {
   const ua = "EditionTrackerNewsCheck/1.0";
   assert.equal(robotsAllows("User-agent: *\nDisallow: /", ua, "/feed"), false);

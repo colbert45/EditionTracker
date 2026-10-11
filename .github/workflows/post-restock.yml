@@ -65,10 +65,12 @@ jobs:
           BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
           BEFORE: ${{ steps.record.outputs.before }}
         run: node scripts/alerts.mjs send "$BEFORE"
-      # Posts the restock to Bluesky, and to Discord once the DISCORD_WEBHOOK_URL secret exists. Not to X,
-      # which charges for every post. A failed post doesn't fail the run; check this step's log if one is missing.
+      # Posts the restock to Bluesky, and to Discord once the DISCORD_WEBHOOK_URL secret exists. Not to X: this step
+      # has no X keys. A failed post doesn't fail the run; check this step's log if one is missing.
+      # It runs even if the email step failed (the restock is saved either way), and Resend restock email
+      # only emails, so a restock is never posted twice.
       - name: Post to Bluesky and Discord
-        if: steps.record.outputs.alert == 'true'
+        if: ${{ !cancelled() && steps.record.outputs.alert == 'true' }}
         continue-on-error: true
         env:
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}

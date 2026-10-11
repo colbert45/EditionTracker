@@ -84,6 +84,26 @@ test("a restock from a news report says so, and that it may be gone", () => {
   assert.match(roundupEmail(planAlerts(old, now, SITE), now.categories).body, /Reported back in stock at Best Buy\./);
 });
 
+test("a news report that has gone stale by send time isn't emailed or posted", () => {
+  const RP = { date: "2026-10-09", store: "bestbuy", url: "https://www.bestbuy.com/site/searchpage.jsp?st=Example", source: "https://www.nintendolife.com/news/2026/10/best-buy-restock", reported: true };
+  const { old, now } = restocked([RP]);
+  // Two days on is still worth telling (the email says it may be gone already). Three is not.
+  assert.equal(planAlerts(old, now, SITE, { today: "2026-10-11" }).length, 1);
+  assert.equal(socialPosts(old, now, SITE, { today: "2026-10-11" }).length, 1);
+  assert.deepEqual(planAlerts(old, now, SITE, { today: "2026-10-12" }), []);
+  assert.deepEqual(socialPosts(old, now, SITE, { today: "2026-10-12" }), []);
+  // Without a date nothing is left out: the weekly roundup still lists it, and the release page still shows it.
+  assert.equal(planAlerts(old, now, SITE).length, 1);
+  // One checked at the store is never held back, and goes out without the stale report next to it.
+  const mixed = restocked([BB, RP]);
+  const [m, ...rest] = planAlerts(mixed.old, mixed.now, SITE, { today: "2026-10-20" });
+  assert.equal(rest.length, 0);
+  assert.deepEqual(m.restocks.map(r => [r.retailer, r.reported]), [["Best Buy", false]]);
+  assert.equal(m.restocks[0].url, BB.url);
+  assert.equal(m.subject, `Back in stock: ${mixed.it.name} at Best Buy`);
+  assert.deepEqual(m.tags, [`item:${ID}`, `type:${mixed.it.category}`]);
+});
+
 test("a bracket in a link can't end the Markdown link early", () => {
   const url = "https://www.bestbuy.com/site/zelda-(40th)/6000000.p?skuId=6000000";
   const source = "https://en.wikipedia.org/wiki/Nintendo_(company)";

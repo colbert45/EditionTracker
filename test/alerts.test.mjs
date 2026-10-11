@@ -1,10 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { planAlerts, emailBody, roundupEmail } from "../lib/alerts.js";
+import { steadyData } from "./helpers/stock.mjs";
+import { buildCopy, page } from "./helpers/build-copy.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
-const base = () => JSON.parse(readFileSync(ROOT + "data/releases.json", "utf8"));
+// The real releases, steadied so these tests don't depend on what's live today (see steadyData).
+const base = steadyData;
 const SITE = "https://editiontracker.com";
 
 test("no changes, no alerts", () => {
@@ -13,7 +14,7 @@ test("no changes, no alerts", () => {
 
 test("preorders opening goes to the item and its type", () => {
   const old = base(), now = base();
-  const it = now.items.find(i => i.status === "announced");
+  const it = now.items.find(i => i.id === "test-announced");
   it.status = "preorder"; it.preordersOpened = "2026-10-06";
   const [a, ...rest] = planAlerts(old, now, SITE);
   assert.equal(rest.length, 0);
@@ -47,34 +48,32 @@ test("a new release goes to its type; a new rumor waits", () => {
 
 test("several new releases in one type become one email", () => {
   const old = base(), now = base();
-  const c = now.items.find(i => i.category === "games");
+  const c = now.items.find(i => i.id === "test-announced");
   now.items.push({ ...c, id: "new-a", name: "New A", status: "announced" }, { ...c, id: "new-b", name: "New B", status: "preorder" });
   const alerts = planAlerts(old, now, SITE);
   assert.equal(alerts.length, 1);
-  assert.match(alerts[0].subject, /^2 new Game editions: New A, New B$/);
+  assert.equal(alerts[0].subject, `2 new ${now.categories[c.category]}: New A, New B`);
   const body = emailBody(alerts[0], now.categories);
   assert.match(body, /new-a\//); assert.match(body, /new-b\//);
 });
 
-test("built pages carry the alert form with the right tags", async () => {
-  const { execFileSync } = await import("node:child_process");
-  execFileSync("node", ["scripts/build.mjs"], { cwd: ROOT });
+test("built pages carry the alert form with the right tags", () => {
   const data = base();
-  const home = readFileSync(ROOT + "_site/index.html", "utf8");
+  const dir = buildCopy({ data });
+  const home = page(dir, ".");
   assert.match(home, /class="alert-btn" href="#alerts"/);
   for (const k of Object.keys(data.categories)) assert.match(home, new RegExp(`name="tag" value="type:${k}"`));
   assert.doesNotMatch(home, /value="item:/);
-  const it = data.items.find(i => i.status === "preorder");
-  const page = readFileSync(ROOT + `_site/${it.id}/index.html`, "utf8");
-  assert.match(page, new RegExp(`name="tag" value="item:${it.id}" checked`));
-  assert.match(page, /class="alert-me" href="#alerts"/);
+  const item = page(dir, "test-preorder");
+  assert.match(item, /name="tag" value="item:test-preorder" checked/);
+  assert.match(item, /class="alert-me" href="#alerts"/);
   // The weekly roundup is its own opt-out box, ticked by default.
   assert.match(home, /name="tag" value="roundup" checked/);
 });
 
 test("the roundup lists new releases and updates in one email", () => {
   const old = base(), now = base();
-  const c = now.items.find(i => i.category === "games");
+  const c = now.items.find(i => i.id === "test-announced");
   now.items.push({ ...c, id: "new-a", name: "New A", status: "announced" });
   now.items[0].price = "$1.00";
   const r = roundupEmail(planAlerts(old, now, SITE), now.categories);

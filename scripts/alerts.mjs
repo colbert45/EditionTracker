@@ -78,7 +78,8 @@ async function send(beforeSha) {
   try { oldData = JSON.parse(execFileSync("git", ["show", `${beforeSha}:data/releases.json`], { cwd: ROOT, encoding: "utf8" })); }
   catch { console.log("Couldn't read the previous releases.json. Nothing to send."); return; }
 
-  const alerts = planAlerts(oldData, data, config.siteUrl);
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const alerts = planAlerts(oldData, data, config.siteUrl, { today });
   if (!alerts.length) { console.log("No release changes worth an alert."); return; }
   if (alerts.length > MAX_EMAILS) {
     console.log(`${alerts.length} releases changed at once, which looks like a bulk edit. Not sending. Changed: ${alerts.map(a => a.id).join(", ")}`);

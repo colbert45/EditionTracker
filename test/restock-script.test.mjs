@@ -18,13 +18,15 @@ const git = (cwd, ...args) => execFileSync("git", ["-c", "user.name=test", "-c",
 const { item: PICK, other: OTHER } = pickItems(plainData());
 const BB = "https://www.bestbuy.com/site/example/6000000.p?skuId=6000000";
 
-function setup() {
+function setup(edit) {
   const dir = mkdtempSync(join(tmpdir(), "et-restock-"));
   const origin = join(dir, "origin.git"), work = join(dir, "work");
   git(dir, "init", "--bare", "-q", "-b", "main", origin);
   git(dir, "init", "-q", "-b", "main", work);
   mkdirSync(join(work, "data"));
-  writeFileSync(join(work, "data/releases.json"), JSON.stringify(plainData(), null, 2) + "\n");
+  const data = plainData();
+  if (edit) edit(data);
+  writeFileSync(join(work, "data/releases.json"), JSON.stringify(data, null, 2) + "\n");
   copyFileSync(join(ROOT, "site.config.json"), join(work, "site.config.json"));
   git(work, "add", ".");
   git(work, "commit", "-q", "-m", "Start");
@@ -67,11 +69,14 @@ test("a restock is committed to main, and the sha before it is passed on for the
 });
 
 test("with the Store box blank, the store comes from the link", () => {
-  const s = setup();
-  const r = run(s, { RESTOCK_RETAILER: "" });
+  // A store whose website no other store shares, so a store added to the real list later can't make the link ambiguous.
+  const s = setup(d => { d.stores.onlyone = { name: "Only One Shop", url: "https://shop.onlyone.test/" }; });
+  const r = run(s, { RESTOCK_RETAILER: "", RESTOCK_LINK: "https://shop.onlyone.test/p/1?utm_source=share" });
   assert.equal(r.status, 0, r.stderr + r.stdout);
-  assert.equal(git(s.origin, "log", "-1", "--format=%s", "main"), `Back in stock: ${PICK.name} at Best Buy`);
-  assert.equal(onOrigin(s).items.find(i => i.id === PICK.id).restocks[0].store, "bestbuy");
+  assert.equal(git(s.origin, "log", "-1", "--format=%s", "main"), `Back in stock: ${PICK.name} at Only One Shop`);
+  const [entry] = onOrigin(s).items.find(i => i.id === PICK.id).restocks;
+  assert.equal(entry.store, "onlyone");
+  assert.equal(entry.url, "https://shop.onlyone.test/p/1");
 });
 
 test("a dry run changes nothing and shows the email", () => {
@@ -199,4 +204,23 @@ test("the resend command sends nothing for a sold out again commit", () => {
   assert.equal(run(s, { RESTOCK_ACTION: "soldout" }, { date: "2026-10-10" }).status, 0);
   assert.match(git(s.work, "log", "-1", "--format=%s"), /^Sold out again: /); // the workflow's own guard stops here, and so does [no alerts]
   assert.match(resend(s).stdout, /A commit says \[no alerts\]\. Not sending\./);
+});
+
+test("the send command leaves out a news report that is days old by the time it's merged", () => {
+  const s = setup();
+  const ago = n => new Date(Date.now() - n * 86400000).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  // A commit like the merge of a news check pull request: a reported restock, dated `date`.
+  const report = date => {
+    const data = JSON.parse(readFileSync(join(s.work, "data/releases.json"), "utf8"));
+    const it = data.items.find(i => i.id === PICK.id);
+    it.status = "restock";
+    it.restocks = [{ date, store: "bestbuy", url: "https://www.bestbuy.com/site/searchpage.jsp?st=x", source: "https://news.example/report", reported: true }];
+    writeFileSync(join(s.work, "data/releases.json"), JSON.stringify(data, null, 2) + "\n");
+    git(s.work, "commit", "-q", "-am", "News check: proposed release updates");
+  };
+  report(ago(1));
+  assert.match(resend(s).stdout, new RegExp(`Would send "Reported back in stock: .+ at Best Buy" to item:${PICK.id}\\n?$`));
+  git(s.work, "reset", "-q", "--hard", s.start);
+  report(ago(6));
+  assert.match(resend(s).stdout, /No release changes worth an alert\./);
 });

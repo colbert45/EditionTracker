@@ -15,13 +15,13 @@ test("a photo replaces the illustration", () => {
   const cfg = JSON.parse(readFileSync(join(dir, "site.config.json")));
   writeFileSync(join(dir, "site.config.json"), JSON.stringify({ ...cfg, photos: "all" }));
   const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
-  const it = data.items.find(i => i.id === "xbox-series-x25");
+  const it = data.items[0]; // any release will do
   it.image = "https://images.example/x25.jpg";
   it.imageCredit = "Photo: Microsoft";
   mkdirSync(join(dir, "data"));
   writeFileSync(join(dir, "data/releases.json"), JSON.stringify(data));
   execFileSync("node", ["scripts/build.mjs"], { cwd: dir });
-  const html = readFileSync(join(dir, "_site/xbox-series-x25/index.html"), "utf8");
+  const html = readFileSync(join(dir, `_site/${it.id}/index.html`), "utf8");
   assert.match(html, /<img src="https:\/\/images.example\/x25.jpg"/);
   assert.match(html, /<figcaption>Photo: Microsoft<\/figcaption>/);
   assert.doesNotMatch(html, /Illustration, not a product photo/);
@@ -59,7 +59,8 @@ test("no page has affiliate links, tags or sponsored markup", async () => {
     assert.doesNotMatch(html, /rel="[^"]*sponsored/, f);
     assert.doesNotMatch(html, /[?&]tag=[a-z0-9-]+-20/i, f);
     assert.doesNotMatch(html, /Amazon Associate/i, f);
-    assert.doesNotMatch(html, /amazon\./i, f);
+    // Links only: a sentence like "Not sold on Amazon." in a note or a "How to get one" box is fine.
+    assert.doesNotMatch(html, /(?:href|src|action|content)="(?:https?:)?\/\/(?:[^"\/]*\.)?(?:amazon\.[a-z.]+|amzn\.[a-z.]+|a\.co)[\/"?#:]/i, f);
   }
   const home = readFileSync(join(ROOT, "_site/index.html"), "utf8");
   assert.match(home, /No ads\. No affiliate links\./);
@@ -69,7 +70,7 @@ test("the validator rejects affiliate links", async () => {
   const { validate } = await import("../lib/validate.js");
   const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
   assert.deepEqual(validate(data).errors, []);
-  data.items[0].stores[0].affiliateUrl = "https://example.com/x";
+  data.items.find(i => i.stores.length).stores[0].affiliateUrl = "https://example.com/x";
   assert.ok(validate(data).errors.some(e => e.includes("affiliate")));
 });
 

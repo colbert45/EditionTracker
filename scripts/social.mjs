@@ -3,8 +3,10 @@
 //   node scripts/social.mjs --text "..." [--image path] [--dry-run]   post one message of your own
 //   node scripts/social.mjs --scheduled [--dry-run]   today's "Out today" posts, plus "Coming out this week" on Thursdays
 // Posts to Bluesky when BLUESKY_APP_PASSWORD is set, and to X when the four X_* keys are set.
+// Posts to X never have a link in them (X charges $0.20 for a post with one, about 1.5 cents without): they name the
+// site in words and carry hashtags instead. See lib/xpost.js. Bluesky and Discord posts keep their links.
 // Restock posts go to Bluesky and, when DISCORD_WEBHOOK_URL is set, to a Discord channel. They go to X
-// only if site.config.json has social.restockToX: true, because X charges for every post.
+// only if site.config.json has social.restockToX: true.
 // Without the keys, or with --dry-run, it only prints what it would post.
 // [no alerts] or [no posts] in a commit message skips posting for that push.
 import { readFileSync, existsSync } from "node:fs";
@@ -13,7 +15,9 @@ import { createHmac, randomBytes } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { socialPosts, outTodayPosts, weekAheadPost } from "../lib/social.js";
+import { planAlerts } from "../lib/alerts.js";
 import { postToDiscord, isDiscordWebhook } from "../lib/discord.js";
+import { forX, xCustom, xLength, X_LIMIT } from "../lib/xpost.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = p => readFileSync(join(ROOT, p), "utf8");
@@ -22,6 +26,7 @@ const data = JSON.parse(read("data/releases.json"));
 const env = process.env;
 const DRY = process.argv.includes("--dry-run");
 const MAX_POSTS = 8; // a bigger batch than this is almost always a bulk edit, not news
+const MAX_RELEASES = 8; // the same limit the alert emails use: more releases changed than this is a bulk edit
 
 // Logs in with the account's permanent ID when there is one, so a handle change never breaks posting.
 const bsky = { handle: config.social?.blueskyDid || config.social?.bluesky, password: env.BLUESKY_APP_PASSWORD };
@@ -31,7 +36,7 @@ const only = (() => { const i = process.argv.indexOf("--only"); return i > 0 ? (
 const useBsky = !DRY && (!only || only === "bluesky") && bsky.handle && bsky.password;
 const useX = !DRY && (!only || only === "x") && x.key && x.secret && x.token && x.tokenSecret;
 // The webhook link is a secret, so it's never printed, and anything that isn't a Discord webhook is ignored.
-const discordUrl = env.DISCORD_WEBHOOK_URL || "";
+const discordUrl = (env.DISCORD_WEBHOOK_URL || "").trim(); // a pasted secret often ends in a line break
 if (discordUrl && !isDiscordWebhook(discordUrl)) console.log("DISCORD_WEBHOOK_URL is set but isn't a Discord webhook link. Not posting to Discord.");
 const useDiscord = !DRY && (!only || only === "discord") && isDiscordWebhook(discordUrl);
 const restockToX = config.social?.restockToX === true;
@@ -40,6 +45,10 @@ const discordPost = p => postToDiscord(discordUrl, p.discord);
 const targets = p => p.restock
   ? [["Bluesky", useBsky, bskyPost], ["Discord", useDiscord, discordPost], ["X", useX && restockToX, xPost]]
   : [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]];
+// What a post looks like, for the log. X gets its own version without the link, shown when X is a place it would go.
+const goesToX = p => (!only || only === "x") && (!p.restock || restockToX);
+const xBlock = p => p.xText && goesToX(p) ? `  On X, without the link:\n${p.xText.split("\n").map(l => `    ${l}`).join("\n")}` : "";
+const show = p => { console.log(`\n---\n${p.text}`); if (xBlock(p)) console.log(xBlock(p)); };
 
 async function request(url, opts) {
   const res = await fetch(url, opts);
@@ -94,11 +103,13 @@ function oauthHeader(method, url) {
   return "OAuth " + Object.keys(o).sort().map(k => `${enc(k)}="${enc(o[k])}"`).join(", ");
 }
 async function xPost(p) {
-  // X builds the link card (with the photo) from the page's own preview tags.
+  // No link, ever: it costs ten times as much. forX takes out anything that looks like a web address, even if a
+  // post somehow reaches here without its X version.
+  const text = forX(p.xText ?? p.text, config.siteUrl);
   const url = "https://api.x.com/2/tweets";
   await request(url, {
     method: "POST", headers: { Authorization: oauthHeader("POST", url), "Content-Type": "application/json" },
-    body: JSON.stringify({ text: p.text })
+    body: JSON.stringify({ text })
   });
 }
 
@@ -117,7 +128,7 @@ if (process.argv.includes("--scheduled")) {
   if (!useBsky && !useX && !useDiscord) console.log("Dry run (no Bluesky, X or Discord keys, or --dry-run). Would post:");
   let failed = 0;
   for (const p of posts) {
-    console.log(`\n---\n${p.text}`);
+    show(p);
     for (const [name, on, fn] of targets(p)) {
       if (!on) continue;
       try { await fn(p); console.log(`  posted to ${name}`); }
@@ -136,7 +147,10 @@ if (ownText !== undefined) {
   const url = (text.match(/https?:\/\/\S+/) || [])[0] || config.siteUrl;
   const p = { text, url, title: config.siteName, description: "Special edition consoles, controllers, games and collectibles: release dates, prices and where to buy.", imageFile: arg("--image") };
   if (!text.includes(url)) p.text = `${text}\n${url}`;
+  p.xText = xCustom(text, config.siteUrl); // the same words with every link taken out, and the site named in words
+  if ((!only || only === "x") && xLength(p.xText) > X_LIMIT) { console.log(`Too long for X once its links are taken out: ${xLength(p.xText)} (limit ${X_LIMIT}).`); process.exit(1); }
   console.log(`${useBsky || useX || useDiscord ? "Posting" : "Dry run, would post"}:\n${p.text}`);
+  if (xBlock(p)) console.log(xBlock(p));
   let failed = 0;
   for (const [name, on, fn] of targets(p)) {
     if (!on) continue;
@@ -154,14 +168,17 @@ let oldData;
 try { oldData = JSON.parse(execFileSync("git", ["show", `${beforeSha}:data/releases.json`], { cwd: ROOT, encoding: "utf8" })); }
 catch { console.log("Couldn't read the previous releases.json. Nothing to post."); process.exit(0); }
 
-const posts = socialPosts(oldData, data, config.siteUrl);
+const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+const changed = planAlerts(oldData, data, config.siteUrl, { today });
+if (changed.length > MAX_RELEASES) { console.log(`${changed.length} releases changed at once, which looks like a bulk edit. Not posting.`); process.exit(0); }
+const posts = socialPosts(oldData, data, config.siteUrl, { today });
 if (!posts.length) { console.log("No release news worth a post."); process.exit(0); }
 if (posts.length > MAX_POSTS) { console.log(`${posts.length} posts at once looks like a bulk edit. Not posting.`); process.exit(0); }
 if (!useBsky && !useX && !useDiscord) console.log("Dry run (no Bluesky, X or Discord keys, or --dry-run). Would post:");
 
 let failed = 0;
 for (const p of posts) {
-  console.log(`\n---\n${p.text}`);
+  show(p);
   for (const [name, on, fn] of targets(p)) {
     if (!on) continue;
     try { await fn(p); console.log(`  posted to ${name}`); }

@@ -1,12 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { socialPosts, outTodayPosts, weekAheadPost, MAX_LENGTH } from "../lib/social.js";
 import { msrpText } from "../lib/msrp.js";
-import { plainData, pickItems } from "./helpers/stock.mjs";
+import { xLength, X_LIMIT } from "../lib/xpost.js";
+import { plainData, pickItems, steadyData } from "./helpers/stock.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
-const base = () => JSON.parse(readFileSync(ROOT + "data/releases.json", "utf8"));
+// The real releases, steadied so these tests don't depend on what's live today (see steadyData).
+const base = steadyData;
 const SITE = "https://editiontracker.com";
 
 test("no changes, no posts", () => {
@@ -15,7 +15,7 @@ test("no changes, no posts", () => {
 
 test("preorders opening makes a post with the link", () => {
   const old = base(), now = base();
-  const it = now.items.find(i => i.status === "announced");
+  const it = now.items.find(i => i.id === "test-announced");
   it.status = "preorder"; it.preordersOpened = "2026-10-06";
   const [p, ...rest] = socialPosts(old, now, SITE);
   assert.equal(rest.length, 0);
@@ -33,7 +33,7 @@ test("a price change or timeline note alone isn't posted", () => {
 
 test("each new release gets its own post, and long names still fit", () => {
   const old = base(), now = base();
-  const c = now.items.find(i => i.category === "games");
+  const c = now.items.find(i => i.id === "test-announced");
   now.items.push({ ...c, id: "new-a", name: "New A", status: "announced" },
     { ...c, id: "new-b", name: "B".repeat(400), status: "preorder" });
   const posts = socialPosts(old, now, SITE);
@@ -51,7 +51,7 @@ test("a new rumor isn't posted", () => {
 
 test("release day gets an Out today post; rumors don't", () => {
   const d = base();
-  const it = d.items.find(i => i.releaseDate && i.status !== "rumor");
+  const it = d.items.find(i => i.id === "test-preorder");
   const posts = outTodayPosts(d, it.releaseDate, SITE);
   assert.ok(posts.some(p => p.text.startsWith(`Out today: ${it.name}`) && p.text.endsWith(`${SITE}/${it.id}/`)));
   for (const p of posts) assert.ok(p.text.length <= MAX_LENGTH);
@@ -61,7 +61,7 @@ test("release day gets an Out today post; rumors don't", () => {
 
 test("the week-ahead post lists this week's dates, fits, and links the calendar", () => {
   const d = base();
-  const it = d.items.find(i => i.releaseDate && i.status !== "rumor");
+  const it = d.items.find(i => i.id === "test-preorder");
   for (let k = 0; k < 12; k++) d.items.push({ ...it, id: `x${k}`, name: `A long special edition name number ${k}`, status: "preorder" });
   const p = weekAheadPost(d, it.releaseDate, SITE);
   assert.ok(p.text.startsWith("Coming out this week:"));
@@ -73,7 +73,7 @@ test("the week-ahead post lists this week's dates, fits, and links the calendar"
 
 test("a restock note is posted as stock news; other notes aren't", () => {
   const old = base(), now = base();
-  const it = now.items.find(i => i.status === "preorder" && i.releaseDate);
+  const it = now.items.find(i => i.id === "test-preorder");
   it.timeline.push({ date: "2026-10-09", text: "Best Buy will sell limited extra units in stores at launch." });
   const [p, ...rest] = socialPosts(old, now, SITE);
   assert.equal(rest.length, 0);
@@ -135,10 +135,81 @@ test("the Discord version links each store without a preview, escapes the name, 
   assert.equal(lines.at(-1), `${SITE}/${PICK.id}/`);
   assert.ok(p.discord.length < 2000);
   // Other posts have no Discord version, so they never go there.
-  const old = plainData(), now = plainData();
-  const target = now.items.find(i => i.status === "announced");
+  const old = base(), now = base();
+  const target = now.items.find(i => i.id === "test-announced");
   target.status = "preorder"; target.preordersOpened = "2026-10-06";
   const [other] = socialPosts(old, now, SITE);
   assert.equal(other.restock, undefined);
   assert.equal(other.discord, undefined);
+});
+
+// ---------- posts for X: no link ----------
+// X charges ten times as much for a post with a link in it, so its version of every post has none: the site is written
+// in words ("editiontracker dot com", which X doesn't turn into a link) and hashtags help people find it. Bluesky keeps its link.
+const NO_LINK = /https?:|www\.|\beditiontracker\.com|\b[a-z0-9-]+\.(com|org|net|io|gg|tv|co)\b/i;
+const asNintendo = it => { it.category = "nintendo"; it.platform = "Nintendo Switch 2"; return it; };
+
+test("a new release or big change is posted to X without its link, with the site named and hashtags", () => {
+  const old = base(), now = base();
+  const it = asNintendo(now.items.find(i => i.id === "test-announced"));
+  it.status = "preorder"; it.preordersOpened = "2026-10-06";
+  asNintendo(old.items.find(i => i.id === "test-announced"));
+  const [p] = socialPosts(old, now, SITE);
+  assert.ok(p.text.endsWith(`${SITE}/test-announced/`)); // Bluesky still gets the link
+  assert.equal(p.xText, "Preorders open: Test test-announced\nNintendo Switch 2 · $99.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2");
+  assert.doesNotMatch(p.xText, NO_LINK);
+  // A brand new release too.
+  const fresh = base(), more = base();
+  more.items.push({ ...asNintendo({ ...more.items.find(i => i.id === "test-announced") }), id: "new-a", name: "New A", status: "announced" });
+  const [n] = socialPosts(fresh, more, SITE);
+  assert.equal(n.xText, "New: New A\nNintendo Switch 2 · $99.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2");
+});
+
+test("stock news, release day, restocks and the week ahead all have a version for X without a link", () => {
+  // Stock news
+  const old = base(), now = base();
+  const it = asNintendo(now.items.find(i => i.id === "test-preorder"));
+  asNintendo(old.items.find(i => i.id === "test-preorder"));
+  it.timeline.push({ date: "2026-10-09", text: "Best Buy will sell limited extra units in stores at launch." });
+  const [stock] = socialPosts(old, now, SITE);
+  assert.match(stock.xText, /^Stock news: Test test-preorder\nNintendo Switch 2 · \$99\.99 · Out Jun 1, 2099\nBest Buy will sell limited extra units in stores at launch\.\nDetails: editiontracker dot com\n#Nintendo #Switch2$/);
+  // A restock says where the links are
+  const { posts: [restock], it: restocked } = restockPosts([BB]);
+  assert.equal(restock.xText.split("\n").at(-2), "Store links: editiontracker dot com");
+  assert.equal(restock.xText.split("\n")[0], `Back in stock: ${restocked.name} at Best Buy`);
+  // Release day
+  const d = base();
+  asNintendo(d.items.find(i => i.id === "test-preorder"));
+  const [today] = outTodayPosts(d, "2099-06-01", SITE).filter(p => p.id === "test-preorder");
+  assert.equal(today.xText, "Out today: Test test-preorder\nNintendo Switch 2 · $99.99\nDetails: editiontracker dot com\n#Nintendo #Switch2");
+  // The week ahead
+  const week = weekAheadPost(d, "2099-06-01", SITE);
+  assert.ok(week.text.endsWith(`${SITE}/calendar/`));
+  assert.ok(week.xText.startsWith("Coming out this week:\n• Jun 1: Test test-preorder"));
+  assert.ok(week.xText.endsWith("\nFull calendar: editiontracker dot com\n#SpecialEdition"));
+  for (const x of [stock.xText, restock.xText, today.xText, week.xText]) { assert.doesNotMatch(x, NO_LINK); assert.ok(xLength(x) <= X_LIMIT, x); }
+});
+
+test("a long list or a long name still fits on X, and the week ahead keeps its site line", () => {
+  const d = base();
+  const it = d.items.find(i => i.id === "test-preorder");
+  for (let k = 0; k < 12; k++) d.items.push({ ...it, id: `x${k}`, name: `A long special edition name number ${k}`, status: "preorder" });
+  const week = weekAheadPost(d, it.releaseDate, SITE);
+  assert.ok(xLength(week.xText) <= X_LIMIT, xLength(week.xText));
+  assert.match(week.xText, /\+ \d+ more\nFull calendar: editiontracker dot com/);
+  const old = base(), now = base();
+  const big = { ...now.items.find(i => i.id === "test-announced"), id: "big", name: "B".repeat(400), status: "preorder" };
+  now.items.push(big);
+  const [p] = socialPosts(old, now, SITE);
+  assert.ok(xLength(p.xText) <= X_LIMIT, xLength(p.xText));
+  assert.match(p.xText.split("\n")[0], /^New, preorders open: B+…$/);
+});
+
+test("a name that looks like a web address is written in words on X, and left alone on Bluesky", () => {
+  const old = base(), now = base();
+  now.items.push({ ...now.items.find(i => i.id === "test-announced"), id: "dot-com", name: "Xbox.com Edition", status: "announced" });
+  const [p] = socialPosts(old, now, SITE);
+  assert.match(p.text, /^New: Xbox\.com Edition/);
+  assert.match(p.xText, /^New: Xbox dot com Edition\n/);
+  assert.doesNotMatch(p.xText, NO_LINK);
 });

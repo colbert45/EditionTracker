@@ -168,6 +168,20 @@ test("a second restock at the same store on the same day is one entry, however t
   assert.equal(wave2.data.items.find(i => i.id === "xbox-series-x25").restocks.length, 2);
 });
 
+test("a news report of a restock doesn't stop you logging it yourself afterwards", () => {
+  // The news check logged "Reported" at Best Buy today. You then check the store and post it: that's a new, confirmed entry.
+  const d = mini();
+  const it = d.items.find(i => i.id === "xbox-series-x25");
+  it.status = "restock";
+  it.restocks = [{ date: TODAY, store: "bestbuy", url: "https://www.bestbuy.com/site/searchpage.jsp?st=Xbox", source: "https://news.example/restock", reported: true }];
+  const r = restock({}, d);
+  assert.equal(r.changed, true);
+  const log = r.data.items.find(i => i.id === "xbox-series-x25").restocks;
+  assert.deepEqual(log.map(x => [x.store, Boolean(x.reported)]), [["bestbuy", true], ["bestbuy", false]]);
+  // Doing it again is the double tap, as before.
+  assert.equal(restock({}, r.data).changed, false);
+});
+
 test("the Store box can be left blank: the store is read from the link", () => {
   assert.equal(restock({ retailer: "" }).entry.store, "bestbuy");
   assert.equal(restock({ retailer: "   " }).entry.store, "bestbuy");

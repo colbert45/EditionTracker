@@ -1,6 +1,7 @@
 # Posts one message of your own to Bluesky (and X, once its keys are set).
 # Actions tab > Post to social > Run workflow, type the message, click Run.
 # A link in the message becomes the preview card; without one, it links the homepage.
+# On X the links are taken out (X charges ten times as much for a post with one) and the site is named in words.
 name: Post to social
 
 on:

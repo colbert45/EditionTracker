@@ -62,6 +62,11 @@ test("a preorder that's back in stock is still an upcoming release", () => {
   assert.match(html, /<dt>Preorders<\/dt><dd>Open since Sep 1<\/dd>/);
   // Still on the calendar, and on the homepage once: under Back in stock, not also Coming up.
   assert.match(page(dir, "calendar"), new RegExp(`href="/${ID}/"`));
+  // The calendar is about release days, so its row shows the release date, not "Restocked <today>".
+  const calendarRow = page(dir, "calendar").split("<li ").find(r => r.includes(`href="/${ID}/"`));
+  assert.match(calendarRow, /<span class="dt">Jan 1<span>in \d+ days<\/span><\/span>/);
+  assert.doesNotMatch(calendarRow, /Restocked|Reported/);
+  assert.match(calendarRow, />Back in stock</); // the status chip still says so
   const home = page(dir, ".");
   assert.match(sec(home, "restock"), new RegExp(`href="/${ID}/"`));
   assert.doesNotMatch(sec(home, "coming"), new RegExp(`href="/${ID}/"`));

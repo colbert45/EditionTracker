@@ -21,3 +21,20 @@ export function pickItems(d) {
   const item = d.items.find(i => ["preorder", "out", "soldout"].includes(i.status) && msrpText(i));
   return { item, other: d.items.find(i => i.id !== item.id) };
 }
+
+// The starting point for the older alert, social and schedule tests: the plain data above with the preorder
+// dates the news check writes taken out, plus two releases of a known kind that can't age out (an announced one with
+// no date, and a preorder that doesn't open until 2099). Those tests look for "an announced release" and "a preorder",
+// and the live data can stop having either on any given day.
+export function steadyData() {
+  const d = plainData();
+  for (const it of d.items) delete it.preordersStart;
+  const template = JSON.parse(JSON.stringify(d.items[0]));
+  const make = (id, patch) => ({ ...JSON.parse(JSON.stringify(template)), id, name: `Test ${id}`, searchQuery: id, image: null, imageCredit: null,
+    timeline: [], preordersOpened: null, price: "$99.99", ...patch });
+  d.items.push(
+    make("test-announced", { status: "announced", releaseDate: null, releaseWindow: "2099" }),
+    make("test-preorder", { status: "preorder", releaseDate: "2099-06-01", releaseWindow: null, preordersOpened: "2098-12-01" })
+  );
+  return d;
+}

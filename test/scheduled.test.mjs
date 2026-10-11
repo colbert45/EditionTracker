@@ -1,14 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { duePreorders } from "../lib/scheduled.js";
 import { validate } from "../lib/validate.js";
+import { steadyData } from "./helpers/stock.mjs";
 
-const base = () => JSON.parse(readFileSync(new URL("../data/releases.json", import.meta.url), "utf8"));
+// No release in this data has a preorder date except the ones these tests give it. The live data does (the news
+// check writes them), and a real one that's due would flip along with the test's own.
+const base = steadyData;
 
 test("an announced release flips to preorder on its preorder date, not before", () => {
   const d = base();
-  const it = d.items.find(i => i.status === "announced");
+  const it = d.items.find(i => i.id === "test-announced");
   it.preordersStart = "2026-11-02";
   assert.equal(duePreorders(d, "2026-11-01").changed.length, 0);
   const { data, changed } = duePreorders(d, "2026-11-02");
