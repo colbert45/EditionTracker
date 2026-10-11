@@ -47,6 +47,21 @@ To show what resellers are asking, fill in `resale` by hand from the listings yo
 
 The page shows "Resellers are asking $800 to $1,000 on eBay (checked Oct 9, 2026). That's 54% to 92% over MSRP." The percentages are worked out from the MSRP, and only shown when the price is over it. `high` and `where` are optional. A check older than 30 days says "may be out of date". Leave `resale` out and nothing shows. Only enter what you actually saw.
 
+## How to get one
+
+A release can have a short "How to get one" box, filled in by hand from what you've checked. It only shows the fields that have something in them, and nothing at all when none do:
+
+```json
+"howToGet": {
+  "where": "Online at the Nintendo Store, and some stores in person at launch.",
+  "limit": "One per customer.",
+  "membership": "Members get a day of early access.",
+  "tips": ["Sign in to each store ahead of time.", "Save your address and card."]
+}
+```
+
+`where`, `limit` and `membership` are short text (under 400 characters) and `tips` is up to 8 short sentences. Leave a field out, or blank, to hide it. The data check rejects anything else in there, so a typo can't silently hide a field. Only write what you've seen on the store's own page or in a source.
+
 ## No ads, no affiliate links
 
 The site has neither, and the validator rejects an `affiliateUrl`. What it costs to run is on the About page, from `data/costs.json` (a row with an empty `price` is hidden, so fill in "Domain name" when you know it). To show a tip link on the About page, set `support.url` in `site.config.json`; leave it empty and no link shows.

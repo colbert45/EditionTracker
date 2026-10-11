@@ -179,6 +179,15 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .msrp .mline b{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:1.45rem;letter-spacing:.01em}
 .msrp .resale{margin-top:6px;color:var(--soft);font-size:.98rem}
 .msrp .resale b{color:var(--ink)}
+.howto{margin:0 0 18px;padding:14px 16px 12px;border:1.5px solid var(--line);border-radius:8px}
+.item .howto h2{margin:0 0 8px;font-size:1.25rem}
+.howto dl{margin:0;display:grid;gap:8px}
+.howto dl div{display:grid;grid-template-columns:5.2rem 1fr;gap:10px}
+.howto dt{padding-top:.18rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft)}
+.howto dd{margin:0}
+.howto h3{margin:12px 0 4px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft)}
+.howto ul{margin:0}
+.howto li{margin:0 0 4px}
 .cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
@@ -463,6 +472,20 @@ function priceCheck(i) {
   return `<div class="msrp">${out.join("")}</div>`;
 }
 
+// "How to get one": facts about buying it, filled in by hand. Only the fields that have something in them are shown,
+// and the whole box is left out when nothing is filled in.
+function howToGet(i) {
+  const h = i.howToGet;
+  if (!h) return "";
+  const rows = [["Where", h.where], ["Limit", h.limit], ["Members", h.membership]].filter(([, v]) => typeof v === "string" && v.trim());
+  const tips = (Array.isArray(h.tips) ? h.tips : []).filter(t => typeof t === "string" && t.trim());
+  if (!rows.length && !tips.length) return "";
+  return `<section class="howto"><h2>How to get one</h2>
+    ${rows.length ? `<dl>${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+    ${tips.length ? `<h3>Tips</h3><ul class="plain">${tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+  </section>`;
+}
+
 // Item alerts make sense until it's out, or while it's sold out (restocks).
 const wantsAlert = i => i.status === "soldout" || i.status === "restock" || !isOut(i);
 
@@ -498,6 +521,7 @@ function item(i, ogImage) {
       <div><dt>Category</dt><dd>${esc(CATS[i.category])}</dd></div>
     </dl>
     ${showCountdown ? `<p class="countdown" data-release="${i.date}"${cd && !isOut(i) ? "" : " hidden"}>${cd && !isOut(i) ? cd : ""}</p>` : ""}
+    ${howToGet(i)}
     <h2>Notes</h2>${i.notes.map(p => `<p>${esc(p)}</p>`).join("")}
     ${i.inTheBox.length ? `<h2>What's in the box</h2><ul class="plain">${i.inTheBox.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
     <h2>Where to buy</h2>
