@@ -109,7 +109,7 @@ test("a restock report becomes a reported entry whose source is the report", () 
   assert.match(md, /\| restock \|  \| `Best Buy, reported 2026-10-12` \|/);
   // The link that would be published is in the diff, so it can be looked at before merging.
   assert.ok(md.includes(`| restock link |  | \`${BB_SEARCH(PICK.id)}\` |`));
-  assert.match(md, /Merge by 2026-10-14 and the "Reported back in stock" email goes to people following this release, and it's posted/);
+  assert.match(md, /Merge by the end of 2026-10-14 \(New York time\) and the "Reported back in stock" email goes to people following this release, and it's posted/);
   // Other kinds of change don't carry that warning.
   assert.doesNotMatch(prMarkdown({ applied: [{ p: { kind: "update", itemId: "x", summary: "s", confidence: "high" }, diff: [["price", "$1", "$2"]], used: [] }], skipped: [], reviewed: 1, when: "now" }), /Merge by|emailed or posted/);
 });
@@ -122,8 +122,8 @@ test("the pull request says whether merging will email and post a restock, by ho
     return prMarkdown({ applied: r.applied, skipped: [], reviewed: 1, when: "now", today }).split("\n").find(l => /^_/.test(l));
   };
   // Dated the 11th: merged by the 13th it goes out (two days old is the last day), after that only the page changes.
-  assert.match(note("2026-10-11", "2026-10-12"), /^_Merge by 2026-10-13 and the "Reported back in stock" email goes to people following this release, and it's posted\. After that, merging only updates the page\./);
-  assert.match(note("2026-10-10", "2026-10-12"), /^_Merge by 2026-10-12 and /);
+  assert.match(note("2026-10-11", "2026-10-12"), /^_Merge by the end of 2026-10-13 \(New York time\) and the "Reported back in stock" email goes to people following this release, and it's posted\. After that, merging only updates the page\./);
+  assert.match(note("2026-10-10", "2026-10-12"), /^_Merge by the end of 2026-10-12 \(New York time\) and /);
   assert.match(note("2026-10-09", "2026-10-12"), /^_This report is already more than 2 days old, so merging only updates the page\. Nothing is emailed or posted\._$/);
   // The cut-off is the one the emails and posts use, so the note can't promise what the send step won't do.
   assert.equal(STALE_REPORT_DAYS, 2);
@@ -131,7 +131,7 @@ test("the pull request says whether merging will email and post a restock, by ho
   assert.equal(planAlerts(plainData(), r.data, "https://editiontracker.com", { today: "2026-10-11" }).length, 1);
   assert.equal(planAlerts(plainData(), r.data, "https://editiontracker.com", { today: "2026-10-12" }).length, 0);
   // Without a date, the note still names the last day.
-  assert.match(note("2026-10-11", undefined), /^_Merge by 2026-10-13 and /);
+  assert.match(note("2026-10-11", undefined), /^_Merge by the end of 2026-10-13 \(New York time\) and /);
 });
 
 test("a restock link is only used when the report's own text has it and it's on the store's website", () => {
@@ -227,7 +227,7 @@ const SHAPES = [
   /^\| Field \| Before \| After \|$/,
   /^\|---\|---\|---\|$/,
   /^\| [\p{L}\p{N}_.() -]+ \| (X|_empty_)? \| (X|_empty_)? \|$/u,
-  /^_Merge by \d{4}-\d{2}-\d{2} and the "Reported back in stock" email goes to people following this release, and it's posted\. After that, merging only updates the page\. Check that the source says it's available now\._$/,
+  /^_Merge by the end of \d{4}-\d{2}-\d{2} \(New York time\) and the "Reported back in stock" email goes to people following this release, and it's posted\. After that, merging only updates the page\. Check that the source says it's available now\._$/,
   /^_This report is already more than 2 days old, so merging only updates the page\. Nothing is emailed or posted\._$/,
   /^Sources:$/,
   /^- \[(X|_empty_)\]\(U\) \((X|_empty_)\)$/,
@@ -247,7 +247,9 @@ const EVIL = [
   "```js\nalert(1)\n```", "~~~\nfence\n~~~", "`` ` ``", "<!-- hide the rest", "-->", "<details open>", "</details>",
   "[evil](https://evil.example/)", "[evil][ref]\n\n[ref]: https://evil.example/", "![](https://evil.example/pixel.gif)",
   "<img src=x onerror=alert(1)>", "<script>alert(1)</script>", "<https://evil.example/>", "https://evil.example/bare",
-  "x\\|[evil](https://evil.example/)", "| a | b |", "|---|---|", "@octocat please merge", "#1234", "\u202eevil", "a\u200bb\u2028## after separator"
+  "x\\|[evil](https://evil.example/)", "| a | b |", "|---|---|", "@octocat please merge", "#1234", "\u202eevil", "a\u200bb\u2028## after separator",
+  // Controls, and characters that show nothing: a next-line mark, an escape, a soft hyphen, hidden "tag" letters, blanks.
+  "x\u0085## next line", "x\u001b[2Jclear", "a\u00adb", "tag\u{e0041}\u{e0042}\u{e0043}ged", "braille\u2800blank", "arabic\u061cmark", "filler\u3164here"
 ];
 
 test("a headline can't add headings, lists, links, images or hidden text to the pull request", () => {
@@ -269,8 +271,8 @@ test("a headline can't add headings, lists, links, images or hidden text to the 
     // Nothing from the headline is left outside a code span.
     const plain = outsideCode(md).join("\n");
     for (const bad of BANNED) if (evil.includes(bad)) assert.ok(!plain.includes(bad), `${why}: "${bad}" got out of its code span`);
-    // Nothing that hides or flips text, or starts a new line, is left anywhere in it.
-    assert.ok(!/[\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/.test(md), why);
+    // Nothing that hides or flips text, or starts a new line, is left anywhere in it (other than the line breaks between its lines).
+    for (const line of md.split("\n")) assert.ok(!/[\p{Default_Ignorable_Code_Point}\u2800\p{Cc}\u2028\u2029]/u.test(line), `${why}: ${JSON.stringify(line)}`);
     // No backtick, "|" or "\" can end a code span or a table cell early.
     for (const line of md.split("\n").filter(l => l.startsWith("| ") && !l.startsWith("| Field"))) assert.equal(line.split("|").length, 5, `${why}: ${line}`);
   }
@@ -299,7 +301,10 @@ test("a link in a source can't end its Markdown link early or add anything", () 
   // Brackets, parentheses, quotes, backticks, angle brackets, bars, backslashes and spaces are written as %XX.
   assert.equal(line("https://news.example/a b(c)[d]<e>\"f'g`h|i\\j"), "- [`Zelda`](https://news.example/a%20b%28c%29%5Bd%5D%3Ce%3E%22f%27g%60h%7Ci%5Cj) (`Example`)");
   assert.equal(line("https://news.example/x\n## heading"), "- [`Zelda`](https://news.example/x%20##%20heading) (`Example`)");
-  // A link that isn't a web address isn't linked at all.
+  // Web addresses are linked, whatever the capitals of the scheme; a link that isn't a web address isn't linked at all.
+  assert.equal(line("http://news.example/a"), "- [`Zelda`](http://news.example/a) (`Example`)");
+  assert.equal(line("HTTPS://NEWS.EXAMPLE/A"), "- [`Zelda`](HTTPS://NEWS.EXAMPLE/A) (`Example`)");
+  assert.equal(line("ftp://news.example/a"), "- `Zelda` (`Example`)");
   assert.equal(line("javascript:alert(1)"), "- `Zelda` (`Example`)");
   assert.equal(line("data:text/html,<b>"), "- `Zelda` (`Example`)");
   assert.equal(line(""), "- `Zelda` (`Example`)");

@@ -27,6 +27,8 @@ const env = process.env;
 const DRY = process.argv.includes("--dry-run");
 const MAX_POSTS = 8; // a bigger batch than this is almost always a bulk edit, not news
 const MAX_RELEASES = 8; // the same limit the alert emails use: more releases changed than this is a bulk edit
+const BSKY_LIMIT = 300;
+const graphemes = text => [...new Intl.Segmenter("en", { granularity: "grapheme" }).segment(text)].length;
 
 // Logs in with the account's permanent ID when there is one, so a handle change never breaks posting.
 const bsky = { handle: config.social?.blueskyDid || config.social?.bluesky, password: env.BLUESKY_APP_PASSWORD };
@@ -47,7 +49,13 @@ const targets = p => p.restock
   : [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]];
 // What a post looks like, for the log. X gets its own version without the link, shown when X is a place it would go.
 const goesToX = p => (!only || only === "x") && (!p.restock || restockToX);
-const xBlock = p => p.xText && goesToX(p) ? `  On X, without the link:\n${p.xText.split("\n").map(l => `    ${l}`).join("\n")}` : "";
+// It shows exactly what the request to X will carry (xBody), or says why X would refuse it.
+const xBlock = p => {
+  if (!goesToX(p)) return "";
+  let body;
+  try { body = xBody(p, config.siteUrl); } catch (e) { return `  On X, refused: ${e.message}`; }
+  return `  On X, without the link:\n${body.split("\n").map(l => `    ${l}`).join("\n")}`;
+};
 const show = p => { console.log(`\n---\n${p.text}`); if (xBlock(p)) console.log(xBlock(p)); };
 
 // A failed post is logged, and inside GitHub Actions it's also shown as a warning on the run page, because the step
@@ -150,12 +158,14 @@ const ownText = arg("--text");
 if (ownText !== undefined) {
   const text = ownText.trim();
   if (!text) { console.log("Nothing to post."); process.exit(1); }
-  if (text.length > 280) { console.log(`Too long for X: ${text.length} characters (limit 280).`); process.exit(1); }
+  if (text.length > 1000) { console.log(`Too long: ${text.length} characters. Neither X (280) nor Bluesky (300) takes anything near that.`); process.exit(1); }
   const url = (text.match(/https?:\/\/\S+/) || [])[0] || config.siteUrl;
   const p = { text, url, title: config.siteName, description: "Special edition consoles, controllers, games and collectibles: release dates, prices and where to buy.", imageFile: arg("--image") };
   if (!text.includes(url)) p.text = `${text}\n${url}`;
   p.xText = xCustom(text, config.siteUrl); // the same words with every link taken out, and the site named in words
   if ((!only || only === "x") && xLength(p.xText) > X_LIMIT) { console.log(`Too long for X once its links are taken out: ${xLength(p.xText)} (limit ${X_LIMIT}).`); process.exit(1); }
+  // Bluesky counts what a reader sees as one character each, and its post keeps the link.
+  if ((!only || only === "bluesky") && graphemes(p.text) > BSKY_LIMIT) { console.log(`Too long for Bluesky: ${graphemes(p.text)} (limit ${BSKY_LIMIT}).`); process.exit(1); }
   console.log(`${useBsky || useX || useDiscord ? "Posting" : "Dry run, would post"}:\n${p.text}`);
   if (xBlock(p)) console.log(xBlock(p));
   let failed = 0;

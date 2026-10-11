@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { forX, xBody, spokenHost, xLength, xTags, fitX, xTextFor, xCustom, X_LIMIT } from "../lib/xpost.js";
+import { TLDS } from "../lib/tlds.js";
 import { readReal } from "./helpers/build-copy.mjs";
 
 const SITE = "https://editiontracker.com";
@@ -33,21 +34,32 @@ test("an address X would link is taken out whatever it looks like around the edg
   // A path after it (a store's product page) goes, and so does a port.
   t("See Walmart.Shop/ip/123456 for details", "See Walmart dot Shop for details");
   t("Try shop.example.com:8080/x?y=1 now", "Try shop dot example dot com now");
-  t("Try Walmart.Example/ip/12 or www.Funko.Example now", "Try Walmart dot Example or www dot Funko dot Example now"); // a path or "www." makes it an address whatever the ending
+  // A path after something that isn't an address stays, and an address inside it is still found.
+  t("Dr.Mario/Luigi", "Dr.Mario/Luigi");
+  t("Dr.Mario/gamestop.com now", "Dr.Mario/gamestop dot com now");
+  t("see a.co.Mario/Luigi now", "see a dot co.Mario/Luigi now");
   // Other alphabets, and an address written with punycode.
   t("Купите на пример.рф сегодня", "Купите на пример dot рф сегодня");
   t("a.日本", "a dot 日本");
   t("xn--80ak6aa92e.com", "xn--80ak6aa92e dot com");
   // Dashes or dots right in front of it don't hide it.
   t("Use -gamestop.com or stock...gamestop.com", "Use -gamestop dot com or stock...gamestop dot com");
-  // An address that follows an ordinary word with a full stop and a capital is a missing space, but an address in front of it isn't hidden by it.
-  t("x.co.Check", "x dot co.Check");
+  // A capital after a full stop is a missing space, unless it is a real ending: "Check" isn't one, "In" (India's) is, so X links it.
   t("Sold out.Check back", "Sold out.Check back");
+  t("Sold out.In stock at Target", "Sold out dot In stock at Target");
+  t("Back in stock at Target.In-store pickup", "Back in stock at Target dot In-store pickup");
+  t("x.co.Check", "x dot co.Check"); // an address in front of a word that isn't an ending isn't hidden by it
+  // A letter with its accent as a separate mark, and Japanese (or other) text stuck on the end.
+  t("Cafe\u0301.com", "Cafe\u0301 dot com");
+  t("gamestop.com\u3067" + "3\u500b", "gamestop dot com\u3067" + "3\u500b");
+  // Empty brackets that join text into an address when they go, however deep.
+  t("gamestop.c" + "(".repeat(12) + ")".repeat(12) + "om", "gamestop dot com");
+  t("gamestop.c" + "( ".repeat(300) + ") ".repeat(300) + "om", "gamestop.c om"); // a space stays a space, so these two don't join
   // Taking one address out can join the text on either side into a new one, so it's repeated until nothing is left.
   t("x.co:1x.co", "x dot cox dot co");
   t("h0.com:1h1.com:1h2.com:1h3.com:1", "h0 dot comh1 dot comh2 dot comh3 dot com");
   // An email address isn't a web address, and this site's own addresses become the same words everywhere.
-  t("Email tips@editiontracker.com", "Email tips@editiontracker.com");
+  t("Email tips@editiontracker.com or john.smith@example.com", "Email tips@editiontracker.com or john.smith@example.com");
   t("EDITIONTRACKER.COM and www.EditionTracker.com/zelda?x=1.", "editiontracker dot com and editiontracker dot com.");
   t("https://shop.editiontracker.com/a and HTTPS://UPPER.EXAMPLE.COM/Y ftp://files.example.org/x", "editiontracker dot com and");
 });
@@ -58,12 +70,14 @@ test("running the address remover again on its own result never changes it", () 
   let seed = 20261011;
   const random = () => (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32;
   const pick = list => list[Math.floor(random() * list.length)];
-  const PIECES = ["a", "b", "x", "Z", "co", "com", "COM", "Shop", "io", "ly", "1", "2", "9", "_", "-", ".", ".", ".", "/", ":", ":1", "://", "http", "https", "www.",
+  const PIECES = ["a", "b", "x", "Z", "co", "com", "COM", "Shop", "io", "ly", "In", "At", "Check", "Mario", "Pro", "(", ")", "((", "))", "e\u0301", "\u3067", "\u500b",
+    "1", "2", "9", "_", "-", ".", ".", ".", "/", ":", ":1", "://", "http", "https", "www.",
     "ftp", " ", " ", "  ", "\n", "(", ")", "<", ">", "\"", "'", "\u201c", "\u201d", "@", "#", "?", "=", "&", ",", ";", "!", "é", "п", "р", "ф", "日", "本", "…", "•",
     "editiontracker", "editiontracker.com", "gamestop.com", "x.co", "a.b", "e.g.", "U.S.", "v1.2", "$5.99", "...", "..", "--", "xn--p1ai"];
   // What X links that is left in a result: a scheme and an address, or a name and a well-known ending (emails aside).
   const SCHEME = /\b(?:https?|ftp):\/\/[^\s<>"'\u201c\u201d]/i;
-  const ADDRESS = /(?<![\p{L}\p{N}_@])(?:[\p{L}\p{N}_](?:[\p{L}\p{N}_-]*[\p{L}\p{N}_])?\.)+(?:com|net|org|edu|gov|io|co|gg|tv|me|app|dev|xyz|info|shop|store|uk|de|fr|jp|ca|au)(?![\p{L}\p{N}])/iu;
+  const ENDINGS = [...TLDS].filter(t => /^[a-z]+$/.test(t)).join("|"); // every real ending, so nothing here is copied from the code
+  const ADDRESS = new RegExp(`(?<![\\p{L}\\p{N}\\p{M}_@])(?:[\\p{L}\\p{N}_](?:[\\p{L}\\p{N}\\p{M}_-]*[\\p{L}\\p{N}\\p{M}_])?\\.)+(?:${ENDINGS})(?![a-z0-9@])`, "iu");
   for (let i = 0; i < 30000; i++) {
     let text = "";
     for (let k = 1 + Math.floor(random() * 24); k > 0; k--) text += pick(PIECES);
@@ -72,6 +86,13 @@ test("running the address remover again on its own result never changes it", () 
     assert.doesNotMatch(once, SCHEME, JSON.stringify(text));
     assert.doesNotMatch(once.replace(/\S*@\S*/g, " "), ADDRESS, JSON.stringify(text));
   }
+});
+
+test("the list of address endings has the real ones and not the words that only look like them", () => {
+  for (const real of ["com", "uk", "in", "at", "shop", "store", "xbox", "walmart", "target", "io", "md", "\u0440\u0444"]) assert.ok(TLDS.has(real), real);
+  for (const word of ["check", "mario", "louis", "pac", "exe", "ii", "nintendo", ""]) assert.ok(!TLDS.has(word), word);
+  assert.ok(TLDS.size > 1400);
+  for (const t of TLDS) assert.equal(t, t.toLowerCase());
 });
 
 test("what is sent to X is the X version with every address out, and never more than X takes", () => {

@@ -221,6 +221,52 @@ test("a message that is too long for X once its links are out is refused, and Bl
   assert.deepEqual(exact.x, ["\u2192".repeat(140)]);
 });
 
+test("what is too long is worked out for each place a message goes, after the links are out for X", () => {
+  const { dir, start } = repoWithRestock();
+  const tried = (text, ...flags) => sendFor(dir, start, ["--text", text, ...flags]);
+  // A long link doesn't count against X (it's taken out), but Bluesky keeps it: 330 characters is over its 300.
+  const longLink = `Read ${"https://example.com/"}${"a".repeat(300)} today`;
+  const both = tried(longLink);
+  assert.equal(both.status, 1);
+  assert.match(both.stdout, /Too long for Bluesky: 3\d\d \(limit 300\)\./);
+  assert.deepEqual(both.calls, []);
+  const onlyX = tried(longLink, "--only", "x");
+  assert.equal(onlyX.status, 0, onlyX.stderr + onlyX.stdout);
+  assert.deepEqual(onlyX.x, ["Read today\neditiontracker dot com"]);
+  assert.equal(tried(longLink, "--only", "bluesky").status, 1);
+  // The other way round: 288 on X once the site is named in words, 292 on Bluesky. Only Bluesky takes it.
+  const plain = `${"a".repeat(265)} https://editiontracker.com`;
+  const bothPlain = tried(plain);
+  assert.equal(bothPlain.status, 1);
+  assert.match(bothPlain.stdout, /Too long for X once its links are taken out: 288 \(limit 280\)\./);
+  const bsky = tried(plain, "--only", "bluesky");
+  assert.equal(bsky.status, 0, bsky.stderr + bsky.stdout);
+  assert.equal(bsky.bluesky.length, 1);
+  // Nothing comes near a thousand characters, so that is refused before anything else is worked out.
+  const huge = tried("a ".repeat(501));
+  assert.equal(huge.status, 1);
+  assert.match(huge.stdout, /^Too long: 1001 characters\./);
+  // A message that names no link gets the homepage added, which counts: 273 fits Bluesky, 274 doesn't.
+  assert.equal(tried("b".repeat(273), "--only", "bluesky").status, 0);
+  const over = tried("b".repeat(274), "--only", "bluesky");
+  assert.equal(over.status, 1);
+  assert.match(over.stdout, /Too long for Bluesky: 301 \(limit 300\)\./);
+  // Bluesky counts what a reader sees as one each: 150 emoji are 150, not the 300 they are in memory (and 150 more with the homepage).
+  assert.equal(tried("\u{1F600}".repeat(150), "--only", "bluesky").status, 0);
+});
+
+test("the log shows what the request to X carries, or why X would refuse it", () => {
+  const { dir, start } = repoWithRestock(undefined, newRelease, c => { c.social.restockToX = true; });
+  const r = social(dir, start);
+  assert.match(r.stdout, /On X, without the link:\n    New: Brand New Test Edition\n/);
+  assert.doesNotMatch(r.stdout, /On X, refused/);
+  // A post whose X text can't be sent says so in the log instead of showing text that never goes out.
+  const src = readFileSync(join(ROOT, "scripts/social.mjs"), "utf8");
+  assert.match(src, /try \{ body = xBody\(p, config\.siteUrl\); \} catch \(e\) \{ return `  On X, refused: \$\{e\.message\}`; \}/);
+  // And the request itself is made from the same function, nothing else.
+  assert.match(src, /async function xPost\(p\) \{[^}]*const text = xBody\(p, config\.siteUrl\);[\s\S]*?body: JSON\.stringify\(\{ text \}\)/);
+});
+
 test("the scheduled posts go to X without links too", () => {
   const edit = d => { Object.assign(d.items[0], { status: "preorder", releaseDate: "2099-06-04", releaseWindow: null }); };
   const { dir, start } = repoWithRestock(undefined, edit);

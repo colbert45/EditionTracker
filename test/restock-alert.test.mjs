@@ -121,7 +121,12 @@ test("a stale report doesn't hide another change made to the same release", () =
   assert.deepEqual(a.tags, [`item:${ID}`, `type:${it.category}`]); // a new date is news for the whole category
   assert.equal(a.restocks, undefined);
   const body = emailBody(a, now.categories);
-  assert.doesNotMatch(body, /reported|Back in stock at|bestbuy/i);
+  assert.doesNotMatch(body, /reported|Back in stock|bestbuy/i); // not even in the summary under the changes
+  assert.match(body, /\*\*Price:\*\*/); // which still has its other lines
+  // An ordinary update keeps its Status line.
+  const plain = base(), plainNow = base();
+  plainNow.items.find(i => i.id === ID).releaseDate = it.releaseDate;
+  assert.match(emailBody(planAlerts(plain, plainNow, SITE)[0], plainNow.categories), /\*\*Status:\*\*/);
   // The post says the date moved, and nothing about stock or a restock.
   const [p, ...more] = socialPosts(old, now, SITE, { today: "2026-10-20" });
   assert.equal(more.length, 0);
@@ -136,6 +141,17 @@ test("a stale report doesn't hide another change made to the same release", () =
   assert.match(f.extra[0], /^Release: /);
 });
 
+test("a stale report next to a status change that has another cause leaves that status line alone", () => {
+  const { old, now } = restocked([REPORT], "soldout"); // the release sold out, and a stale report was logged on the same day
+  old.items.find(i => i.id === ID).status = "preorder";
+  const [a, ...rest] = planAlerts(old, now, SITE, { today: "2026-10-20" });
+  assert.equal(rest.length, 0);
+  assert.equal(a.kind, "status");
+  assert.match(a.lines[0], new RegExp(`^Status: .* \u2192 Sold out\\.$`));
+  assert.doesNotMatch(a.lines.join(" "), /Back in stock/);
+  assert.match(a.facts.join(" "), /Status:\*\* Sold out/); // and its summary keeps the status
+});
+
 test("a stale report on a release that was already back in stock tells nobody", () => {
   const old = base(), now = base();
   old.items.find(i => i.id === ID).status = "restock";
@@ -146,6 +162,13 @@ test("a stale report on a release that was already back in stock tells nobody", 
   assert.deepEqual(socialPosts(old, now, SITE, { today: "2026-10-20" }), []);
   // Without a date nothing is held back, which is how the weekly roundup sees it.
   assert.equal(planAlerts(old, now, SITE)[0].kind, "restock");
+  // A price change on the same release is an ordinary update, and its summary still says the release is back in stock (it was).
+  now.items.find(i => i.id === ID).price = "$1.23";
+  const [u, ...rest] = planAlerts(old, now, SITE, { today: "2026-10-20" });
+  assert.equal(rest.length, 0);
+  assert.equal(u.kind, "update");
+  assert.match(u.lines[0], /^Price: /);
+  assert.match(u.facts.join(" "), /Status:\*\* Back in stock/);
 });
 
 test("a change to a release that's back in stock is still posted, a bare status flip is not", () => {
@@ -159,6 +182,11 @@ test("a change to a release that's back in stock is still posted, a bare status 
   const [p, ...rest] = socialPosts(old, now, SITE);
   assert.equal(rest.length, 0);
   assert.match(p.text, /^Update: /);
+  // But switching a release to "Back in stock" with no restock logged is not news that gets posted.
+  const before = base(), flipped = base();
+  before.items.find(i => i.id === ID).status = "soldout";
+  flipped.items.find(i => i.id === ID).status = "restock";
+  assert.deepEqual(socialPosts(before, flipped, SITE), []);
 });
 
 test("a bracket in a link can't end the Markdown link early", () => {
