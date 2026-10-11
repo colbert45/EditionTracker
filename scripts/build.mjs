@@ -63,10 +63,6 @@ const chip = s => `<span class="st" style="--c:var(--c-${s});--t:var(--t-${s})">
 const absUrl = u => u.startsWith("/") ? SITE + u : u;
 const isRaster = u => /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u);
 const artSpec = i => [i.art.type, ...i.art.colors];
-// Every Amazon link carries the Associates tag (replacing any other tag) and is marked sponsored.
-const AMAZON_TAG = config.amazonTag || "";
-const isAmazon = u => { try { return /(^|\.)amazon\.[a-z.]+$/i.test(new URL(u).hostname); } catch { return false; } };
-const tagged = u => { if (!AMAZON_TAG || !isAmazon(u)) return u; const x = new URL(u); x.searchParams.set("tag", AMAZON_TAG); return x.href; };
 // site.config.json "photos" decides where product photos replace the illustrations.
 const PHOTOS = config.photos || "all";
 const photoOnPage = i => Boolean(i.image) && (PHOTOS === "all" || PHOTOS === "pages");
@@ -270,8 +266,8 @@ ${analytics()}
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
     <p>Spotted something I missed? <a href="mailto:tips@editiontracker.com">Send a tip</a> to tips@editiontracker.com. It'll be added once there's a source.</p>
-    <p>Some links are affiliate links, so Edition Tracker may earn a commission at no cost to you. As an Amazon Associate I earn from qualifying purchases. Any commissions go toward running the site.</p>
-    <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> · <a href="/contact/">Contact</a> · <a href="/privacy/">Privacy and cookies</a></p>
+    <p>No ads. No affiliate links. I don't get paid when you click or buy. <a href="/about/">What it costs to run</a>.</p>
+    <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> · <a href="/about/">About</a> · <a href="/contact/">Contact</a> · <a href="/privacy/">Privacy and cookies</a></p>
     ${SOCIAL.length ? `<p>Follow: ${SOCIAL.map(([n, u]) => `<a href="${esc(u)}" rel="me noopener">${n}</a>`).join(" · ")}</p>` : ""}
   </footer>
 </div>
@@ -407,9 +403,8 @@ function offers(i) {
 
 function storeRow(i, s) {
   const st = STORES[s.store];
-  const href = tagged(s.affiliateUrl || (st.searchUrl ? st.searchUrl + encodeURIComponent(i.searchQuery) : st.url));
-  const rel = isAmazon(href) ? "noopener sponsored" : s.affiliateUrl ? "sponsored noopener" : "noopener";
-  return `<tr><td>${esc(st.name)}</td><td>${!s.listed ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="${rel}">Check stock</a>`}</td></tr>`;
+  const href = st.searchUrl ? st.searchUrl + encodeURIComponent(i.searchQuery) : st.url;
+  return `<tr><td>${esc(st.name)}</td><td>${!s.listed ? `<span class="na">Not listed yet</span>` : `<a href="${esc(href)}" target="_blank" rel="noopener">Check stock</a>`}</td></tr>`;
 }
 
 // Item alerts make sense until it's out, or while it's sold out (restocks).
@@ -422,8 +417,6 @@ function item(i, ogImage) {
   const n = i.date ? daysOut(i.date) : null;
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
   const showCountdown = i.date && i.status !== "out" && i.status !== "soldout";
-  const hasAmazon = i.stores.some(s => s.listed && (s.store === "amazon" || isAmazon(s.affiliateUrl || "")));
-  const hasAffiliate = hasAmazon || i.stores.some(s => s.listed && s.affiliateUrl);
   const hero = photoOnPage(i)
     ? `<figure class="hero" style="margin:0 0 14px"><div class="art"><img src="${esc(i.image)}" alt="${esc(i.name)}" decoding="async"></div><figcaption>${esc(i.imageCredit)}</figcaption></figure>`
     : `<figure class="hero" style="margin:0 0 14px"><div class="art">${art(artSpec(i))}</div><figcaption>Illustration, not a product photo</figcaption></figure>`;
@@ -443,12 +436,11 @@ function item(i, ogImage) {
     ${i.inTheBox.length ? `<h2>What's in the box</h2><ul class="plain">${i.inTheBox.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
     <h2>Where to buy</h2>
     ${i.stores.length ? `<table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
-    ${i.stores.some(s => s.listed) ? `<p class="small">Links open the store's search. Stock changes by the hour on these, so check before you head out.</p>` : ""}` : `<p class="small">Not listed yet</p>`}
-    ${hasAffiliate ? `<p class="small">Some of these are affiliate links, so Edition Tracker may earn a commission if you buy through them. It doesn't change your price.${hasAmazon ? " As an Amazon Associate I earn from qualifying purchases." : ""} Any commissions go toward running the site.</p>` : ""}
+    ${i.stores.some(s => s.listed) ? `<p class="small">Links open the store's own search. Stock changes by the hour. Check that the seller is the store itself, and don't pay over MSRP.</p>` : ""}` : `<p class="small">Not listed yet</p>`}
     ${i.timeline.length ? `<h2>Timeline</h2>
     <ul class="tl">${[...i.timeline].sort((a, b) => b.date.localeCompare(a.date)).map(t => `<li><time datetime="${t.date}">${long(t.date)}</time><span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
     <h2>Sources</h2>
-    <ul class="plain src">${i.sources.map(s => `<li><a href="${esc(tagged(s.url))}" target="_blank" rel="${isAmazon(s.url) ? "noopener sponsored" : "noopener"}">${esc(s.label)}</a></li>`).join("")}</ul>
+    <ul class="plain src">${i.sources.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.label)}</a></li>`).join("")}</ul>
   </article>`;
 
   const description = describe(i);
@@ -517,13 +509,13 @@ function privacy() {
     <p>Your email address and the boxes you tick (the releases and categories you picked, and whether you want the weekly roundup) are stored by <a href="https://buttondown.com" rel="noopener">Buttondown</a>, which sends the emails. They're only used to send you what you asked for. Every email has a link to change your picks or unsubscribe, and you can email <a href="mailto:hello@editiontracker.com">hello@editiontracker.com</a> to have your address deleted.</p>
     <h2>Analytics and cookies</h2>
     <p>The site uses Google Analytics to count visits and see which pages are popular. It sets cookies (named <code>_ga</code> and <code>_ga_…</code>) and Google receives your IP address, browser and the pages you view. Edition Tracker only sees totals, never who you are. You can block these cookies in your browser settings or with <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">Google's opt-out add-on</a>, and the site works the same without them. There are no other cookies and no ads.</p>
-    <h2>Affiliate links</h2>
-    <p>Some "Check stock" links are affiliate links. As an Amazon Associate I earn from qualifying purchases. It doesn't change your price, and any commissions go toward running the site. Once you click through, the store's own privacy policy and cookies apply.</p>
+    <h2>No ads, no affiliate links</h2>
+    <p>Edition Tracker has no ads and no affiliate links, so nothing here tracks you for advertising. When you click through to a store, the store's own privacy policy and cookies apply.</p>
     <h2>Hosting</h2>
     <p>The site is hosted on GitHub Pages, which may log your IP address for security. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.</p>
     <h2>Questions</h2>
     <p>Email <a href="mailto:hello@editiontracker.com">hello@editiontracker.com</a>.</p>
-    <p class="small">Last updated October 6, 2026.</p>
+    <p class="small">Last updated October 11, 2026.</p>
   </article>`;
   return page({ title: `Privacy and cookies | ${NAME}`, description: "What Edition Tracker collects, which cookies it uses, and how to opt out.",
     path: "/privacy/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body });

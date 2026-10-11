@@ -7,8 +7,8 @@ import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 
-// Build a copy of the site where one item has a photo and an affiliate link.
-test("image and affiliate link replace the illustration and search link", () => {
+// Build a copy of the site where one item has a photo.
+test("a photo replaces the illustration", () => {
   const dir = mkdtempSync(join(tmpdir(), "et-"));
   for (const p of ["lib", "scripts", "static", "og", "site.config.json", "package.json"]) cpSync(join(ROOT, p), join(dir, p), { recursive: true });
   symlinkSync(join(ROOT, "node_modules"), join(dir, "node_modules"));
@@ -18,7 +18,6 @@ test("image and affiliate link replace the illustration and search link", () => 
   const it = data.items.find(i => i.id === "xbox-series-x25");
   it.image = "https://images.example/x25.jpg";
   it.imageCredit = "Photo: Microsoft";
-  it.stores.find(s => s.store === "bestbuy").affiliateUrl = "https://bestbuy.7tiv.net/x25";
   mkdirSync(join(dir, "data"));
   writeFileSync(join(dir, "data/releases.json"), JSON.stringify(data));
   execFileSync("node", ["scripts/build.mjs"], { cwd: dir });
@@ -26,8 +25,6 @@ test("image and affiliate link replace the illustration and search link", () => 
   assert.match(html, /<img src="https:\/\/images.example\/x25.jpg"/);
   assert.match(html, /<figcaption>Photo: Microsoft<\/figcaption>/);
   assert.doesNotMatch(html, /Illustration, not a product photo/);
-  assert.match(html, /href="https:\/\/bestbuy.7tiv.net\/x25" target="_blank" rel="sponsored noopener"/);
-  assert.match(html, /affiliate links/);
   assert.match(html, /og:image" content="https:\/\/images.example\/x25.jpg"/);
   const home = readFileSync(join(dir, "_site/index.html"), "utf8");
   assert.match(home, /<span class="thumb"><img src="https:\/\/images.example\/x25.jpg"/);
@@ -51,20 +48,29 @@ test("every page has its own title, description, canonical and Product data", ()
   assert.equal((sitemap.match(/<loc>/g) || []).length, data.items.length + 2); // homepage + calendar
 });
 
-test("every Amazon link carries the Associates tag and is sponsored", () => {
+test("no page has affiliate links, tags or sponsored markup", async () => {
   execFileSync("node", ["scripts/build.mjs"], { cwd: ROOT });
-  const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
-  let count = 0;
-  for (const i of data.items) {
-    const html = readFileSync(join(ROOT, "_site", i.id, "index.html"), "utf8");
-    for (const [a] of html.matchAll(/<a [^>]*href="https:\/\/www\.amazon\.[^"]*"[^>]*>/g)) {
-      count++;
-      assert.match(a, /tag=editiontracker02-20/);
-      assert.doesNotMatch(a, /triforcetra08-20/);
-      assert.match(a, /rel="noopener sponsored"/);
-    }
-    if (html.includes("www.amazon.")) assert.match(html, /As an Amazon Associate I earn from qualifying purchases\./);
+  const { readdirSync, statSync } = await import("node:fs");
+  const walk = d => readdirSync(d).flatMap(f => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : p.endsWith(".html") ? [p] : []; });
+  const pages = walk(join(ROOT, "_site"));
+  assert.ok(pages.length > 30);
+  for (const f of pages) {
+    const html = readFileSync(f, "utf8");
+    assert.doesNotMatch(html, /rel="[^"]*sponsored/, f);
+    assert.doesNotMatch(html, /[?&]tag=[a-z0-9-]+-20/i, f);
+    assert.doesNotMatch(html, /Amazon Associate/i, f);
+    assert.doesNotMatch(html, /amazon\./i, f);
   }
-  assert.ok(count > 0, "expected some Amazon links");
+  const home = readFileSync(join(ROOT, "_site/index.html"), "utf8");
+  assert.match(home, /No ads\. No affiliate links\./);
 });
+
+test("the validator rejects affiliate links", async () => {
+  const { validate } = await import("../lib/validate.js");
+  const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
+  assert.deepEqual(validate(data).errors, []);
+  data.items[0].stores[0].affiliateUrl = "https://example.com/x";
+  assert.ok(validate(data).errors.some(e => e.includes("affiliate")));
+});
+
 
