@@ -1,14 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { planAlerts, emailBody, roundupEmail } from "../lib/alerts.js";
 import { socialPosts } from "../lib/social.js";
 import { msrpText, dollars } from "../lib/msrp.js";
+import { plainData as base, pickItems } from "./helpers/stock.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
-const base = () => JSON.parse(readFileSync(ROOT + "data/releases.json", "utf8"));
 const SITE = "https://editiontracker.com";
-const ID = "switch-2-zelda-40th";
+const PICK = pickItems(base()).item;
+const ID = PICK.id;
+const escape = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const BB = { date: "2026-10-09", store: "bestbuy", url: "https://www.bestbuy.com/site/example/1.p", source: "https://example.com/news/restock" };
 const TG = { date: "2026-10-09", store: "target", url: "https://www.target.com/p/example/-/A-1", source: null };
 
@@ -33,7 +33,7 @@ test("a new restock emails the item's and the category's subscribers", () => {
   assert.match(body, /^## Back in stock: /);
   assert.match(body, /\*\*Best Buy\*\* has it\. \[Go to the listing →\]\(https:\/\/www.bestbuy.com\/site\/example\/1.p\)/);
   assert.match(body, /Source: \[example.com\]\(https:\/\/example.com\/news\/restock\)/);
-  assert.match(body, /\*\*MSRP \$519\.99\.\*\* Don't pay more\./);
+  assert.match(body, new RegExp(`\\*\\*MSRP ${escape(msrpText(PICK))}\\.\\*\\* Don't pay more\\.`));
   assert.match(body, /\[tips@editiontracker.com\]\(mailto:tips@editiontracker.com\)/);
   assert.match(body, new RegExp(`\\(${SITE}/${ID}/\\)`));
   assert.doesNotMatch(body, /Status:/);
@@ -62,6 +62,16 @@ test("a later restock alerts again, and nothing alerts when nothing is new", () 
   assert.match(alerts[0].subject, / at Target$/);
   assert.deepEqual(planAlerts(now, now, SITE), []);
   assert.equal(planAlerts(old, mid, SITE).length, 1);
+});
+
+test("a second restock of the same listing on the same day still alerts", () => {
+  const old = base(), now = base();
+  for (const [d, r] of [[old, [BB]], [now, [BB, BB]]]) { const it = d.items.find(i => i.id === ID); it.status = "restock"; it.restocks = r; }
+  const alerts = planAlerts(old, now, SITE);
+  assert.equal(alerts.length, 1);
+  assert.equal(alerts[0].restocks.length, 1);
+  // The same two entries on both sides are nothing new.
+  assert.deepEqual(planAlerts(now, now, SITE), []);
 });
 
 test("flipping the status without a log entry still says Back in stock", () => {

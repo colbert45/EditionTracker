@@ -1,0 +1,71 @@
+# Run this from your phone when something is back in stock.
+# GitHub app (or github.com) > Actions > Post a restock > Run workflow, fill in the boxes, tap Run.
+# It logs the restock on the release's page, switches the release to "Back in stock", emails the
+# people who follow it, and redeploys the site. About 30 seconds from tap to inbox.
+# Tick "Dry run" to see exactly what would happen (including the email) without changing anything.
+name: Post a restock
+
+on:
+  workflow_dispatch:
+    inputs:
+      item:
+        description: "Release: part of its name, or its id. Example: switch-2-zelda-40th"
+        required: true
+      retailer:
+        description: "Store that has it. Example: Best Buy"
+        required: true
+      link:
+        description: "Link to the product page on that store's own site"
+        required: true
+      source:
+        description: "Where you saw it, a post or article link (optional)"
+        required: false
+      dry_run:
+        description: "Dry run: show what would happen, change nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # saves the change to main
+  actions: write # starts the site deploy
+
+# One edit to the data at a time (restocks, sold out again).
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  restock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RESTOCK_ACTION: restock
+      RESTOCK_ITEM: ${{ inputs.item }}
+      RESTOCK_RETAILER: ${{ inputs.retailer }}
+      RESTOCK_LINK: ${{ inputs.link }}
+      RESTOCK_SOURCE: ${{ inputs.source }}
+      RESTOCK_DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Save the restock
+        id: record
+        run: node scripts/restock.mjs
+      # Sent from here, because a push made by an Action doesn't start the deploy's alert step.
+      # Needs the BUTTONDOWN_API_KEY secret; without it this only logs what it would send.
+      - name: Email the people who follow it
+        if: steps.record.outputs.alert == 'true'
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          BEFORE: ${{ steps.record.outputs.before }}
+        run: node scripts/alerts.mjs send "$BEFORE"
+      - name: Redeploy the site
+        if: ${{ !cancelled() && steps.record.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

@@ -1,0 +1,49 @@
+# Run this from your phone when a restock has sold out again, so the page stops saying "Back in stock".
+# GitHub app (or github.com) > Actions > Sold out again > Run workflow, fill in the release, tap Run.
+# It switches the release to "Sold out" and redeploys the site. No email goes out for this.
+name: Sold out again
+
+on:
+  workflow_dispatch:
+    inputs:
+      item:
+        description: "Release: part of its name, or its id. Example: switch-2-zelda-40th"
+        required: true
+      dry_run:
+        description: "Dry run: show what would happen, change nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # saves the change to main
+  actions: write # starts the site deploy
+
+# One edit to the data at a time (restocks, sold out again).
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  soldout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RESTOCK_ACTION: soldout
+      RESTOCK_ITEM: ${{ inputs.item }}
+      RESTOCK_DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Save the change
+        id: record
+        run: node scripts/restock.mjs
+      - name: Redeploy the site
+        if: ${{ !cancelled() && steps.record.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

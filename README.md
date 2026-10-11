@@ -23,6 +23,17 @@ The form also has a "Weekly roundup" box (tag `roundup`), ticked by default. Eve
 
 It needs the `BUTTONDOWN_API_KEY` repository secret and Buttondown's Tags add-on. Put `[no alerts]` in a commit message to skip a push, and anything that changes more than 8 releases at once is treated as a bulk edit and not sent.
 
+## Restocks
+
+When something comes back in stock at a store, log it by hand. A release can carry `restocks`, a list of `{ date, store, url, source }`: `store` is a key from `stores`, `url` is the store's own product page, `source` is where you saw it (or `null`). The release page then shows the status "Back in stock" and a "Restock history" list, and the homepage lists it first. No entries, no history section. People following that release or its category get one "Back in stock" email with the store's link first.
+
+**From your phone:** GitHub app (or github.com) > Actions > **Post a restock** > Run workflow. Type part of the release's name (or its id), the store, and the link to the product page, and add where you saw it if you like. Tick *Dry run* first to see exactly what would happen, email included, without changing anything. A real run saves the restock to `main`, sends the email within seconds, and starts a fresh deploy. If something is wrong it changes nothing and says why on the run page.
+
+- The link has to be on the store's own website. A store that sells from more than one site gets a `domains` list in `stores` (Xbox has `microsoft.com`). Tracking tags such as `utm_*` and `irclickid` are removed from links.
+- The same restock run twice is logged once. A release that sells out and comes back the same day can be logged again after **Sold out again**.
+- **Sold out again** (also under Actions) switches a release back to "Sold out" so the page stops saying "Back in stock". It emails nobody.
+- The news check never sets "Back in stock" itself. It can add a timeline note about a restock, and you decide whether to log it.
+
 ## Social posts
 
 After each change to `main` goes live, `scripts/social.mjs` posts release news to Bluesky and X: new releases, and big changes (preorders opening, a release date, out now, sold out). Posts are built from the data with fixed wording and link to the release page. Price changes, timeline notes and rumors aren't posted, except timeline notes about stock (a restock, extra units, a new wave), which are posted as "Stock news". `[no alerts]` or `[no posts]` in a commit message skips posting, and so does any change touching more than 8 releases.

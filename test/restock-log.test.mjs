@@ -1,14 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildCopy, readReal, page } from "./helpers/build-copy.mjs";
+import { buildCopy, page } from "./helpers/build-copy.mjs";
+import { plainData, pickItems } from "./helpers/stock.mjs";
 import { validate } from "../lib/validate.js";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 // Fake restocks, only ever built into a throwaway copy of the site.
-const ID = "switch-2-zelda-40th";
+const { item: PICK, other: OTHER } = pickItems(plainData());
+const ID = PICK.id;
 const withRestocks = restocks => {
-  const data = readReal("data/releases.json");
+  const data = plainData();
   const it = data.items.find(i => i.id === ID);
   it.status = "restock";
   it.restocks = restocks;
@@ -28,9 +30,9 @@ test("a release page shows the status, the log and an InStock offer", () => {
 
 test("no log means no heading, on every other page too", () => {
   const dir = buildCopy({ data: withRestocks(ONE) });
-  assert.doesNotMatch(page(dir, "xbox-series-x25"), /Restock history/);
-  const real = buildCopy();
-  assert.doesNotMatch(page(real, ID), /Restock history/);
+  assert.doesNotMatch(page(dir, OTHER.id), /Restock history/);
+  const none = buildCopy({ data: plainData() });
+  assert.doesNotMatch(page(none, ID), /Restock history/);
 });
 
 test("the log is newest first, and a source that repeats the link isn't shown twice", () => {
@@ -60,7 +62,7 @@ test("the homepage lists restocked releases first, and not again under Already o
   assert.ok(home.indexOf('data-sec="restock"') < home.indexOf('data-sec="coming"'));
   assert.match(home, /<b>1<\/b> back in stock/);
   // With nothing restocked the section is still there for the page script, but hidden.
-  const none = page(buildCopy(), ".");
+  const none = page(buildCopy({ data: plainData() }), ".");
   assert.match(none, /<section data-sec="restock" hidden>/);
   assert.doesNotMatch(none, /back in stock<\/li>/);
 });
@@ -91,9 +93,10 @@ test("the validator checks restocks", () => {
   assert.deepEqual(r.errors, []);
   assert.ok(r.warnings.some(w => w.includes("no restock logged")));
   // Extra sites a store sells from.
-  const d = readReal("data/releases.json");
-  d.stores.xbox.domains = ["microsoft.com"];
+  const d = plainData();
+  const store = Object.keys(d.stores)[0];
+  d.stores[store].domains = ["microsoft.com"];
   assert.deepEqual(validate(d).errors, []);
-  d.stores.xbox.domains = ["https://microsoft.com"];
+  d.stores[store].domains = ["https://microsoft.com"];
   assert.ok(validate(d).errors.some(e => e.includes("domains")));
 });

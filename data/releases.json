@@ -31,7 +31,10 @@
     },
     "xbox": {
       "name": "Xbox Store",
-      "url": "https://www.xbox.com/"
+      "url": "https://www.xbox.com/",
+      "domains": [
+        "microsoft.com"
+      ]
     },
     "psdirect": {
       "name": "PlayStation Direct",
