@@ -1,5 +1,5 @@
 // Starting points for the restock and price tests: the real release data with everything filled in by
-// hand removed (restocks, resale prices, explicit MSRPs), and a release to use. Tests that start here
+// hand removed (restocks, resale prices, explicit MSRPs, "How to get one" boxes), and a release to use. Tests that start here
 // keep passing after real restocks or resale prices are added on the site.
 import { readReal } from "./build-copy.mjs";
 import { msrpText } from "../../lib/msrp.js";
@@ -10,6 +10,7 @@ export function plainData() {
     delete it.restocks;
     delete it.resale;
     delete it.msrp;
+    delete it.howToGet;
     if (it.status === "restock") it.status = "soldout";
   }
   return d;
