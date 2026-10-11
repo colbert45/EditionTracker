@@ -3,7 +3,9 @@
 //   node scripts/social.mjs --text "..." [--image path] [--dry-run]   post one message of your own
 //   node scripts/social.mjs --scheduled [--dry-run]   today's "Out today" posts, plus "Coming out this week" on Thursdays
 // Posts to Bluesky when BLUESKY_APP_PASSWORD is set, and to X when the four X_* keys are set.
-// Without them, or with --dry-run, it only prints what it would post.
+// Restock posts go to Bluesky and, when DISCORD_WEBHOOK_URL is set, to a Discord channel. They go to X
+// only if site.config.json has social.restockToX: true, because X charges for every post.
+// Without the keys, or with --dry-run, it only prints what it would post.
 // [no alerts] or [no posts] in a commit message skips posting for that push.
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -11,6 +13,7 @@ import { createHmac, randomBytes } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { socialPosts, outTodayPosts, weekAheadPost } from "../lib/social.js";
+import { postToDiscord, isDiscordWebhook } from "../lib/discord.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = p => readFileSync(join(ROOT, p), "utf8");
@@ -27,6 +30,16 @@ const x = { key: env.X_API_KEY, secret: env.X_API_SECRET, token: env.X_ACCESS_TO
 const only = (() => { const i = process.argv.indexOf("--only"); return i > 0 ? (process.argv[i + 1] || "").toLowerCase() : ""; })();
 const useBsky = !DRY && (!only || only === "bluesky") && bsky.handle && bsky.password;
 const useX = !DRY && (!only || only === "x") && x.key && x.secret && x.token && x.tokenSecret;
+// The webhook link is a secret, so it's never printed, and anything that isn't a Discord webhook is ignored.
+const discordUrl = env.DISCORD_WEBHOOK_URL || "";
+if (discordUrl && !isDiscordWebhook(discordUrl)) console.log("DISCORD_WEBHOOK_URL is set but isn't a Discord webhook link. Not posting to Discord.");
+const useDiscord = !DRY && (!only || only === "discord") && isDiscordWebhook(discordUrl);
+const restockToX = config.social?.restockToX === true;
+const discordPost = p => postToDiscord(discordUrl, p.discord);
+// Where a post goes: restocks to Bluesky and Discord (X only if the config says so), everything else to Bluesky and X.
+const targets = p => p.restock
+  ? [["Bluesky", useBsky, bskyPost], ["Discord", useDiscord, discordPost], ["X", useX && restockToX, xPost]]
+  : [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]];
 
 async function request(url, opts) {
   const res = await fetch(url, opts);
@@ -101,11 +114,11 @@ if (process.argv.includes("--scheduled")) {
   if (week) posts.unshift(week);
   if (!posts.length) { console.log(`Nothing to post for ${today}.`); process.exit(0); }
   if (posts.length > MAX_POSTS) { console.log(`${posts.length} posts at once looks wrong. Not posting.`); process.exit(1); }
-  if (!useBsky && !useX) console.log("Dry run (no Bluesky or X keys, or --dry-run). Would post:");
+  if (!useBsky && !useX && !useDiscord) console.log("Dry run (no Bluesky, X or Discord keys, or --dry-run). Would post:");
   let failed = 0;
   for (const p of posts) {
     console.log(`\n---\n${p.text}`);
-    for (const [name, on, fn] of [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]]) {
+    for (const [name, on, fn] of targets(p)) {
       if (!on) continue;
       try { await fn(p); console.log(`  posted to ${name}`); }
       catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }
@@ -123,9 +136,9 @@ if (ownText !== undefined) {
   const url = (text.match(/https?:\/\/\S+/) || [])[0] || config.siteUrl;
   const p = { text, url, title: config.siteName, description: "Special edition consoles, controllers, games and collectibles: release dates, prices and where to buy.", imageFile: arg("--image") };
   if (!text.includes(url)) p.text = `${text}\n${url}`;
-  console.log(`${useBsky || useX ? "Posting" : "Dry run, would post"}:\n${p.text}`);
+  console.log(`${useBsky || useX || useDiscord ? "Posting" : "Dry run, would post"}:\n${p.text}`);
   let failed = 0;
-  for (const [name, on, fn] of [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]]) {
+  for (const [name, on, fn] of targets(p)) {
     if (!on) continue;
     try { await fn(p); console.log(`  posted to ${name}`); }
     catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }
@@ -144,12 +157,12 @@ catch { console.log("Couldn't read the previous releases.json. Nothing to post."
 const posts = socialPosts(oldData, data, config.siteUrl);
 if (!posts.length) { console.log("No release news worth a post."); process.exit(0); }
 if (posts.length > MAX_POSTS) { console.log(`${posts.length} posts at once looks like a bulk edit. Not posting.`); process.exit(0); }
-if (!useBsky && !useX) console.log("Dry run (no Bluesky or X keys, or --dry-run). Would post:");
+if (!useBsky && !useX && !useDiscord) console.log("Dry run (no Bluesky, X or Discord keys, or --dry-run). Would post:");
 
 let failed = 0;
 for (const p of posts) {
   console.log(`\n---\n${p.text}`);
-  for (const [name, on, fn] of [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]]) {
+  for (const [name, on, fn] of targets(p)) {
     if (!on) continue;
     try { await fn(p); console.log(`  posted to ${name}`); }
     catch (e) { failed++; console.log(`  ${name} failed: ${e.message}`); }

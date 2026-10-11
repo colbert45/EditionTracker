@@ -57,6 +57,10 @@ After each change to `main` goes live, `scripts/social.mjs` posts release news t
 
 The **Scheduled posts** action also posts "Out today" for each release on its release day, and on Thursdays a "Coming out this week" list linking the calendar. It tries hourly from 9am New York time and posts once a day. The **Post to social** action posts a message of your own.
 
+**Restocks** get their own post, whenever a restock is logged by the phone action or merged from the news check: "Back in stock: <release> at <store>", the MSRP, and a link to the release page ("Reported back in stock" for one from a news report). They go to Bluesky, and to a Discord channel when the `DISCORD_WEBHOOK_URL` secret is set. They don't go to X unless `social.restockToX` is `true` in `site.config.json`, because X charges $0.20 for every post that has a link. The phone action posts to Bluesky and Discord right after the email.
+
+**Discord (optional).** Make a server and a read-only `#restock-alerts` channel (turn off Send Messages for everyone). Then channel settings > Integrations > Webhooks > New Webhook > Copy Webhook URL, and save that link as a repository secret named `DISCORD_WEBHOOK_URL` (repo > Settings > Secrets and variables > Actions > New repository secret). The link works like a password, so it's never printed and only a real Discord webhook link is accepted. Posts can't ping anyone. Without the secret nothing is posted to Discord.
+
 Bluesky needs the `BLUESKY_APP_PASSWORD` secret (the handle is in `site.config.json`). X needs `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN` and `X_ACCESS_TOKEN_SECRET`. Without them the step only logs what it would post.
 
 Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store.

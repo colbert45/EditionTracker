@@ -1,7 +1,8 @@
 # Run this from your phone when something is back in stock.
 # GitHub app (or github.com) > Actions > Post a restock > Run workflow, fill in the boxes, tap Run.
 # It logs the restock on the release's page, switches the release to "Back in stock", emails the
-# people who follow it, and redeploys the site. About 30 seconds from tap to inbox.
+# people who follow it, posts it to Bluesky (and Discord, if set up), and redeploys the site.
+# About 30 seconds from tap to inbox.
 # Tick "Dry run" to see exactly what would happen (including the email) without changing anything.
 # If the restock saved but the email step failed, run "Resend restock email".
 name: Post a restock
@@ -64,6 +65,16 @@ jobs:
           BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
           BEFORE: ${{ steps.record.outputs.before }}
         run: node scripts/alerts.mjs send "$BEFORE"
+      # Posts the restock to Bluesky, and to Discord once the DISCORD_WEBHOOK_URL secret exists. Not to X,
+      # which charges for every post. A failed post doesn't fail the run; check this step's log if one is missing.
+      - name: Post to Bluesky and Discord
+        if: steps.record.outputs.alert == 'true'
+        continue-on-error: true
+        env:
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          BEFORE: ${{ steps.record.outputs.before }}
+        run: node scripts/social.mjs "$BEFORE"
       - name: Redeploy the site
         if: ${{ !cancelled() && steps.record.outputs.changed == 'true' }}
         env:

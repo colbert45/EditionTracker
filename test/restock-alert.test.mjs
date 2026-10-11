@@ -128,9 +128,12 @@ test("a restock and a status change together are one email", () => {
   assert.ok(!alerts[0].lines.some(l => l.startsWith("Status:")));
 });
 
-test("restocks are kept out of social posts until phase 2", () => {
-  const { old, now } = restocked([BB]);
-  assert.deepEqual(socialPosts(old, now, SITE), []);
+test("a restock makes one social post, and a status flip with no log entry makes none", () => {
+  const { old, now, it } = restocked([BB]);
+  const posts = socialPosts(old, now, SITE);
+  assert.equal(posts.length, 1);
+  assert.equal(posts[0].restock, true);
+  assert.equal(posts[0].text.split("\n")[0], `Back in stock: ${it.name} at Best Buy`);
   const o2 = base();
   o2.items.find(i => i.id === ID).status = "soldout";
   const n2 = base();
