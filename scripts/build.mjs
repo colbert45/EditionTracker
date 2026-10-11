@@ -152,6 +152,12 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .btn{display:inline-block;padding:10px 22px;border-radius:999px;background:var(--red);color:#fff;font-weight:700;text-decoration:none}
 .btn:hover{filter:brightness(1.08)}
 @media (max-width:600px){.mast{flex-wrap:wrap;row-gap:4px}.mast .updated{display:block;order:3;flex-basis:100%;font-size:.8rem}}
+.costs{width:100%;border-collapse:collapse;margin:6px 0 10px}
+.costs td{padding:11px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.costs tr:first-child td{border-top:1px solid var(--line)}
+.costs td:first-child{font-weight:600}
+.costs td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:14px}
+.costs .what{display:block;margin-top:2px;color:var(--soft);font-size:.9rem;font-weight:400}
 .cal-month{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @media (max-width:600px){
   .fcard{grid-template-columns:1fr;gap:10px;padding:18px 18px 20px}
@@ -515,7 +521,7 @@ function privacy() {
     <p>The site is hosted on GitHub Pages, which may log your IP address for security. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.</p>
     <h2>Questions</h2>
     <p>Email <a href="mailto:hello@editiontracker.com">hello@editiontracker.com</a>.</p>
-    <p class="small">Last updated October 11, 2026.</p>
+    <p class="small">Last updated October 10, 2026.</p>
   </article>`;
   return page({ title: `Privacy and cookies | ${NAME}`, description: "What Edition Tracker collects, which cookies it uses, and how to opt out.",
     path: "/privacy/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body });
@@ -528,11 +534,43 @@ function contact() {
     <ul class="plain steps">
       <li><b>Spotted an edition that's missing?</b> Send a link to the announcement or store page to <a href="mailto:tips@editiontracker.com"><b>tips@editiontracker.com</b></a>. It'll be added once there's a source.</li>
       <li><b>Something wrong on a page?</b> Tell me which release and what's off.</li>
+      <li><b>Wondering who pays for this?</b> I do, and there are no ads or affiliate links. <a href="/about/">See what it costs</a>.</li>
       <li><b>Want alerts?</b> Use the form below, or tap <b>Alert me about this</b> on any release page.</li>
     </ul>
   </article>`;
   return page({ title: `Contact | ${NAME}`, description: "Send Edition Tracker a tip, a correction or a question.",
     path: "/contact/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body });
+}
+
+// About page: how it works and what it costs. The cost rows live in data/costs.json,
+// so updating a number is a one-line edit. A row with no price is left out.
+const COSTS = (() => { try { return JSON.parse(read("data/costs.json")); } catch { return null; } })();
+const costRows = (COSTS?.items || []).filter(r => r && typeof r.name === "string" && typeof r.price === "string" && r.price.trim());
+const SUPPORT = /^https:\/\//.test(config.support?.url || "") ? { url: config.support.url, label: config.support.label || "Buy me a coffee" } : null;
+
+function about() {
+  const rows = costRows.map(r => `<tr><td>${esc(r.name)}${r.what ? `<span class="what">${esc(r.what)}</span>` : ""}</td><td>${esc(r.price)}</td></tr>`).join("");
+  const asOf = /^\d{4}-\d{2}-\d{2}$/.test(COSTS?.updated || "") ? ` as of ${long(COSTS.updated)}` : "";
+  const body = `<article class="item note">
+    <h1>About Edition Tracker</h1>
+    <p class="big">Edition Tracker lists special edition consoles, controllers, games and collectibles, with release dates, prices and where to look. The goal is simple: help regular buyers get things at MSRP before resellers do.</p>
+    <h2>No ads. No affiliate links.</h2>
+    <p>Nothing here is paid for by a store or an advertiser. Links go to the store's own pages, and I don't get a cut when you buy. I don't run sponsored posts either.</p>
+    <h2>How the news gets here</h2>
+    <p>Resellers use bots to buy out stock in seconds. The only bot here reads gaming news sites twice a day and suggests changes. I check the sources and approve every change before it goes live.</p>
+    <p>Restock alerts I post by hand, with a link to the store and a source. If I get something wrong, <a href="mailto:hello@editiontracker.com">tell me</a> and I'll fix it.</p>
+    ${costRows.length ? `<h2>What it costs</h2>
+    <p>I pay for this myself. Here's what it costs to run${asOf}:</p>
+    <table class="costs"><tbody>${rows}</tbody></table>
+    ${typeof COSTS.total === "string" && COSTS.total.trim() ? `<p><b>${esc(COSTS.total)}</b></p>` : ""}` : ""}
+    <h2>Want to help?</h2>
+    <ul class="plain steps">
+      <li><b>Saw a restock?</b> Send the store link to <a href="mailto:tips@editiontracker.com">tips@editiontracker.com</a>. I'll check it and post it.</li>
+      ${SUPPORT ? `<li><b>Chip in.</b> If you'd like to cover the bills above, you can <a href="${esc(SUPPORT.url)}" rel="noopener">${esc(SUPPORT.label)}</a>. I'll keep this page up to date, and if tips ever cover more than the bills I'll say so here.</li>` : ""}
+    </ul>
+  </article>`;
+  return page({ title: `About and what it costs | ${NAME}`, description: "No ads, no affiliate links. How Edition Tracker works and what it costs to run.",
+    path: "/about/", ogImage: `${SITE}/og/home.png`, ogAlt: NAME, body });
 }
 
 function welcome() {
@@ -612,6 +650,7 @@ write("404.html", notFound());
 write("subscribed/index.html", subscribed());
 write("welcome/index.html", welcome());
 write("privacy/index.html", privacy());
+write("about/index.html", about());
 // Proves to Bluesky that @editiontracker.com is this site's account.
 if (/^did:[a-z]+:[a-z0-9]+$/i.test(config.social?.blueskyDid || "")) write(".well-known/atproto-did", config.social.blueskyDid);
 write("contact/index.html", contact());
@@ -627,6 +666,7 @@ write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${SITE}/</loc><lastmod>${data.updated}</lastmod></url>
   <url><loc>${SITE}/calendar/</loc><lastmod>${data.updated}</lastmod></url>
+  <url><loc>${SITE}/about/</loc><lastmod>${data.updated}</lastmod></url>
 ${ITEMS.map(i => `  <url><loc>${esc(i.url)}</loc><lastmod>${lastmod(i)}</lastmod></url>`).join("\n")}
 </urlset>
 `);

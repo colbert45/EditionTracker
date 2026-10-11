@@ -45,7 +45,7 @@ test("every page has its own title, description, canonical and Product data", ()
   assert.equal(titles.size, data.items.length);
   assert.equal(descs.size, data.items.length);
   const sitemap = readFileSync(join(ROOT, "_site/sitemap.xml"), "utf8");
-  assert.equal((sitemap.match(/<loc>/g) || []).length, data.items.length + 2); // homepage + calendar
+  assert.equal((sitemap.match(/<loc>/g) || []).length, data.items.length + 3); // homepage + calendar + about
 });
 
 test("no page has affiliate links, tags or sponsored markup", async () => {

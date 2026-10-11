@@ -23,5 +23,9 @@
     "bluesky": "editiontracker.com",
     "x": "editiontracker",
     "blueskyDid": "did:plc:lh2jnxw3w43w4zx6b5fdc7np"
+  },
+  "support": {
+    "url": "",
+    "label": "Buy me a coffee"
   }
 }

@@ -1,0 +1,41 @@
+{
+  "updated": "2026-10-10",
+  "total": null,
+  "items": [
+    {
+      "name": "Alert emails",
+      "what": "Buttondown sends the alerts and the weekly roundup (Basic plan).",
+      "price": "$9 a month"
+    },
+    {
+      "name": "News check",
+      "what": "An AI model (Claude) reads gaming news twice a day and suggests changes. I approve every one. Estimated from the real run logs.",
+      "price": "About $4 to $7 a month"
+    },
+    {
+      "name": "Posts on X",
+      "what": "X charges $0.20 for each post that has a link in it.",
+      "price": "$0.20 a post"
+    },
+    {
+      "name": "Posts on Bluesky",
+      "what": "",
+      "price": "Free"
+    },
+    {
+      "name": "Website hosting",
+      "what": "GitHub Pages.",
+      "price": "Free"
+    },
+    {
+      "name": "Visit counts",
+      "what": "Google Analytics. The privacy page says what it collects.",
+      "price": "Free"
+    },
+    {
+      "name": "Domain name",
+      "what": "editiontracker.com, renewed every year.",
+      "price": ""
+    }
+  ]
+}
