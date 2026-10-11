@@ -54,6 +54,31 @@ test("a source that just repeats the listing link is left out", () => {
   assert.doesNotMatch(emailBody(planAlerts(old, now, SITE)[0], now.categories), /Source:/);
 });
 
+test("a restock from a news report says so, and that it may be gone", () => {
+  const RP = { date: "2026-10-09", store: "bestbuy", url: "https://www.bestbuy.com/site/searchpage.jsp?st=Example", source: "https://www.nintendolife.com/news/2026/10/best-buy-restock", reported: true };
+  const { old, now, it } = restocked([RP]);
+  const [a, ...rest] = planAlerts(old, now, SITE);
+  assert.equal(rest.length, 0);
+  assert.equal(a.subject, `Reported back in stock: ${it.name} at Best Buy`);
+  assert.deepEqual(a.lines, ["Reported back in stock at Best Buy."]);
+  const body = emailBody(a, now.categories);
+  assert.match(body, new RegExp(`^## Reported back in stock: `));
+  assert.match(body, /\*\*Best Buy\*\* was reported back in stock on Oct 9, 2026, per \[nintendolife.com\]\(https:\/\/www.nintendolife.com\/news\/2026\/10\/best-buy-restock\)\./);
+  assert.match(body, /That report may be hours old, so it may already be gone\. \[Check Best Buy →\]\(https:\/\/www.bestbuy.com\/site\/searchpage.jsp\?st=Example\)/);
+  assert.doesNotMatch(body, /has it\./); // it doesn't claim the store has it
+  assert.match(body, new RegExp(`\\*\\*MSRP ${escape(msrpText(PICK))}\\.\\*\\* Don't pay more\\.`));
+  // One checked at the store and one reported: the email leads with the confirmed wording and keeps each line honest.
+  const mixed = restocked([BB, RP]);
+  const [m] = planAlerts(mixed.old, mixed.now, SITE);
+  assert.equal(m.subject, `Back in stock: ${mixed.it.name} at Best Buy`);
+  const mixedBody = emailBody(m, mixed.now.categories);
+  assert.match(mixedBody, /^## Back in stock: /);
+  assert.match(mixedBody, /has it\. \[Go to the listing →\]/);
+  assert.match(mixedBody, /was reported back in stock on/);
+  // The weekly roundup says "Reported" too.
+  assert.match(roundupEmail(planAlerts(old, now, SITE), now.categories).body, /Reported back in stock at Best Buy\./);
+});
+
 test("a bracket in a link can't end the Markdown link early", () => {
   const url = "https://www.bestbuy.com/site/zelda-(40th)/6000000.p?skuId=6000000";
   const source = "https://en.wikipedia.org/wiki/Nintendo_(company)";

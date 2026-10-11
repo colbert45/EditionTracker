@@ -65,6 +65,12 @@ const isOut = i => i.status === "out" || i.status === "soldout" || (i.date && da
 // Restocks, newest first (the log on a release page, and "last restocked" on the homepage).
 const restocksNewestFirst = i => (i.restocks || []).map((r, k) => [r, k]).sort((a, b) => b[0].date.localeCompare(a[0].date) || b[1] - a[1]).map(x => x[0]);
 const lastRestock = i => restocksNewestFirst(i)[0] || null;
+// "Reported" restocks come from a news report, not from someone checking the store.
+const restockWord = r => r.reported ? "Reported" : "Restocked";
+// A restock a couple of days old may be sold out by now, and the page says so.
+const restockAge = i => { const r = lastRestock(i); return r ? -daysOut(r.date) : null; };
+const restockIsOld = i => i.status === "restock" && restockAge(i) >= 2;
+const hostName = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
 const storeName = k => STORES[k]?.name || k;
 const when = i => i.date ? long(i.date) : (i.when || "TBA");
 const chip = s => `<span class="st" style="--c:var(--c-${s});--t:var(--t-${s})">${esc(STATUS[s])}</span>`;
@@ -311,7 +317,7 @@ function rowHTML(i) {
   return `<li data-i="${i.n}" data-q="${esc(q)}" data-cat="${esc(i.category)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}${rs ? ` data-rs="${rs.date}"` : ""}><a href="${esc(i.path)}">
     <span class="thumb">${thumb(i)}</span>
     <span class="nm">${esc(i.name)}<span class="pf">${esc(i.platform)}, ${esc(i.price)}</span></span>
-    <span class="dt">${rs ? `Restocked ${short(rs.date)}<span>at ${esc(storeName(rs.store))}</span>` : `${i.date ? (isOut(i) ? long(i.date) : short(i.date)) : esc(i.when || "TBA")}${sub ? `<span>${sub}</span>` : ""}`}</span>
+    <span class="dt">${rs ? `${restockWord(rs)} ${short(rs.date)}<span>at ${esc(storeName(rs.store))}${restockIsOld(i) ? " · may be gone" : ""}</span>` : `${i.date ? (isOut(i) ? long(i.date) : short(i.date)) : esc(i.when || "TBA")}${sub ? `<span>${sub}</span>` : ""}`}</span>
     <span>${chip(i.status)}</span></a></li>`;
 }
 
@@ -463,6 +469,15 @@ const wantsAlert = i => i.status === "soldout" || i.status === "restock" || !isO
 // Short enough that Google shows it whole (about 60 characters).
 const itemTitle = i => { const t = `${i.name}: release date and price | ${NAME}`; return t.length <= 62 ? t : `${i.name} | ${NAME}`; };
 
+// One line of the restock history. A reported restock says where it was reported.
+function restockRow(r) {
+  const link = u => `<a href="${esc(u)}" target="_blank" rel="noopener">`;
+  const note = r.reported
+    ? ` <span class="small">· Reported${r.source ? ` on ${link(r.source)}${esc(hostName(r.source))}</a>` : ""}</span>`
+    : r.source && r.source !== r.url ? ` <span class="small">· ${link(r.source)}Source</a></span>` : "";
+  return `<li><time datetime="${r.date}">${long(r.date)}</time><span>${link(r.url)}${esc(storeName(r.store))}</a>${note}</span></li>`;
+}
+
 function item(i, ogImage) {
   const n = i.date ? daysOut(i.date) : null;
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
@@ -489,7 +504,8 @@ function item(i, ogImage) {
     ${i.stores.length ? `<table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
     ${i.stores.some(s => s.listed) ? `<p class="small">Links open the store's own search. Stock changes by the hour. Check that the seller is the store itself, and don't pay over MSRP.</p>` : ""}` : `<p class="small">Not listed yet</p>`}
     ${(i.restocks || []).length ? `<h2>Restock history</h2>
-    <ul class="tl">${restocksNewestFirst(i).map(r => `<li><time datetime="${r.date}">${long(r.date)}</time><span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(storeName(r.store))}</a>${r.source && r.source !== r.url ? ` <span class="small">· <a href="${esc(r.source)}" target="_blank" rel="noopener">Source</a></span>` : ""}</span></li>`).join("")}</ul>` : ""}
+    ${restockIsOld(i) ? `<p class="small">The latest restock was ${restockAge(i)} days ago, so it may be sold out by now.</p>` : ""}
+    <ul class="tl">${restocksNewestFirst(i).map(restockRow).join("")}</ul>` : ""}
     ${i.timeline.length ? `<h2>Timeline</h2>
     <ul class="tl">${[...i.timeline].sort((a, b) => b.date.localeCompare(a.date)).map(t => `<li><time datetime="${t.date}">${long(t.date)}</time><span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
     <h2>Sources</h2>
@@ -737,7 +753,7 @@ ${feedItems.map(i => `  <item>
     <guid isPermaLink="false">${esc(i.url)}#${lastmod(i)}-${esc(i.status)}${(i.restocks || []).length ? `-r${i.restocks.length}` : ""}</guid>
     <pubDate>${rfc822(lastmod(i))}</pubDate>
     <category>${esc(CATS[i.category])}</category>
-    <description>${esc((i.status === "restock" && lastRestock(i) ? `Back in stock at ${storeName(lastRestock(i).store)}. ` : "") + (i.timeline.length ? [...i.timeline].sort((a, b) => b.date.localeCompare(a.date))[0].text + " " : "") + describe(i))}</description>
+    <description>${esc((i.status === "restock" && lastRestock(i) ? `${lastRestock(i).reported ? "Reported back in stock" : "Back in stock"} at ${storeName(lastRestock(i).store)}. ` : "") + (i.timeline.length ? [...i.timeline].sort((a, b) => b.date.localeCompare(a.date))[0].text + " " : "") + describe(i))}</description>
   </item>`).join("\n")}
 </channel>
 </rss>
