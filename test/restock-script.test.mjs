@@ -66,6 +66,14 @@ test("a restock is committed to main, and the sha before it is passed on for the
   assert.match(r.summary, /### Saved/);
 });
 
+test("with the Store box blank, the store comes from the link", () => {
+  const s = setup();
+  const r = run(s, { RESTOCK_RETAILER: "" });
+  assert.equal(r.status, 0, r.stderr + r.stdout);
+  assert.equal(git(s.origin, "log", "-1", "--format=%s", "main"), `Back in stock: ${PICK.name} at Best Buy`);
+  assert.equal(onOrigin(s).items.find(i => i.id === PICK.id).restocks[0].store, "bestbuy");
+});
+
 test("a dry run changes nothing and shows the email", () => {
   const s = setup();
   const r = run(s, { RESTOCK_DRY_RUN: "true" });

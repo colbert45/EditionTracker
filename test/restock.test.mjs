@@ -168,6 +168,24 @@ test("a second restock at the same store on the same day is one entry, however t
   assert.equal(wave2.data.items.find(i => i.id === "xbox-series-x25").restocks.length, 2);
 });
 
+test("the Store box can be left blank: the store is read from the link", () => {
+  assert.equal(restock({ retailer: "" }).entry.store, "bestbuy");
+  assert.equal(restock({ retailer: "   " }).entry.store, "bestbuy");
+  assert.equal(restock({ retailer: "", link: "https://www.microsoft.com/en-us/d/xbox-series-x/8k5kr3x2l3vn" }).entry.store, "xbox");
+  assert.equal(restock({ retailer: "", link: "https://direct.playstation.com/en-us/item/x" }).entry.store, "psdirect");
+  // A website that isn't a store on the list: say so, and say what to do.
+  fails(() => restock({ retailer: "", link: "https://www.walmart.com/ip/1" }), /can't tell which store walmart\.com is[\s\S]*Store box/);
+  // A blank link is reported once, not twice.
+  assert.throws(() => restock({ retailer: "", link: "" }), e => e instanceof InputError && e.message.split("\n").length === 1 && /The link is empty/.test(e.message));
+  // Two stores on one website: it won't guess.
+  const two = mini();
+  two.stores.outlet = { name: "Best Buy Outlet", url: "https://www.bestbuy.com/outlet/" };
+  fails(() => restock({ retailer: "" }, two), /could be Best Buy or Best Buy Outlet/);
+  assert.equal(restock({ retailer: "outlet" }, two).entry.store, "outlet");
+  // A store typed in still has to match the link's website.
+  fails(() => restock({ retailer: "target", link: BB }), /goes to bestbuy\.com, but Target sells from target\.com/);
+});
+
 test("every mistake is reported at once", () => {
   assert.throws(
     () => restock({ item: "zelda 40th", retailer: "amazon", link: "http://x" }),

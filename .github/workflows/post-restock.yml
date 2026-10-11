@@ -12,12 +12,12 @@ on:
       item:
         description: "Release: part of its name, or its id. Example: switch-2-zelda-40th"
         required: true
-      retailer:
-        description: "Store that has it. Example: Best Buy"
-        required: true
       link:
-        description: "Link to the product page on that store's own site"
+        description: "Link to the product page on the store's own site"
         required: true
+      retailer:
+        description: "Store (optional, it's read from the link). Example: Best Buy"
+        required: false
       source:
         description: "Where you saw it, a post or article link (optional)"
         required: false

@@ -38,8 +38,10 @@ test("post-restock: the email goes out before the deploy is asked for, and only 
   assert.match(yml, /if: steps\.record\.outputs\.alert == 'true'/);
   assert.match(yml, /BUTTONDOWN_API_KEY: \$\{\{ secrets\.BUTTONDOWN_API_KEY \}\}/);
   assert.match(yml, /BEFORE: \$\{\{ steps\.record\.outputs\.before \}\}/);
-  for (const field of ["item", "retailer", "link"]) assert.match(yml, new RegExp(`      ${field}:\\n        description: [^\\n]+\\n        required: true`));
-  assert.match(yml, /source:\n        description: [^\n]+\n        required: false/);
+  for (const field of ["item", "link"]) assert.match(yml, new RegExp(`      ${field}:\\n        description: [^\\n]+\\n        required: true`));
+  // The store is read from the link, so it's optional (and so is the source).
+  for (const field of ["retailer", "source"]) assert.match(yml, new RegExp(`      ${field}:\\n        description: [^\\n]+\\n        required: false`));
+  assert.ok(yml.indexOf("      item:") < yml.indexOf("      link:") && yml.indexOf("      link:") < yml.indexOf("      retailer:"), "the required boxes come first");
 });
 
 test("sold-out-again: never emails", () => {
