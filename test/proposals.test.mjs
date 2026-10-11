@@ -146,6 +146,7 @@ test("merging a reported restock emails it as reported", () => {
   const [alert, ...rest] = planAlerts(before, next, "https://editiontracker.com");
   assert.equal(rest.length, 0);
   assert.equal(alert.kind, "restock");
+  assert.deepEqual(alert.tags, [`item:${PICK.id}`]);
   assert.match(alert.subject, /^Reported back in stock: .* at Best Buy$/);
   const body = emailBody(alert, next.categories);
   assert.match(body, /was reported back in stock on Oct 12, 2026, per \[news\.example\]\(https:\/\/news\.example\/zelda-restock\)/);

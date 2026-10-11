@@ -61,8 +61,12 @@ test("a restock from a news report says so, and that it may be gone", () => {
   assert.equal(rest.length, 0);
   assert.equal(a.subject, `Reported back in stock: ${it.name} at Best Buy`);
   assert.deepEqual(a.lines, ["Reported back in stock at Best Buy."]);
+  // Only the people following this release hear about a report, not the whole category.
+  assert.deepEqual(a.tags, [`item:${ID}`]);
   const body = emailBody(a, now.categories);
   assert.match(body, new RegExp(`^## Reported back in stock: `));
+  assert.match(body, /You're getting this because you asked for alerts on this release\./);
+  assert.doesNotMatch(body, /asked for alerts on this release or on/);
   assert.match(body, /\*\*Best Buy\*\* was reported back in stock on Oct 9, 2026, per \[nintendolife.com\]\(https:\/\/www.nintendolife.com\/news\/2026\/10\/best-buy-restock\)\./);
   assert.match(body, /That report may be hours old, so it may already be gone\. \[Check Best Buy →\]\(https:\/\/www.bestbuy.com\/site\/searchpage.jsp\?st=Example\)/);
   assert.doesNotMatch(body, /has it\./); // it doesn't claim the store has it
@@ -71,6 +75,7 @@ test("a restock from a news report says so, and that it may be gone", () => {
   const mixed = restocked([BB, RP]);
   const [m] = planAlerts(mixed.old, mixed.now, SITE);
   assert.equal(m.subject, `Back in stock: ${mixed.it.name} at Best Buy`);
+  assert.deepEqual(m.tags, [`item:${ID}`, `type:${mixed.it.category}`]); // a checked restock still goes to the category
   const mixedBody = emailBody(m, mixed.now.categories);
   assert.match(mixedBody, /^## Back in stock: /);
   assert.match(mixedBody, /has it\. \[Go to the listing →\]/);
