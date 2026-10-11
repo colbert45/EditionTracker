@@ -21,7 +21,8 @@
     "announced": "Announced",
     "preorder": "Preorders open",
     "out": "Out now",
-    "soldout": "Sold out"
+    "soldout": "Sold out",
+    "restock": "Back in stock"
   },
   "stores": {
     "nintendo": {

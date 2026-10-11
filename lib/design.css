@@ -2,16 +2,17 @@
   --bg:#FFFFFF; --ink:#16181D; --soft:#5B6170; --line:#E3E5EA; --row:#F6F7F9; --red:#D7263D;
   --c-rumor:#6B5B95; --t-rumor:#EFECF6; --c-announced:#2563A8; --t-announced:#E7F0FA;
   --c-preorder:#8A5A00; --t-preorder:#FDF1D6; --c-out:#1E7A4C; --t-out:#E3F4EA; --c-soldout:#B42335; --t-soldout:#FBE6E9;
+  --c-restock:#0B6E78; --t-restock:#DDF2F4;
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){ --bg:#121418; --ink:#ECEEF2; --soft:#A2A8B5; --line:#2A2E36; --row:#1A1D23; --red:#FF4D62;
     --c-rumor:#C3B6EA; --t-rumor:#2A2540; --c-announced:#8DBBF0; --t-announced:#18283C; --c-preorder:#F4C66B; --t-preorder:#3A2E12;
-    --c-out:#7FD3A6; --t-out:#163126; --c-soldout:#FF9AA6; --t-soldout:#3D1A20; }
+    --c-out:#7FD3A6; --t-out:#163126; --c-soldout:#FF9AA6; --t-soldout:#3D1A20; --c-restock:#6FD6E0; --t-restock:#10323A; }
 }
 :root[data-theme="dark"]{ --bg:#121418; --ink:#ECEEF2; --soft:#A2A8B5; --line:#2A2E36; --row:#1A1D23; --red:#FF4D62;
   --c-rumor:#C3B6EA; --t-rumor:#2A2540; --c-announced:#8DBBF0; --t-announced:#18283C; --c-preorder:#F4C66B; --t-preorder:#3A2E12;
-  --c-out:#7FD3A6; --t-out:#163126; --c-soldout:#FF9AA6; --t-soldout:#3D1A20; }
+  --c-out:#7FD3A6; --t-out:#163126; --c-soldout:#FF9AA6; --t-soldout:#3D1A20; --c-restock:#6FD6E0; --t-restock:#10323A; }
 html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.5}

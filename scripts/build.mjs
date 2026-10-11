@@ -57,7 +57,11 @@ const ITEMS = data.items.map((it, n) => ({
   path: `/${it.id}/`
 }));
 
-const isOut = i => i.status === "out" || i.status === "soldout" || (i.date && daysOut(i.date) < 0);
+const isOut = i => i.status === "out" || i.status === "soldout" || i.status === "restock" || (i.date && daysOut(i.date) < 0);
+// Restocks, newest first (the log on a release page, and "last restocked" on the homepage).
+const restocksNewestFirst = i => (i.restocks || []).map((r, k) => [r, k]).sort((a, b) => b[0].date.localeCompare(a[0].date) || b[1] - a[1]).map(x => x[0]);
+const lastRestock = i => restocksNewestFirst(i)[0] || null;
+const storeName = k => STORES[k]?.name || k;
 const when = i => i.date ? long(i.date) : (i.when || "TBA");
 const chip = s => `<span class="st" style="--c:var(--c-${s});--t:var(--t-${s})">${esc(STATUS[s])}</span>`;
 const absUrl = u => u.startsWith("/") ? SITE + u : u;
@@ -291,10 +295,11 @@ function rowHTML(i) {
   let sub = "";
   if (i.date && !isOut(i)) { const n = daysOut(i.date); sub = n === 0 ? "today" : n === 1 ? "tomorrow" : `in ${n} days`; }
   const q = [i.name, i.platform, CATS[i.category], STATUS[i.status], i.searchQuery].join(" ").toLowerCase();
-  return `<li data-i="${i.n}" data-q="${esc(q)}" data-cat="${esc(i.category)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}><a href="${esc(i.path)}">
+  const rs = i.status === "restock" ? lastRestock(i) : null;
+  return `<li data-i="${i.n}" data-q="${esc(q)}" data-cat="${esc(i.category)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}${rs ? ` data-rs="${rs.date}"` : ""}><a href="${esc(i.path)}">
     <span class="thumb">${thumb(i)}</span>
     <span class="nm">${esc(i.name)}<span class="pf">${esc(i.platform)}, ${esc(i.price)}</span></span>
-    <span class="dt">${i.date ? (isOut(i) ? long(i.date) : short(i.date)) : esc(i.when || "TBA")}${sub ? `<span>${sub}</span>` : ""}</span>
+    <span class="dt">${rs ? `Restocked ${short(rs.date)}<span>at ${esc(storeName(rs.store))}</span>` : `${i.date ? (isOut(i) ? long(i.date) : short(i.date)) : esc(i.when || "TBA")}${sub ? `<span>${sub}</span>` : ""}`}</span>
     <span>${chip(i.status)}</span></a></li>`;
 }
 
@@ -324,7 +329,8 @@ function home() {
   const byDate = (a, b) => (a.date || "9999").localeCompare(b.date || "9999");
   const coming = ITEMS.filter(i => i.status !== "rumor" && !isOut(i)).sort(byDate);
   const rumors = ITEMS.filter(i => i.status === "rumor");
-  const out = ITEMS.filter(i => i.status !== "rumor" && isOut(i)).sort((a, b) => byDate(b, a));
+  const restock = ITEMS.filter(i => i.status === "restock").sort((a, b) => (lastRestock(b)?.date || "").localeCompare(lastRestock(a)?.date || ""));
+  const out = ITEMS.filter(i => i.status !== "rumor" && i.status !== "restock" && isOut(i)).sort((a, b) => byDate(b, a));
   const chips = [["all", "Everything"]].concat(Object.entries(CATS))
     .map(([k, v]) => `<button type="button" data-cat="${esc(k)}" aria-pressed="${k === "all"}">${esc(v)}</button>`).join("");
   const featuredIds = Array.isArray(data.featured) && data.featured.length ? data.featured : coming.filter(i => i.date).slice(0, 4).map(i => i.id);
@@ -338,6 +344,7 @@ function home() {
       <p class="hero-sub">Consoles, games, controllers and collectibles: when they come out, what they cost, and where to look. Updated daily as news drops.</p>
       <ul class="stats">
         <li><b>${ITEMS.length}</b> tracked</li>
+        ${count("restock") ? `<li><b>${count("restock")}</b> back in stock</li>` : ""}
         <li><b>${count("preorder")}</b> preorders open</li>
         ${thisMonth ? `<li><b>${thisMonth}</b> out this month</li>` : ""}
         <li><b>${count("rumor")}</b> rumors</li>
@@ -353,6 +360,7 @@ function home() {
     </section>` : ""}
     <input class="search" type="search" placeholder="Search releases" aria-label="Search releases" autocomplete="off">
     <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
+    ${section("restock", "Back in stock", "buy from the store itself, at MSRP", restock)}
     ${section("coming", "Coming up", "", coming, true)}
     ${section("rumors", "Rumors and leaks", "not confirmed", rumors)}
     ${section("out", "Already out", "", out)}`;
@@ -370,13 +378,13 @@ function home() {
 }
 
 // ---------- release pages ----------
-const STATUS_PHRASE = { rumor: "rumored, not confirmed", announced: "announced", preorder: "preorders open", out: "out now", soldout: "sold out" };
+const STATUS_PHRASE = { rumor: "rumored, not confirmed", announced: "announced", preorder: "preorders open", out: "out now", soldout: "sold out", restock: "back in stock" };
 
 // The "Preorders" fact on a release page.
 function preorders(i) {
   if (i.status === "soldout") return "Sold out";
   if (i.status === "preorder") return i.pre ? `Open since ${short(i.pre)}` : "Open";
-  if (i.status === "out") return i.pre ? `Opened ${long(i.pre)}` : "Closed";
+  if (i.status === "out" || i.status === "restock") return i.pre ? `Opened ${long(i.pre)}` : "Closed";
   return i.preordersStart ? `Opens ${long(i.preordersStart)}` : "Not yet";
 }
 
@@ -400,7 +408,7 @@ function offers(i) {
   if (i.status === "rumor") return undefined;
   const prices = [...i.price.matchAll(/\$\s?([\d,]+(?:\.\d{1,2})?)/g)].map(m => Number(m[1].replace(/,/g, "")));
   if (!prices.length) return undefined;
-  const availability = { preorder: "https://schema.org/PreOrder", out: "https://schema.org/InStock", soldout: "https://schema.org/SoldOut" }[i.status];
+  const availability = { preorder: "https://schema.org/PreOrder", out: "https://schema.org/InStock", restock: "https://schema.org/InStock", soldout: "https://schema.org/SoldOut" }[i.status];
   const base = { priceCurrency: "USD", url: i.url, ...(availability && { availability }),
     ...(i.status === "preorder" && i.date && { availabilityStarts: i.date }) };
   if (prices.length === 1) return { "@type": "Offer", price: prices[0].toFixed(2), ...base };
@@ -414,7 +422,7 @@ function storeRow(i, s) {
 }
 
 // Item alerts make sense until it's out, or while it's sold out (restocks).
-const wantsAlert = i => i.status === "soldout" || !isOut(i);
+const wantsAlert = i => i.status === "soldout" || i.status === "restock" || !isOut(i);
 
 // Short enough that Google shows it whole (about 60 characters).
 const itemTitle = i => { const t = `${i.name}: release date and price | ${NAME}`; return t.length <= 62 ? t : `${i.name} | ${NAME}`; };
@@ -422,14 +430,14 @@ const itemTitle = i => { const t = `${i.name}: release date and price | ${NAME}`
 function item(i, ogImage) {
   const n = i.date ? daysOut(i.date) : null;
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
-  const showCountdown = i.date && i.status !== "out" && i.status !== "soldout";
+  const showCountdown = i.date && i.status !== "out" && i.status !== "soldout" && i.status !== "restock";
   const hero = photoOnPage(i)
     ? `<figure class="hero" style="margin:0 0 14px"><div class="art"><img src="${esc(i.image)}" alt="${esc(i.name)}" decoding="async"></div><figcaption>${esc(i.imageCredit)}</figcaption></figure>`
     : `<figure class="hero" style="margin:0 0 14px"><div class="art">${art(artSpec(i))}</div><figcaption>Illustration, not a product photo</figcaption></figure>`;
   const body = `<article class="item">
     <a class="back" href="/">Back to all releases</a>
     <h1>${esc(i.name)}</h1>
-    <div class="sub"><span>${esc(i.platform)}</span>${chip(i.status)}${BD_USER && wantsAlert(i) ? `<a class="alert-me" href="#alerts">${i.status === "soldout" ? "Alert me on restock" : "Alert me about this"}</a>` : ""}</div>
+    <div class="sub"><span>${esc(i.platform)}</span>${chip(i.status)}${BD_USER && wantsAlert(i) ? `<a class="alert-me" href="#alerts">${i.status === "soldout" || i.status === "restock" ? "Alert me on restock" : "Alert me about this"}</a>` : ""}</div>
     ${hero}
     <dl class="facts">
       <div><dt>Price</dt><dd>${esc(i.price)}</dd></div>
@@ -443,6 +451,8 @@ function item(i, ogImage) {
     <h2>Where to buy</h2>
     ${i.stores.length ? `<table class="stores"><tbody>${i.stores.map(s => storeRow(i, s)).join("")}</tbody></table>
     ${i.stores.some(s => s.listed) ? `<p class="small">Links open the store's own search. Stock changes by the hour. Check that the seller is the store itself, and don't pay over MSRP.</p>` : ""}` : `<p class="small">Not listed yet</p>`}
+    ${(i.restocks || []).length ? `<h2>Restock history</h2>
+    <ul class="tl">${restocksNewestFirst(i).map(r => `<li><time datetime="${r.date}">${long(r.date)}</time><span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(storeName(r.store))}</a>${r.source && r.source !== r.url ? ` <span class="small">· <a href="${esc(r.source)}" target="_blank" rel="noopener">Source</a></span>` : ""}</span></li>`).join("")}</ul>` : ""}
     ${i.timeline.length ? `<h2>Timeline</h2>
     <ul class="tl">${[...i.timeline].sort((a, b) => b.date.localeCompare(a.date)).map(t => `<li><time datetime="${t.date}">${long(t.date)}</time><span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
     <h2>Sources</h2>
@@ -661,7 +671,7 @@ write("favicon.ico", ico(toPng(faviconSvg.replace(/<style>.*<\/style>/, "").repl
 write("apple-touch-icon.png", toPng(appleSvg, 180));
 
 // Last known change for a release: its newest timeline entry, else when preorders opened, else the site date.
-const lastmod = i => [...i.timeline.map(t => t.date), i.pre].filter(d => d && d <= TODAY).sort().pop() || data.updated;
+const lastmod = i => [...i.timeline.map(t => t.date), i.pre, ...(i.restocks || []).map(r => r.date)].filter(d => d && d <= TODAY).sort().pop() || data.updated;
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${SITE}/</loc><lastmod>${data.updated}</lastmod></url>
@@ -687,10 +697,10 @@ write("feed.xml", `<?xml version="1.0" encoding="UTF-8"?>
 ${feedItems.map(i => `  <item>
     <title>${esc(i.name)}${i.status === "rumor" ? " (rumor)" : ""}</title>
     <link>${esc(i.url)}</link>
-    <guid isPermaLink="false">${esc(i.url)}#${lastmod(i)}-${esc(i.status)}</guid>
+    <guid isPermaLink="false">${esc(i.url)}#${lastmod(i)}-${esc(i.status)}${(i.restocks || []).length ? `-r${i.restocks.length}` : ""}</guid>
     <pubDate>${rfc822(lastmod(i))}</pubDate>
     <category>${esc(CATS[i.category])}</category>
-    <description>${esc((i.timeline.length ? [...i.timeline].sort((a, b) => b.date.localeCompare(a.date))[0].text + " " : "") + describe(i))}</description>
+    <description>${esc((i.status === "restock" && lastRestock(i) ? `Back in stock at ${storeName(lastRestock(i).store)}. ` : "") + (i.timeline.length ? [...i.timeline].sort((a, b) => b.date.localeCompare(a.date))[0].text + " " : "") + describe(i))}</description>
   </item>`).join("\n")}
 </channel>
 </rss>
