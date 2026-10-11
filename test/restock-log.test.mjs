@@ -9,11 +9,14 @@ import { join } from "node:path";
 // Fake restocks, only ever built into a throwaway copy of the site.
 const { item: PICK, other: OTHER } = pickItems(plainData());
 const ID = PICK.id;
-const withRestocks = restocks => {
+// Released a long time ago unless a test says otherwise, so these don't change as the real dates pass.
+const PAST = "2020-01-01", FUTURE = "2099-01-01";
+const withRestocks = (restocks, patch = { releaseDate: PAST, releaseWindow: null }) => {
   const data = plainData();
   const it = data.items.find(i => i.id === ID);
   it.status = "restock";
   it.restocks = restocks;
+  Object.assign(it, patch);
   return data;
 };
 const ONE = [{ date: "2026-10-09", store: "bestbuy", url: "https://www.bestbuy.com/site/example/1.p", source: "https://example.com/news/best-buy-restock" }];
@@ -24,8 +27,35 @@ test("a release page shows the status, the log and an InStock offer", () => {
   assert.match(html, /<h2>Restock history<\/h2>/);
   assert.match(html, /<time datetime="2026-10-09">Oct 9, 2026<\/time><span><a href="https:\/\/www.bestbuy.com\/site\/example\/1.p" target="_blank" rel="noopener">Best Buy<\/a> <span class="small">· <a href="https:\/\/example.com\/news\/best-buy-restock"/);
   assert.match(html, /schema.org\/InStock/);
-  assert.doesNotMatch(html, /class="countdown"/);
+  assert.match(html, /<p class="countdown" data-release="2020-01-01" hidden><\/p>/); // already out: no countdown shown
   assert.match(html, /Alert me on restock/);
+});
+
+test("a restock of something that's already out leaves the calendar and says preorders are closed", () => {
+  const dir = buildCopy({ data: withRestocks(ONE, { releaseDate: PAST, releaseWindow: null, preordersOpened: "2019-12-01" }) });
+  const html = page(dir, ID);
+  assert.match(html, /<dt>Preorders<\/dt><dd>Opened Dec 1, 2019<\/dd>/);
+  assert.match(html, /schema.org\/InStock/);
+  assert.doesNotMatch(page(dir, "calendar"), new RegExp(`href="/${ID}/"`));
+});
+
+test("a preorder that's back in stock is still an upcoming release", () => {
+  const dir = buildCopy({ data: withRestocks(ONE, { releaseDate: FUTURE, releaseWindow: null, preordersOpened: "2026-09-01" }) });
+  const html = page(dir, ID);
+  assert.match(html, />Back in stock</);
+  assert.match(html, /schema.org\/PreOrder/);
+  assert.match(html, /"availabilityStarts":"2099-01-01"/);
+  assert.match(html, /<p class="countdown" data-release="2099-01-01">Out in \d+ days\.<\/p>/);
+  assert.match(html, /<dt>Preorders<\/dt><dd>Open since Sep 1<\/dd>/);
+  // Still on the calendar, and on the homepage once: under Back in stock, not also Coming up.
+  assert.match(page(dir, "calendar"), new RegExp(`href="/${ID}/"`));
+  const home = page(dir, ".");
+  const sec = name => home.slice(home.indexOf(`<section data-sec="${name}"`), home.indexOf("</section>", home.indexOf(`<section data-sec="${name}"`)));
+  assert.match(sec("restock"), new RegExp(`href="/${ID}/"`));
+  assert.doesNotMatch(sec("coming"), new RegExp(`href="/${ID}/"`));
+  assert.doesNotMatch(sec("out"), new RegExp(`href="/${ID}/"`));
+  const listed = JSON.parse(home.match(/<script type="application\/ld\+json">(\{"@context":"https:\/\/schema.org","@type":"ItemList".*?)<\/script>/s)[1]);
+  assert.equal(listed.itemListElement.filter(e => e.url.endsWith(`/${ID}/`)).length, 1);
 });
 
 test("no log means no heading, on every other page too", () => {

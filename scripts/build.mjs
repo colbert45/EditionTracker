@@ -58,7 +58,10 @@ const ITEMS = data.items.map((it, n) => ({
   path: `/${it.id}/`
 }));
 
-const isOut = i => i.status === "out" || i.status === "soldout" || i.status === "restock" || (i.date && daysOut(i.date) < 0);
+// A restock counts as out once the release date has passed (or there isn't one). A preorder that's
+// back in stock is still an upcoming release, so it stays on the calendar and keeps its countdown.
+const isOut = i => i.status === "out" || i.status === "soldout" || (i.date && daysOut(i.date) < 0) ||
+  (i.status === "restock" && !(i.date && daysOut(i.date) >= 0));
 // Restocks, newest first (the log on a release page, and "last restocked" on the homepage).
 const restocksNewestFirst = i => (i.restocks || []).map((r, k) => [r, k]).sort((a, b) => b[0].date.localeCompare(a[0].date) || b[1] - a[1]).map(x => x[0]);
 const lastRestock = i => restocksNewestFirst(i)[0] || null;
@@ -213,7 +216,7 @@ function signup(it = null) {
   const box = (tag, label, checked) => `<label class="pick"><input type="checkbox" name="tag" value="${esc(tag)}"${checked ? " checked" : ""}><span>${esc(label)}</span></label>`;
   return `<section class="signup" id="alerts" aria-labelledby="signup-h">
     <h2 id="signup-h">Get alerts</h2>
-    <p>Pick what you want to hear about. You'll get an email when it's announced, gets a date, opens preorders or sells out. The weekly roundup is optional.</p>
+    <p>Pick what you want to hear about. You'll get an email when it's announced, gets a date, opens preorders, sells out or comes back in stock. The weekly roundup is optional.</p>
     <form action="https://buttondown.com/api/emails/embed-subscribe/${BD_USER}" method="post" target="_blank">
       ${it ? `<fieldset class="picks"><legend>This release</legend>${box(`item:${it.id}`, it.name, true)}</fieldset>` : ""}
       <fieldset class="picks"><legend>${it ? "Also tell me about" : "Tell me about"}</legend>${Object.entries(CATS).map(([k, v]) => box(`type:${k}`, v, false)).join("")}</fieldset>
@@ -335,7 +338,7 @@ function featureCard(i) {
 
 function home() {
   const byDate = (a, b) => (a.date || "9999").localeCompare(b.date || "9999");
-  const coming = ITEMS.filter(i => i.status !== "rumor" && !isOut(i)).sort(byDate);
+  const coming = ITEMS.filter(i => i.status !== "rumor" && i.status !== "restock" && !isOut(i)).sort(byDate);
   const rumors = ITEMS.filter(i => i.status === "rumor");
   const restock = ITEMS.filter(i => i.status === "restock").sort((a, b) => (lastRestock(b)?.date || "").localeCompare(lastRestock(a)?.date || ""));
   const out = ITEMS.filter(i => i.status !== "rumor" && i.status !== "restock" && isOut(i)).sort((a, b) => byDate(b, a));
@@ -376,7 +379,7 @@ function home() {
   const jsonld = [
     { "@context": "https://schema.org", "@type": "WebSite", name: NAME, url: SITE + "/", ...(SOCIAL.length ? { sameAs: SOCIAL.map(([, u]) => u) } : {}) },
     { "@context": "https://schema.org", "@type": "ItemList", name: "Special edition releases",
-      itemListElement: [...coming, ...rumors, ...out].map((i, k) => ({ "@type": "ListItem", position: k + 1, url: i.url, name: i.name })) }
+      itemListElement: [...restock, ...coming, ...rumors, ...out].map((i, k) => ({ "@type": "ListItem", position: k + 1, url: i.url, name: i.name })) }
   ];
   return page({
     title: "Edition Tracker: special edition consoles, games, controllers and collectibles",
@@ -392,7 +395,7 @@ const STATUS_PHRASE = { rumor: "rumored, not confirmed", announced: "announced",
 // The "Preorders" fact on a release page.
 function preorders(i) {
   if (i.status === "soldout") return "Sold out";
-  if (i.status === "preorder") return i.pre ? `Open since ${short(i.pre)}` : "Open";
+  if (i.status === "preorder" || (i.status === "restock" && !isOut(i))) return i.pre ? `Open since ${short(i.pre)}` : "Open";
   if (i.status === "out" || i.status === "restock") return i.pre ? `Opened ${long(i.pre)}` : "Closed";
   return i.preordersStart ? `Opens ${long(i.preordersStart)}` : "Not yet";
 }
@@ -417,9 +420,11 @@ function offers(i) {
   if (i.status === "rumor") return undefined;
   const prices = [...i.price.matchAll(/\$\s?([\d,]+(?:\.\d{1,2})?)/g)].map(m => Number(m[1].replace(/,/g, "")));
   if (!prices.length) return undefined;
-  const availability = { preorder: "https://schema.org/PreOrder", out: "https://schema.org/InStock", restock: "https://schema.org/InStock", soldout: "https://schema.org/SoldOut" }[i.status];
+  const preorder = i.status === "preorder" || (i.status === "restock" && !isOut(i));
+  const availability = preorder ? "https://schema.org/PreOrder"
+    : { out: "https://schema.org/InStock", restock: "https://schema.org/InStock", soldout: "https://schema.org/SoldOut" }[i.status];
   const base = { priceCurrency: "USD", url: i.url, ...(availability && { availability }),
-    ...(i.status === "preorder" && i.date && { availabilityStarts: i.date }) };
+    ...(preorder && i.date && { availabilityStarts: i.date }) };
   if (prices.length === 1) return { "@type": "Offer", price: prices[0].toFixed(2), ...base };
   return { "@type": "AggregateOffer", lowPrice: Math.min(...prices).toFixed(2), highPrice: Math.max(...prices).toFixed(2), ...base };
 }
@@ -460,7 +465,7 @@ const itemTitle = i => { const t = `${i.name}: release date and price | ${NAME}`
 function item(i, ogImage) {
   const n = i.date ? daysOut(i.date) : null;
   const cd = n > 1 ? `Out in ${n} days.` : n === 1 ? "Out tomorrow." : n === 0 ? "Out today." : "";
-  const showCountdown = i.date && i.status !== "out" && i.status !== "soldout" && i.status !== "restock";
+  const showCountdown = i.date && i.status !== "out" && i.status !== "soldout";
   const hero = photoOnPage(i)
     ? `<figure class="hero" style="margin:0 0 14px"><div class="art"><img src="${esc(i.image)}" alt="${esc(i.name)}" decoding="async"></div><figcaption>${esc(i.imageCredit)}</figcaption></figure>`
     : `<figure class="hero" style="margin:0 0 14px"><div class="art">${art(artSpec(i))}</div><figcaption>Illustration, not a product photo</figcaption></figure>`;
@@ -619,7 +624,7 @@ function welcome() {
     <h1>You're in.</h1>
     <p class="big">Thanks for subscribing to Edition Tracker. Here's what lands in your inbox:</p>
     <ul class="plain steps">
-      <li><b>Alerts</b> for the consoles and releases you picked, when something's announced, gets a release date, opens preorders or sells out.</li>
+      <li><b>Alerts</b> for the consoles and releases you picked, when something's announced, gets a release date, opens preorders, sells out or comes back in stock.</li>
       <li><b>A short weekly roundup</b> of everything new, if you left that box ticked, so you don't miss what you didn't pick.</li>
     </ul>
     <h2>Make sure they reach you</h2>
