@@ -579,8 +579,8 @@
       "releaseWindow": null,
       "preordersOpened": "2026-08-26",
       "searchQuery": "Xbox X25 Special Edition Controller",
-      "image": "/images/xbox-x25-controller.jpg",
-      "imageCredit": "Image: Microsoft",
+      "image": null,
+      "imageCredit": null,
       "art": {
         "type": "pad",
         "colors": [
@@ -1708,8 +1708,8 @@
       "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Assassin's Creed Black Flag Resynced Collector's Edition",
-      "image": "/images/assassins-creed-black-flag-resynced-collectors-edition.jpg",
-      "imageCredit": "Image: Ubisoft",
+      "image": null,
+      "imageCredit": null,
       "art": {
         "type": "cebox",
         "colors": [
@@ -1976,8 +1976,8 @@
       "releaseWindow": "October 2026",
       "preordersOpened": null,
       "searchQuery": "Pokemon Santa Cruz blind bag skateboard deck 30th anniversary",
-      "image": "/images/pokemon-30th-santa-cruz-blind-bag-decks.jpg",
-      "imageCredit": "Image: Santa Cruz Skateboards",
+      "image": null,
+      "imageCredit": null,
       "art": {
         "type": "mystery",
         "colors": [
