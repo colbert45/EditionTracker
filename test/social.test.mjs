@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { socialPosts, outTodayPosts, weekAheadPost, MAX_LENGTH } from "../lib/social.js";
 import { msrpText } from "../lib/msrp.js";
-import { xLength, X_LIMIT } from "../lib/xpost.js";
+import { xLength, X_LIMIT, forX } from "../lib/xpost.js";
 import { plainData, pickItems, steadyData } from "./helpers/stock.mjs";
 
 // The real releases, steadied so these tests don't depend on what's live today (see steadyData).
@@ -177,7 +177,7 @@ test("stock news, release day, restocks and the week ahead all have a version fo
   const { posts: [restock], it: restocked } = restockPosts([BB]);
   assert.equal(restock.xText.split("\n").at(-2), "Store links: editiontracker dot com");
   assert.match(restock.xText.split("\n").at(-1), /^#Restock( #[A-Za-z0-9]+)*$/); // the hashtag people watching for stock follow
-  assert.equal(restock.xText.split("\n")[0], `Back in stock: ${restocked.name} at Best Buy`);
+  assert.equal(restock.xText.split("\n")[0], `Back in stock: ${forX(restocked.name, SITE)} at Best Buy`); // a name that looks like an address is written in words
   // Release day
   const d = base();
   asNintendo(d.items.find(i => i.id === "test-preorder"));

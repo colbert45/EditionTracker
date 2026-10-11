@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 import { socialPosts, outTodayPosts, weekAheadPost } from "../lib/social.js";
 import { planAlerts } from "../lib/alerts.js";
 import { postToDiscord, isDiscordWebhook } from "../lib/discord.js";
-import { forX, xCustom, xLength, X_LIMIT } from "../lib/xpost.js";
+import { xBody, xCustom, xLength, X_LIMIT } from "../lib/xpost.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = p => readFileSync(join(ROOT, p), "utf8");
@@ -112,7 +112,7 @@ function oauthHeader(method, url) {
 async function xPost(p) {
   // No link, ever: it costs ten times as much. forX takes out anything that looks like a web address, even if a
   // post somehow reaches here without its X version.
-  const text = forX(p.xText ?? p.text, config.siteUrl);
+  const text = xBody(p, config.siteUrl);
   const url = "https://api.x.com/2/tweets";
   await request(url, {
     method: "POST", headers: { Authorization: oauthHeader("POST", url), "Content-Type": "application/json" },

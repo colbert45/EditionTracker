@@ -104,6 +104,63 @@ test("a news report that has gone stale by send time isn't emailed or posted", (
   assert.deepEqual(m.tags, [`item:${ID}`, `type:${mixed.it.category}`]);
 });
 
+const REPORT = { date: "2026-10-09", store: "bestbuy", url: "https://www.bestbuy.com/site/searchpage.jsp?st=Example", source: "https://www.nintendolife.com/news/2026/10/best-buy-restock", reported: true };
+// A release date that is not the release's own, whatever the live data says.
+const aWeekLater = d => d ? new Date(Date.parse(d + "T12:00:00Z") + 7 * 86400000).toISOString().slice(0, 10) : "2099-01-01";
+
+test("a stale report doesn't hide another change made to the same release", () => {
+  const { old, now, it } = restocked([REPORT]);
+  it.releaseDate = aWeekLater(old.items.find(i => i.id === ID).releaseDate);
+  // The report is 11 days old: the "Back in stock" part isn't news, the new date still is.
+  const [a, ...rest] = planAlerts(old, now, SITE, { today: "2026-10-20" });
+  assert.equal(rest.length, 0);
+  assert.equal(a.kind, "update");
+  assert.equal(a.subject, `Update: ${it.name}`);
+  assert.equal(a.lines.length, 1);
+  assert.match(a.lines[0], /^Release: .* → .*\.$/);
+  assert.deepEqual(a.tags, [`item:${ID}`, `type:${it.category}`]); // a new date is news for the whole category
+  assert.equal(a.restocks, undefined);
+  const body = emailBody(a, now.categories);
+  assert.doesNotMatch(body, /reported|Back in stock at|bestbuy/i);
+  // The post says the date moved, and nothing about stock or a restock.
+  const [p, ...more] = socialPosts(old, now, SITE, { today: "2026-10-20" });
+  assert.equal(more.length, 0);
+  assert.equal(p.restock, undefined);
+  assert.match(p.text, /^Update: /);
+  assert.doesNotMatch(p.text + p.xText, /back in stock|reported|#Restock/i);
+  // While the report is still fresh, the same change is one restock email that carries the new date too.
+  const [f, ...others] = planAlerts(old, now, SITE, { today: "2026-10-10" });
+  assert.equal(others.length, 0);
+  assert.equal(f.kind, "restock");
+  assert.equal(f.extra.length, 1);
+  assert.match(f.extra[0], /^Release: /);
+});
+
+test("a stale report on a release that was already back in stock tells nobody", () => {
+  const old = base(), now = base();
+  old.items.find(i => i.id === ID).status = "restock";
+  old.items.find(i => i.id === ID).restocks = [BB];
+  now.items.find(i => i.id === ID).status = "restock";
+  now.items.find(i => i.id === ID).restocks = [BB, REPORT];
+  assert.deepEqual(planAlerts(old, now, SITE, { today: "2026-10-20" }), []);
+  assert.deepEqual(socialPosts(old, now, SITE, { today: "2026-10-20" }), []);
+  // Without a date nothing is held back, which is how the weekly roundup sees it.
+  assert.equal(planAlerts(old, now, SITE)[0].kind, "restock");
+});
+
+test("a change to a release that's back in stock is still posted, a bare status flip is not", () => {
+  const old = base(), now = base();
+  for (const d of [old, now]) {
+    const it = d.items.find(i => i.id === ID);
+    it.status = "restock"; it.restocks = [BB];
+  }
+  const it = now.items.find(i => i.id === ID);
+  it.releaseDate = aWeekLater(it.releaseDate);
+  const [p, ...rest] = socialPosts(old, now, SITE);
+  assert.equal(rest.length, 0);
+  assert.match(p.text, /^Update: /);
+});
+
 test("a bracket in a link can't end the Markdown link early", () => {
   const url = "https://www.bestbuy.com/site/zelda-(40th)/6000000.p?skuId=6000000";
   const source = "https://en.wikipedia.org/wiki/Nintendo_(company)";

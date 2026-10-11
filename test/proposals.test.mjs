@@ -1,11 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { applyAll, prMarkdown, slugify, proposalSchema } from "../lib/proposals.js";
-import { planAlerts, emailBody } from "../lib/alerts.js";
+import { applyAll, prMarkdown, slugify, proposalSchema, sourceLine } from "../lib/proposals.js";
+import { planAlerts, emailBody, STALE_REPORT_DAYS } from "../lib/alerts.js";
 import { plainData, pickItems } from "./helpers/stock.mjs";
 
-const data = JSON.parse(readFileSync(new URL("../data/releases.json", import.meta.url)));
+// The live releases with their stores written out here (and no restocks), so a store being renamed or closed on the site can't fail these.
+const data = plainData();
 const h = new Map([[1, { id: 1, title: "Zelda Switch 2 sold out again", link: "https://news.example/zelda", sourceName: "Example News" }],
                    [2, { id: 2, title: "Maker reveals the Zork Test Pad", link: "https://news.example/zork", sourceName: "Example News" }]]);
 const FIRST = data.items[0].id; // any release will do for these
@@ -109,9 +109,29 @@ test("a restock report becomes a reported entry whose source is the report", () 
   assert.match(md, /\| restock \|  \| `Best Buy, reported 2026-10-12` \|/);
   // The link that would be published is in the diff, so it can be looked at before merging.
   assert.ok(md.includes(`| restock link |  | \`${BB_SEARCH(PICK.id)}\` |`));
-  assert.match(md, /Merging sends the "Reported back in stock" email to people following this release/);
+  assert.match(md, /Merge by 2026-10-14 and the "Reported back in stock" email goes to people following this release, and it's posted/);
   // Other kinds of change don't carry that warning.
-  assert.doesNotMatch(prMarkdown({ applied: [{ p: { kind: "update", itemId: "x", summary: "s", confidence: "high" }, diff: [["price", "$1", "$2"]], used: [] }], skipped: [], reviewed: 1, when: "now" }), /Merging sends/);
+  assert.doesNotMatch(prMarkdown({ applied: [{ p: { kind: "update", itemId: "x", summary: "s", confidence: "high" }, diff: [["price", "$1", "$2"]], used: [] }], skipped: [], reviewed: 1, when: "now" }), /Merge by|emailed or posted/);
+});
+
+test("the pull request says whether merging will email and post a restock, by how old the report is", () => {
+  const note = (reportDate, today) => {
+    const r = run({ date: reportDate }, { published: null });
+    assert.equal(r.skipped.length, 0, JSON.stringify(r.skipped));
+    assert.equal(r.applied[0].restock.date, reportDate);
+    return prMarkdown({ applied: r.applied, skipped: [], reviewed: 1, when: "now", today }).split("\n").find(l => /^_/.test(l));
+  };
+  // Dated the 11th: merged by the 13th it goes out (two days old is the last day), after that only the page changes.
+  assert.match(note("2026-10-11", "2026-10-12"), /^_Merge by 2026-10-13 and the "Reported back in stock" email goes to people following this release, and it's posted\. After that, merging only updates the page\./);
+  assert.match(note("2026-10-10", "2026-10-12"), /^_Merge by 2026-10-12 and /);
+  assert.match(note("2026-10-09", "2026-10-12"), /^_This report is already more than 2 days old, so merging only updates the page\. Nothing is emailed or posted\._$/);
+  // The cut-off is the one the emails and posts use, so the note can't promise what the send step won't do.
+  assert.equal(STALE_REPORT_DAYS, 2);
+  const r = run({ date: "2026-10-09" }, { published: null });
+  assert.equal(planAlerts(plainData(), r.data, "https://editiontracker.com", { today: "2026-10-11" }).length, 1);
+  assert.equal(planAlerts(plainData(), r.data, "https://editiontracker.com", { today: "2026-10-12" }).length, 0);
+  // Without a date, the note still names the last day.
+  assert.match(note("2026-10-11", undefined), /^_Merge by 2026-10-13 and /);
 });
 
 test("a restock link is only used when the report's own text has it and it's on the store's website", () => {
@@ -156,13 +176,23 @@ test("a restock report that can't be trusted is dropped with a reason", () => {
 
 test("planned stock isn't a restock", () => {
   // "Target restocks on Friday" is a plan, not news that it's in stock now, even when the article came out today.
-  for (const date of ["2026-10-15", "2026-11-01", "2027-01-01"]) {
+  for (const date of ["2026-10-14", "2026-10-15", "2026-11-01", "2027-01-01"]) { // two days ahead is already a plan
     const r = run({ date });
     assert.equal(r.applied.length, 0, date);
     assert.match(r.skipped[0].reason, new RegExp(`dated ${date}, which hasn't happened yet`));
   }
   // A day ahead is only a time zone.
   assert.equal(run({ date: "2026-10-13" }).applied.length, 1);
+});
+
+test("a restock report older than four days is too old to send as news, four days old is not", () => {
+  const day = (date, published = null) => run({ date }, { published });
+  assert.equal(day("2026-10-08").applied.length, 1); // four days before the 12th
+  assert.equal(day("2026-10-08").skipped.length, 0);
+  assert.match(day("2026-10-07").skipped[0].reason, /that restock report is from 2026-10-07, too old to send as news/);
+  // The article's own date counts the same way.
+  assert.equal(run({ date: TODAY }, { published: "2026-10-08T15:00:00Z" }).applied.length, 1);
+  assert.match(run({ date: TODAY }, { published: "2026-10-07T15:00:00Z" }).skipped[0].reason, /too old to send as news/);
 });
 
 test("a restock is never dated newer than the news about it, in New York time", () => {
@@ -186,19 +216,98 @@ test("a restock is never dated newer than the news about it, in New York time", 
   assert.equal(logged(both).date, "2026-10-11");
 });
 
-test("a headline can't add headings or lists to the pull request", () => {
-  const evil = report({ title: "Zelda restock\n\n## Approved by the maintainer\n- [x] merge me", summary: "one\n# Another heading", sourceName: "Example\n## News",
-    link: "https://news.example/a)\n## Link heading" });
-  const { applied, skipped } = applyAll(plainData(), [
-    restockProposal({}, { summary: "Back\n\n## Approved\n- ok" }),
-    { ...restockProposal({}), itemId: "no-such-release\n## Dropped heading", summary: "x\n## Also dropped" }
-  ], evil, TODAY);
-  assert.equal(applied.length, 1);
-  assert.equal(skipped.length, 1);
-  const md = prMarkdown({ applied, skipped, reviewed: 1, when: "now" });
-  assert.deepEqual(md.split("\n").filter(l => l.startsWith("#")), ["### News check, now", `#### Update: ${PICK.id}`]);
-  assert.ok(!md.split("\n").some(l => /^\s*(##|- \[x\]|# )/.test(l) && !l.startsWith("###")));
-  assert.ok(md.includes("Dropped heading") && md.includes("Approved")); // the text is still shown, just on one line
+// Every line of the pull request, with code spans (where untrusted text is kept) swapped for X, has to be one of the
+// shapes the page itself writes. Anything a headline or the model's summary sneaks in outside a code span is a line that fits none.
+const SHAPES = [
+  /^$/,
+  /^### News check, now$/,
+  /^Read \d+ new headline\(s\)\. Proposed \d+ change\(s\)\.$/,
+  /^#### (Update|New release): (X|_empty_)$/,
+  /^(X|_empty_) _\(confidence: (X|_empty_)\)_$/,
+  /^\| Field \| Before \| After \|$/,
+  /^\|---\|---\|---\|$/,
+  /^\| [\p{L}\p{N}_.() -]+ \| (X|_empty_)? \| (X|_empty_)? \|$/u,
+  /^_Merge by \d{4}-\d{2}-\d{2} and the "Reported back in stock" email goes to people following this release, and it's posted\. After that, merging only updates the page\. Check that the source says it's available now\._$/,
+  /^_This report is already more than 2 days old, so merging only updates the page\. Nothing is emailed or posted\._$/,
+  /^Sources:$/,
+  /^- \[(X|_empty_)\]\(U\) \((X|_empty_)\)$/,
+  /^- (X|_empty_) \((X|_empty_)\)$/,
+  /^<details><summary>Suggestions that were dropped automatically<\/summary>$/,
+  /^<\/details>$/,
+  /^- (X|_empty_): (X|_empty_) \((X|_empty_)\)$/
+];
+// A link's address (U) has to be one plain piece: a web address with nothing in it that Markdown or HTML reads as anything else.
+const ADDRESS = /^https?:\/\/[^\s<>()"'`\[\]\\|]+$/;
+const outsideCode = md => md.split("\n").map(l => l.replace(/`[^`]*`/g, "X").replace(/\]\(([^)]*)\)/g, (m, address) => ADDRESS.test(address) ? "](U)" : m));
+const strays = md => outsideCode(md).filter(l => !SHAPES.some(re => re.test(l)));
+
+// Things a stranger could put in a headline, in the model's summary of it, or in a link.
+const EVIL = [
+  "## Approved by the maintainer", "- [x] merge me", "# Another heading", "1. first", "> quote", "---",
+  "```js\nalert(1)\n```", "~~~\nfence\n~~~", "`` ` ``", "<!-- hide the rest", "-->", "<details open>", "</details>",
+  "[evil](https://evil.example/)", "[evil][ref]\n\n[ref]: https://evil.example/", "![](https://evil.example/pixel.gif)",
+  "<img src=x onerror=alert(1)>", "<script>alert(1)</script>", "<https://evil.example/>", "https://evil.example/bare",
+  "x\\|[evil](https://evil.example/)", "| a | b |", "|---|---|", "@octocat please merge", "#1234", "\u202eevil", "a\u200bb\u2028## after separator"
+];
+
+test("a headline can't add headings, lists, links, images or hidden text to the pull request", () => {
+  const BANNED = ["evil", "octocat", "onerror", "<!--", "-->", "<img", "<script", "pixel", "alert", "merge me", "Approved", "#1234"];
+  // Each one on its own (a long text is cut short before its last parts would show), and all of them together.
+  for (const evil of [...EVIL, EVIL.join(" ")]) {
+    const why = JSON.stringify(evil.slice(0, 40));
+    const headline = report({ title: `Zelda restock ${evil}`, summary: evil, sourceName: `Example ${evil}`, link: `https://news.example/a) ${evil}` });
+    const { applied, skipped } = applyAll(plainData(), [
+      restockProposal({}, { summary: evil, confidence: evil, timelineEntry: { date: TODAY, text: `Back. ${evil}` } }),
+      { ...restockProposal({}), itemId: `no-such-release ${evil}`, summary: evil }
+    ], headline, TODAY);
+    assert.equal(applied.length, 1, `${why} ${JSON.stringify(skipped)}`);
+    assert.equal(skipped.length, 1, why);
+    const md = prMarkdown({ applied, skipped, reviewed: 1, when: "now", today: TODAY });
+    assert.deepEqual(strays(md), [], why);
+    // The only headings are the page's own, and the release's id is shown as code.
+    assert.deepEqual(md.split("\n").filter(l => l.startsWith("#")), ["### News check, now", `#### Update: \`${PICK.id}\``], why);
+    // Nothing from the headline is left outside a code span.
+    const plain = outsideCode(md).join("\n");
+    for (const bad of BANNED) if (evil.includes(bad)) assert.ok(!plain.includes(bad), `${why}: "${bad}" got out of its code span`);
+    // Nothing that hides or flips text, or starts a new line, is left anywhere in it.
+    assert.ok(!/[\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/.test(md), why);
+    // No backtick, "|" or "\" can end a code span or a table cell early.
+    for (const line of md.split("\n").filter(l => l.startsWith("| ") && !l.startsWith("| Field"))) assert.equal(line.split("|").length, 5, `${why}: ${line}`);
+  }
+  // Inside a code span the text is still there to read, on one line.
+  const md = prMarkdown({ ...applyAll(plainData(), [restockProposal({}, { summary: "## Approved by the maintainer\n- [x] merge me" })], report(), TODAY), skipped: [], reviewed: 1, when: "now" });
+  assert.ok(md.includes("`## Approved by the maintainer - [x] merge me`"));
+  // A field name made of anything but plain words is cleaned too.
+  const odd = prMarkdown({ applied: [{ p: { kind: "update", itemId: "x", summary: "s", confidence: "high" }, diff: [["a | b\n## c `d` <e>", "x", "y"]], used: [] }], skipped: [], reviewed: 1, when: "now" });
+  assert.deepEqual(strays(odd), []);
+  assert.ok(odd.includes("| a b c d e | `x` | `y` |"));
+});
+
+test("a new release's name can't break out of its heading", () => {
+  const newItem = { name: `Zork Test Pad ${EVIL.join(" ")}`, category: "playstation", platform: "PS5", status: "announced", price: "$79.99", releaseDate: null, releaseWindow: "November 2026",
+    preordersOpened: null, preordersStart: null, searchQuery: "Zork Test Pad", notes: [`A pad. ${EVIL.join(" ")}`], inTheBox: [], stores: ["psdirect"], artType: "pad", artColors: ["#2E6FD8", "#FFFFFF", "#1A1A1A"] };
+  const { applied, skipped } = applyAll(plainData(), [{ kind: "new", itemId: "zork", summary: "New controller", confidence: "medium", headlineIds: [2],
+    changes: noChange, timelineEntry: null, newItem }], h, "2026-10-03");
+  assert.equal(applied.length, 1, JSON.stringify(skipped));
+  const md = prMarkdown({ applied, skipped, reviewed: 2, when: "now" });
+  assert.deepEqual(strays(md), []);
+  assert.deepEqual(md.split("\n").filter(l => l.startsWith("#")).map(l => l.replace(/`[^`]*`/g, "X")), ["### News check, now", "#### New release: X"]);
+});
+
+test("a link in a source can't end its Markdown link early or add anything", () => {
+  const line = link => sourceLine({ title: "Zelda", link, sourceName: "Example" });
+  // Brackets, parentheses, quotes, backticks, angle brackets, bars, backslashes and spaces are written as %XX.
+  assert.equal(line("https://news.example/a b(c)[d]<e>\"f'g`h|i\\j"), "- [`Zelda`](https://news.example/a%20b%28c%29%5Bd%5D%3Ce%3E%22f%27g%60h%7Ci%5Cj) (`Example`)");
+  assert.equal(line("https://news.example/x\n## heading"), "- [`Zelda`](https://news.example/x%20##%20heading) (`Example`)");
+  // A link that isn't a web address isn't linked at all.
+  assert.equal(line("javascript:alert(1)"), "- `Zelda` (`Example`)");
+  assert.equal(line("data:text/html,<b>"), "- `Zelda` (`Example`)");
+  assert.equal(line(""), "- `Zelda` (`Example`)");
+  // Its words are code too, so nothing in a title can close the link text.
+  assert.equal(sourceLine({ title: "a](https://evil.example) [b", link: "https://news.example/", sourceName: "x" }), "- [`a](https://evil.example) [b`](https://news.example/) (`x`)");
+  // A long title is cut, and an empty one says so.
+  assert.ok(sourceLine({ title: "w".repeat(500), link: "https://news.example/", sourceName: "x" }).length < 250);
+  assert.match(sourceLine({ title: "  ", link: "https://news.example/", sourceName: "" }), /^- \[_empty_\]\(https:\/\/news\.example\/\) \(_empty_\)$/);
 });
 
 test("merging a reported restock emails it as reported", () => {

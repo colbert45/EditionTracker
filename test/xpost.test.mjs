@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { forX, spokenHost, xLength, xTags, fitX, xTextFor, xCustom, X_LIMIT } from "../lib/xpost.js";
+import { forX, xBody, spokenHost, xLength, xTags, fitX, xTextFor, xCustom, X_LIMIT } from "../lib/xpost.js";
 import { readReal } from "./helpers/build-copy.mjs";
 
 const SITE = "https://editiontracker.com";
@@ -22,6 +22,71 @@ test("a web address in text is taken out, with or without https", () => {
   t("Go to bestbuy.com/site/x.", "Go to bestbuy dot com.");
   // Running it twice changes nothing.
   assert.equal(forX(forX("a https://x.com/y b gamestop.com", SITE), SITE), forX("a https://x.com/y b gamestop.com", SITE));
+});
+
+test("an address X would link is taken out whatever it looks like around the edges", () => {
+  const t = (text, want) => assert.equal(forX(text, SITE), want, text);
+  // Text stuck to the end of an address ("Walmart.com-exclusive"), an underscore in the name, and capitals in the ending.
+  t("Walmart.com-exclusive color is back", "Walmart dot com-exclusive color is back");
+  t("Order at my_store.example.com today", "Order at my_store dot example dot com today");
+  t("Try Target.Store or www.Funko.Shop now", "Try Target dot Store or www dot Funko dot Shop now");
+  // A path after it (a store's product page) goes, and so does a port.
+  t("See Walmart.Shop/ip/123456 for details", "See Walmart dot Shop for details");
+  t("Try shop.example.com:8080/x?y=1 now", "Try shop dot example dot com now");
+  t("Try Walmart.Example/ip/12 or www.Funko.Example now", "Try Walmart dot Example or www dot Funko dot Example now"); // a path or "www." makes it an address whatever the ending
+  // Other alphabets, and an address written with punycode.
+  t("Купите на пример.рф сегодня", "Купите на пример dot рф сегодня");
+  t("a.日本", "a dot 日本");
+  t("xn--80ak6aa92e.com", "xn--80ak6aa92e dot com");
+  // Dashes or dots right in front of it don't hide it.
+  t("Use -gamestop.com or stock...gamestop.com", "Use -gamestop dot com or stock...gamestop dot com");
+  // An address that follows an ordinary word with a full stop and a capital is a missing space, but an address in front of it isn't hidden by it.
+  t("x.co.Check", "x dot co.Check");
+  t("Sold out.Check back", "Sold out.Check back");
+  // Taking one address out can join the text on either side into a new one, so it's repeated until nothing is left.
+  t("x.co:1x.co", "x dot cox dot co");
+  t("h0.com:1h1.com:1h2.com:1h3.com:1", "h0 dot comh1 dot comh2 dot comh3 dot com");
+  // An email address isn't a web address, and this site's own addresses become the same words everywhere.
+  t("Email tips@editiontracker.com", "Email tips@editiontracker.com");
+  t("EDITIONTRACKER.COM and www.EditionTracker.com/zelda?x=1.", "editiontracker dot com and editiontracker dot com.");
+  t("https://shop.editiontracker.com/a and HTTPS://UPPER.EXAMPLE.COM/Y ftp://files.example.org/x", "editiontracker dot com and");
+});
+
+test("running the address remover again on its own result never changes it", () => {
+  // Made-up text from a fixed random sequence, so a failure can be run again. Pieces that make addresses, almost-addresses,
+  // joins between them, punctuation and other alphabets.
+  let seed = 20261011;
+  const random = () => (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32;
+  const pick = list => list[Math.floor(random() * list.length)];
+  const PIECES = ["a", "b", "x", "Z", "co", "com", "COM", "Shop", "io", "ly", "1", "2", "9", "_", "-", ".", ".", ".", "/", ":", ":1", "://", "http", "https", "www.",
+    "ftp", " ", " ", "  ", "\n", "(", ")", "<", ">", "\"", "'", "\u201c", "\u201d", "@", "#", "?", "=", "&", ",", ";", "!", "é", "п", "р", "ф", "日", "本", "…", "•",
+    "editiontracker", "editiontracker.com", "gamestop.com", "x.co", "a.b", "e.g.", "U.S.", "v1.2", "$5.99", "...", "..", "--", "xn--p1ai"];
+  // What X links that is left in a result: a scheme and an address, or a name and a well-known ending (emails aside).
+  const SCHEME = /\b(?:https?|ftp):\/\/[^\s<>"'\u201c\u201d]/i;
+  const ADDRESS = /(?<![\p{L}\p{N}_@])(?:[\p{L}\p{N}_](?:[\p{L}\p{N}_-]*[\p{L}\p{N}_])?\.)+(?:com|net|org|edu|gov|io|co|gg|tv|me|app|dev|xyz|info|shop|store|uk|de|fr|jp|ca|au)(?![\p{L}\p{N}])/iu;
+  for (let i = 0; i < 30000; i++) {
+    let text = "";
+    for (let k = 1 + Math.floor(random() * 24); k > 0; k--) text += pick(PIECES);
+    const once = forX(text, SITE);
+    assert.equal(forX(once, SITE), once, JSON.stringify(text));
+    assert.doesNotMatch(once, SCHEME, JSON.stringify(text));
+    assert.doesNotMatch(once.replace(/\S*@\S*/g, " "), ADDRESS, JSON.stringify(text));
+  }
+});
+
+test("what is sent to X is the X version with every address out, and never more than X takes", () => {
+  // The X version of a post is used; with none, the Bluesky text is, with its links out.
+  assert.equal(xBody({ text: "Hi https://editiontracker.com/x/", xText: "Hello from gamestop.com" }, SITE), "Hello from gamestop dot com");
+  assert.equal(xBody({ text: "Hi https://editiontracker.com/x/ and https://example.com/y" }, SITE), "Hi editiontracker dot com and");
+  // An X version that still has an address in it (a hand-made one) is cleaned too.
+  assert.equal(xBody({ text: "x", xText: "Buy at https://www.target.com/p/1 now" }, SITE), "Buy at now");
+  // Too long is refused, counted the way X counts: 140 arrows fit, 141 are 282.
+  assert.equal(xBody({ text: "x", xText: "\u2192".repeat(140) }, SITE), "\u2192".repeat(140));
+  assert.throws(() => xBody({ text: "x", xText: "\u2192".repeat(141) }, SITE), /282 characters long once its links are out \(the limit is 280\)/);
+  assert.equal(xBody({ text: "w".repeat(280) }, SITE), "w".repeat(280));
+  assert.throws(() => xBody({ text: "w".repeat(281) }, SITE), /281 characters long once its links are out/);
+  // A long link doesn't count against it: it's taken out first.
+  assert.equal(xBody({ text: `Read this ${"https://example.com/" + "a".repeat(400)} now` }, SITE), "Read this now");
 });
 
 test("prices, versions, abbreviations and a missing space after a full stop are left alone", () => {

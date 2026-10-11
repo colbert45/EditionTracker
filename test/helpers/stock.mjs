@@ -4,8 +4,19 @@
 import { readReal } from "./build-copy.mjs";
 import { msrpText } from "../../lib/msrp.js";
 
+// The stores these tests log restocks at. They are written out here, not read from the live data, so renaming or
+// removing one of them on the site (a store closes, a search address changes) can't turn a deploy red.
+const STORES = {
+  bestbuy: { name: "Best Buy", searchUrl: "https://www.bestbuy.com/site/searchpage.jsp?st=" },
+  target: { name: "Target", searchUrl: "https://www.target.com/s?searchTerm=" },
+  walmart: { name: "Walmart", searchUrl: "https://www.walmart.com/search?q=" },
+  psdirect: { name: "PlayStation Direct", url: "https://direct.playstation.com/" },
+  gamestop: { name: "GameStop", searchUrl: "https://www.gamestop.com/search/?q=" }
+};
+
 export function plainData() {
   const d = readReal("data/releases.json");
+  d.stores = { ...d.stores, ...JSON.parse(JSON.stringify(STORES)) };
   for (const it of d.items) {
     delete it.restocks;
     delete it.resale;

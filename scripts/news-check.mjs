@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 import { parseFeed, robotsAllows, matchesKeywords } from "../lib/feeds.js";
-import { proposalSchema, applyAll, prMarkdown } from "../lib/proposals.js";
+import { proposalSchema, applyAll, prMarkdown, sourceLine } from "../lib/proposals.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const STATE_DIR = join(ROOT, ".news-state");
@@ -210,7 +210,7 @@ if (!headlines.length) { output("changed", "false"); saveState(); summary("No ne
 if (!process.env.ANTHROPIC_API_KEY) {
   // Without a key, list the headlines in the run summary instead (and don't mark them seen).
   summary(`### Relevant headlines (no ANTHROPIC_API_KEY set, so no edits were proposed)\n\n` +
-    headlines.map(h => `- [${h.title.replace(/[[\]]/g, "")}](${h.link}) (${h.sourceName})`).join("\n"));
+    headlines.map(sourceLine).join("\n"));
   output("changed", "false");
   saveState();
   process.exit(0);
@@ -221,7 +221,7 @@ const byId = new Map(headlines.map(h => [h.id, h]));
 const { data: next, applied, skipped } = applyAll(data, proposals, byId, today);
 for (const h of headlines) state.seen[h.link] = new Date().toISOString();
 
-const body = prMarkdown({ applied, skipped, reviewed: headlines.length, when: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC" });
+const body = prMarkdown({ applied, skipped, reviewed: headlines.length, when: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC", today });
 mkdirSync(STATE_DIR, { recursive: true });
 writeFileSync(join(STATE_DIR, "pr-body.md"), body);
 summary(body);

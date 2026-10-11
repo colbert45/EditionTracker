@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { plainData, pickItems } from "./helpers/stock.mjs";
 import { applyRestock } from "../lib/restock.js";
+import { forX } from "../lib/xpost.js";
 
 // Runs scripts/social.mjs on a throwaway repo whose last commit logs a restock, with no keys set,
 // so it can only say what it would post. Nothing is sent anywhere.
@@ -107,6 +108,23 @@ test("a news report that's days old by the time it's merged isn't posted", () =>
   assert.match(social(fresh.dir, fresh.start).stdout, /Reported back in stock: /);
 });
 
+test("a report that is too old to post doesn't count towards the bulk-edit limit", () => {
+  const ago = n => new Date(Date.now() - n * 86400000).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  // 7 price changes and the restock are 8 releases. A six-day-old report on one more is not news, so it is not a ninth.
+  const edit = d => {
+    const others = d.items.filter(i => i.id !== PICK.id);
+    for (const it of others.slice(0, 7)) it.price = "$1.23";
+    const old = others.at(-1);
+    old.status = "restock";
+    old.restocks = [{ date: ago(6), store: "bestbuy", url: "https://www.bestbuy.com/site/searchpage.jsp?st=x", source: "https://news.example/report", reported: true }];
+  };
+  const r = repoWithRestock(undefined, edit);
+  const out = social(r.dir, r.start).stdout;
+  assert.doesNotMatch(out, /bulk edit/);
+  assert.match(out, /Back in stock: /);
+  assert.doesNotMatch(out, /Reported back in stock/);
+});
+
 // ---------- what is really sent to X and Bluesky ----------
 // The script is run with fetch() replaced (test/helpers/fake-fetch.mjs), so every request it would make is written to a
 // file instead of leaving the machine. That shows exactly what X would be charged for.
@@ -151,7 +169,7 @@ test("restocks reach X when the config says so, still without a link, and not wh
   const on = repoWithRestock(undefined, undefined, c => { c.social.restockToX = true; });
   const r = sendFor(on.dir, on.start);
   assert.equal(r.x.length, 1);
-  assert.equal(r.x[0].split("\n")[0], `Back in stock: ${on.name} at Best Buy`);
+  assert.equal(r.x[0].split("\n")[0], `Back in stock: ${forX(on.name, "https://editiontracker.com")} at Best Buy`);
   assert.match(r.x[0], /\nStore links: editiontracker dot com\n#Restock\b/);
   assert.doesNotMatch(r.x[0], NO_LINK);
   assert.ok(r.bluesky[0].text.endsWith(`https://editiontracker.com/${PICK.id}/`));
@@ -183,6 +201,24 @@ test("a message typed by hand goes to X with its links taken out", () => {
   const plain = sendFor(dir, start, ["--text", "Restocks are on the way"]);
   assert.deepEqual(plain.x, ["Restocks are on the way\neditiontracker dot com"]);
   assert.ok(plain.bluesky[0].text.endsWith("https://editiontracker.com"));
+});
+
+test("a message that is too long for X once its links are out is refused, and Bluesky alone can still take it", () => {
+  const { dir, start } = repoWithRestock();
+  // 200 characters, but X counts each arrow as two: 400.
+  const arrows = "\u2192".repeat(200);
+  const both = sendFor(dir, start, ["--text", arrows]);
+  assert.equal(both.status, 1);
+  assert.match(both.stdout, /Too long for X once its links are taken out: 400 \(limit 280\)\./);
+  assert.deepEqual(both.calls, []); // nothing was posted anywhere, not even to Bluesky
+  const bsky = sendFor(dir, start, ["--text", arrows, "--only", "bluesky"]);
+  assert.equal(bsky.status, 0, bsky.stderr + bsky.stdout);
+  assert.deepEqual(bsky.x, []);
+  assert.equal(bsky.bluesky.length, 1);
+  // 140 arrows is exactly 280 on X: with the site's name added it no longer fits, so it goes without it, and goes.
+  const exact = sendFor(dir, start, ["--text", "\u2192".repeat(140)]);
+  assert.equal(exact.status, 0, exact.stderr + exact.stdout);
+  assert.deepEqual(exact.x, ["\u2192".repeat(140)]);
 });
 
 test("the scheduled posts go to X without links too", () => {
