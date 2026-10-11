@@ -621,7 +621,7 @@ function about() {
     <p>Nothing here is paid for by a store or an advertiser. Links go to the store's own pages, and I don't get a cut when you buy. I don't run sponsored posts either.</p>
     <h2>How the news gets here</h2>
     <p>Resellers use bots to buy out stock in seconds. The only bot here reads gaming news sites twice a day and suggests changes. I check the sources and approve every change before it goes live.</p>
-    <p>Restock alerts I post by hand, with a link to the store and a source. If I get something wrong, <a href="mailto:hello@editiontracker.com">tell me</a> and I'll fix it.</p>
+    <p>Restock alerts come from me checking a store, or from the news check when a site or subreddit reports one. A restock marked "reported" comes from a report, not from me checking the store, and it may already be gone. I look at every one before it goes out. If I get something wrong, <a href="mailto:hello@editiontracker.com">tell me</a> and I'll fix it.</p>
     ${costRows.length ? `<h2>What it costs</h2>
     <p>I pay for this myself. Here's what it costs to run${asOf}:</p>
     <table class="costs"><tbody>${rows}</tbody></table>

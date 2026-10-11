@@ -33,7 +33,7 @@ When something comes back in stock at a store, log it by hand. A release can car
 - A second restock at the same store on the same day is logged once, however the link was pasted. A release that sells out and comes back the same day can be logged again after **Sold out again**.
 - **Sold out again** (also under Actions) switches a release back to "Sold out" so the page stops saying "Back in stock". It emails nobody.
 - **Resend restock email** (also under Actions) is only for when a restock saved but its email step failed (open that run to see). It emails for the latest change on `main` if that change is a restock. If the first email did go out it sends it twice, so check Buttondown > Emails first. Tick *Dry run* to see what it would send.
-- The news check never sets "Back in stock" itself. It can add a timeline note about a restock, and you decide whether to log it.
+- **The news check can propose restocks too.** When a news site or subreddit reports a release back in stock at a store on the list, the daily pull request includes it as a *reported* restock: the report is its source, the log links the store's search for the release (or the store's own product page, if the report's text has one), and the status becomes "Back in stock". Merging it sends the "Reported back in stock" email, which says the report may be hours old. The release page, the homepage and the feed all say "Reported", and any restock two or more days old says it may be sold out by now. Restocks the news check proposes are the only ones it can touch: it can't choose "Back in stock" as a status, and a store's own link is only used when it appears in the report's text.
 
 ## Prices and resellers
 
