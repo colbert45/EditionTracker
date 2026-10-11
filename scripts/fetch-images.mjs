@@ -66,7 +66,7 @@ for (const [id, s] of Object.entries(sources)) {
       writeFileSync(join(ROOT, "static", file), out);
       item.image = file;
       item.imageCredit = s.credit;
-      rows.push([id, "added", `${width}×${height} from ${page}`, src]);
+      rows.push([id, "added", `${width}×${height} from ${page}`, src, errors.slice()]);
       done = true;
       break;
     } catch (e) { errors.push(`${new URL(page).hostname}: ${e.message}`); }
@@ -84,7 +84,7 @@ const added = rows.filter(r => r[1] === "added");
 const branch = process.env.BRANCH;
 const raw = id => branch ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${branch}/static/images/${id}.jpg` : "";
 const md = [`Took ${added.length} product image(s) from official pages. Check each one is the right product before merging.`, ""];
-for (const [id, , note] of added) md.push(`**${id}**: ${note}`, "", `<img src="${raw(id)}" width="320">`, "");
+for (const [id, , note, , tried] of added) md.push(`**${id}**: ${note}`, ...(tried?.length ? [`_Pages tried first: ${tried.join("; ")}_`] : []), "", `<img src="${raw(id)}" width="320">`, "");
 const other = rows.filter(r => r[1] !== "added");
 if (other.length) { md.push("<details><summary>Not added</summary>", ""); for (const [id, st, note] of other) md.push(`- ${id}: ${st}, ${note}`); md.push("", "</details>"); }
 writeFileSync(join(ROOT, ".images-report.md"), md.join("\n"));

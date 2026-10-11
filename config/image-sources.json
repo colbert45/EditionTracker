@@ -44,7 +44,9 @@
       "pages": [
         "https://www.xbox.com/en-US/accessories/controllers/xbox-25th-anniversary",
         "https://www.microsoft.com/en-us/d/xbox-wireless-controller-x25-special-edition/8wg5vqp0x4h2",
-        "https://news.xbox.com/en-us/2026/08/26/pre-orders-begin-today-xbox-25th-anniversary-collection/"
+        "https://www.geekay.com/en/xbox-wireless-controller-x25-special-edition",
+        "https://ee.co.uk/products/xbox-wireless-controller-x25-special-edition",
+        "https://www.currys.co.uk/products/xbox-wireless-controller-x25-special-edition-10308874.html"
       ]
     },
     "razer-xbox-25-collection": {
@@ -165,7 +167,10 @@
       "pages": [
         "https://www.ubisoft.com/en-us/game/assassins-creed/black-flag-resynced/collectors-edition",
         "https://direct.playstation.com/en-us/buy-games/assassins-creed-black-flag-resynced-collectors-edition-ps5",
-        "https://news.ubisoft.com/en-us/article/4WSO7FBW76v05UxZSqG5L8/assassins-creed-black-flag-resynced-out-july-9-everything-you-need-to-know"
+        "https://www.gamestop.com/products/assassins-creed-black-flag-resynced-collectors-edition---playstation-5/445513.html",
+        "https://www.ebgames.ca/shop/games-playstation-194/assassin-s-creed-black-flag-resynced-collector-s-edition-197343",
+        "https://www.smythstoys.com/uk/en-gb/gaming-and-tech/pre-order-games/playstation-5-pre-order-games/assassins-creed-black-flag-resynced-collectors-edition-ps5/p/261971",
+        "https://www.digitec.ch/en/s1/product/ubisoft-assassins-creed-black-flag-resynced-collector-edition-ps5-de-video-games-69686824"
       ]
     },
     "metro-2039-collectors-edition": {
@@ -207,18 +212,6 @@
       "credit": "Image: The Pokémon Company",
       "pages": [
         "https://www.pokemon.com/us/news/pokemon-red-pokemon-blue-game-boy-jukebox-back-in-stock-at-pokemon-center"
-      ]
-    },
-    "atari-800xl-full-size-replica": {
-      "credit": "Image: Atari",
-      "pages": [
-        "https://atari.com/products/the-800xl"
-      ]
-    },
-    "pokemon-30th-santa-cruz-blind-bag-decks": {
-      "credit": "Image: Santa Cruz Skateboards",
-      "pages": [
-        "https://www.santacruzskateboards.com/collections/pokemon"
       ]
     }
   }
