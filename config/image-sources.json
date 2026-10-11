@@ -42,9 +42,9 @@
     "xbox-x25-controller": {
       "credit": "Image: Microsoft",
       "pages": [
+        "https://www.xbox.com/en-US/accessories/controllers/xbox-25th-anniversary",
         "https://www.microsoft.com/en-us/d/xbox-wireless-controller-x25-special-edition/8wg5vqp0x4h2",
-        "https://www.play-asia.com/en/xbox-wireless-controller-special-edition-x25/13/70k19d",
-        "https://news.xbox.com/en-us/2026/08/25/designed-for-xbox-25th-annversary-accessories-hardware/"
+        "https://news.xbox.com/en-us/2026/08/26/pre-orders-begin-today-xbox-25th-anniversary-collection/"
       ]
     },
     "razer-xbox-25-collection": {
@@ -163,9 +163,8 @@
     "assassins-creed-black-flag-resynced-collectors-edition": {
       "credit": "Image: Ubisoft",
       "pages": [
+        "https://www.ubisoft.com/en-us/game/assassins-creed/black-flag-resynced/collectors-edition",
         "https://direct.playstation.com/en-us/buy-games/assassins-creed-black-flag-resynced-collectors-edition-ps5",
-        "https://www.bestbuy.com/product/assassins-creed-black-flag-resynced-collectors-edition-playstation-5/J3ZY37H96G",
-        "https://kotaku.com/games/assassins-creed-black-flag-resynced-collectors-edition",
         "https://news.ubisoft.com/en-us/article/4WSO7FBW76v05UxZSqG5L8/assassins-creed-black-flag-resynced-out-july-9-everything-you-need-to-know"
       ]
     },
@@ -182,6 +181,44 @@
         "https://www.nintendo.com/us/store/products/the-legend-of-zelda-majoras-mask-3d-3ds/",
         "https://www.nintendo.com/au/games/nintendo-3ds/the-legend-of-zelda-majoras-mask-3d/",
         "https://www.nintendo.com/en-gb/Games/Nintendo-3DS/The-Legend-of-Zelda-Majora-s-Mask-3D-922055.html"
+      ]
+    },
+    "dualsense-wolverine": {
+      "credit": "Image: Sony Interactive Entertainment",
+      "pages": [
+        "https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-marvels-wolverine-adamantium-limited-edition-for-ps5-pc-mac-mobile",
+        "https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-marvels-wolverine-battle-yellow-limited-edition-for-ps5-pc-mac-mobile",
+        "https://blog.playstation.com/2026/08/11/first-look-at-marvels-wolverine-limited-edition-ps5-console-bundle-and-accessories/"
+      ]
+    },
+    "rise-of-the-tomb-raider-switch-2-lrg-collectors-edition": {
+      "credit": "Image: Limited Run Games",
+      "pages": [
+        "https://limitedrungames.com/products/switch-2-limited-run-8-rise-of-the-tomb-raider-20-year-celebration-collectors-edition"
+      ]
+    },
+    "superstation-one-transparent-collection": {
+      "credit": "Image: RetroRemake",
+      "pages": [
+        "https://retroremake.co/products/superstation%e1%b5%92%e2%81%bf%e1%b5%89-transparent-collection-preorder"
+      ]
+    },
+    "pokemon-red-blue-game-boy-jukebox": {
+      "credit": "Image: The Pokémon Company",
+      "pages": [
+        "https://www.pokemon.com/us/news/pokemon-red-pokemon-blue-game-boy-jukebox-back-in-stock-at-pokemon-center"
+      ]
+    },
+    "atari-800xl-full-size-replica": {
+      "credit": "Image: Atari",
+      "pages": [
+        "https://atari.com/products/the-800xl"
+      ]
+    },
+    "pokemon-30th-santa-cruz-blind-bag-decks": {
+      "credit": "Image: Santa Cruz Skateboards",
+      "pages": [
+        "https://www.santacruzskateboards.com/collections/pokemon"
       ]
     }
   }
