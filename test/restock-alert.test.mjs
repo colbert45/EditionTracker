@@ -54,6 +54,15 @@ test("a source that just repeats the listing link is left out", () => {
   assert.doesNotMatch(emailBody(planAlerts(old, now, SITE)[0], now.categories), /Source:/);
 });
 
+test("a bracket in a link can't end the Markdown link early", () => {
+  const url = "https://www.bestbuy.com/site/zelda-(40th)/6000000.p?skuId=6000000";
+  const source = "https://en.wikipedia.org/wiki/Nintendo_(company)";
+  const { old, now } = restocked([{ ...BB, url, source }]);
+  const body = emailBody(planAlerts(old, now, SITE)[0], now.categories);
+  assert.match(body, /\[Go to the listing →\]\(https:\/\/www.bestbuy.com\/site\/zelda-%2840th%29\/6000000.p\?skuId=6000000\)/);
+  assert.match(body, /Source: \[en.wikipedia.org\]\(https:\/\/en.wikipedia.org\/wiki\/Nintendo_%28company%29\)/);
+});
+
 test("a later restock alerts again, and nothing alerts when nothing is new", () => {
   const old = base(), mid = base(), now = base();
   for (const [d, r] of [[mid, [BB]], [now, [BB, TG]]]) { const it = d.items.find(i => i.id === ID); it.status = "restock"; it.restocks = r; }

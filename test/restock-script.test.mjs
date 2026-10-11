@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync, execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, chmodSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, chmodSync, existsSync, cpSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { plainData, pickItems } from "./helpers/stock.mjs";
@@ -98,6 +98,7 @@ test("running the same restock twice only saves it once", () => {
   assert.equal(again.status, 0);
   assert.deepEqual(again.outputs, { changed: "false" });
   assert.match(again.stdout, /already logged/);
+  assert.match(again.stdout, /run Resend restock email/);
   assert.equal(head(s), saved);
 });
 
@@ -162,4 +163,32 @@ test("sold out again with no release name stops", () => {
   assert.match(r.stderr, /Type the release's name/);
   assert.ok(existsSync(join(s.work, "data/releases.json")));
   assert.equal(head(s), s.start);
+});
+
+// What the "Resend restock email" workflow runs, on a real checkout: the code sits next to the data.
+function resend(s) {
+  mkdirSync(join(s.work, "scripts"), { recursive: true });
+  copyFileSync(join(ROOT, "scripts/alerts.mjs"), join(s.work, "scripts/alerts.mjs"));
+  cpSync(join(ROOT, "lib"), join(s.work, "lib"), { recursive: true });
+  const env = { ...process.env, ...NO_GLOBAL };
+  delete env.BUTTONDOWN_API_KEY;
+  return spawnSync("node", ["scripts/alerts.mjs", "send", "HEAD~1", "--dry-run"], { cwd: s.work, encoding: "utf8", env });
+}
+
+test("if the email failed, the resend command plans exactly that restock's email from the latest commit", () => {
+  const s = setup();
+  assert.equal(run(s).status, 0);
+  const r = resend(s);
+  assert.equal(r.status, 0, r.stderr);
+  const lines = r.stdout.trim().split("\n");
+  assert.equal(lines.length, 1);
+  assert.match(lines[0], new RegExp(`^Would send "Back in stock: .+ at Best Buy" to item:${PICK.id} or type:`));
+});
+
+test("the resend command sends nothing for a sold out again commit", () => {
+  const s = setup();
+  assert.equal(run(s).status, 0);
+  assert.equal(run(s, { RESTOCK_ACTION: "soldout" }, { date: "2026-10-10" }).status, 0);
+  assert.match(git(s.work, "log", "-1", "--format=%s"), /^Sold out again: /); // the workflow's own guard stops here, and so does [no alerts]
+  assert.match(resend(s).stdout, /A commit says \[no alerts\]\. Not sending\./);
 });

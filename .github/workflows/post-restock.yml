@@ -3,6 +3,7 @@
 # It logs the restock on the release's page, switches the release to "Back in stock", emails the
 # people who follow it, and redeploys the site. About 30 seconds from tap to inbox.
 # Tick "Dry run" to see exactly what would happen (including the email) without changing anything.
+# If the restock saved but the email step failed, run "Resend restock email".
 name: Post a restock
 
 on:
@@ -29,10 +30,9 @@ permissions:
   contents: write # saves the change to main
   actions: write # starts the site deploy
 
-# One edit to the data at a time (restocks, sold out again).
-concurrency:
-  group: data-write
-  cancel-in-progress: false
+# No concurrency group, on purpose: GitHub keeps only one waiting run per group and silently
+# cancels the older one, which would drop a restock. If two runs collide, restock.mjs starts
+# again from the latest main, and a repeat of the same restock is only logged once.
 
 jobs:
   restock:

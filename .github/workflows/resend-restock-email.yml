@@ -1,0 +1,48 @@
+# Only for when "Post a restock" saved the restock but its email step failed (look at that run's page).
+# GitHub app (or github.com) > Actions > Resend restock email > Run workflow.
+# It emails the people following the release, for the latest change on main, if that change is a restock.
+# If the first email did go out (check Buttondown > Emails), this sends it a second time.
+# Tick "Dry run" to see who would get what without sending anything.
+name: Resend restock email
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: show what would be sent, send nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  resend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The restock commits are named "Back in stock: ...". Anything else on top means someone else
+      # changed the site since, and this can't tell what to resend.
+      - name: Check the latest change is a restock
+        run: |
+          SUBJECT=$(git log -1 --format=%s)
+          case "$SUBJECT" in
+            "Back in stock: "*) echo "Resending for: $SUBJECT" ;;
+            *)
+              echo "::error::The latest change on main isn't a restock ($SUBJECT), so I can't tell which email to resend. Send it from Buttondown instead."
+              exit 1 ;;
+          esac
+      - name: Send the email
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then FLAG="--dry-run"; else FLAG=""; fi
+          node scripts/alerts.mjs send HEAD~1 $FLAG

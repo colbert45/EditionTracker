@@ -19,9 +19,11 @@ for (const [name, yml] of Object.entries(FLOWS)) {
     assert.doesNotMatch(yml, /run:[^\n]*\$\{\{/);
   });
 
-  test(`${name}: saves to main only, one edit at a time, then redeploys`, () => {
+  test(`${name}: saves to main only, then redeploys`, () => {
     assert.match(yml, /permissions:\n  contents: write[^\n]*\n  actions: write/);
-    assert.match(yml, /concurrency:\n  group: data-write\n  cancel-in-progress: false/);
+    // No concurrency group: GitHub keeps one waiting run per group and silently cancels the older one,
+    // which would drop a restock. restock.mjs handles two runs colliding by starting again from the latest main.
+    assert.doesNotMatch(yml, /^concurrency:/m);
     assert.match(yml, /uses: actions\/checkout@v4\n\s+with:\n\s+ref: main\n\s+fetch-depth: 0/);
     assert.match(yml, /node scripts\/restock\.mjs/);
     assert.match(yml, /gh workflow run deploy\.yml --ref main/);
@@ -51,4 +53,34 @@ test("the deploy can be started by hand, and only a real push sends alerts (so a
   assert.match(deploy.slice(0, deploy.indexOf("permissions:")), /workflow_dispatch:/);
   assert.match(deploy, /- name: Send alerts for this change\n        if: github\.event_name == 'push'/);
   assert.match(deploy, /- name: Post to social media\n        if: github\.event_name == 'push'/);
+});
+
+test("resend-restock-email: only on request, only for a restock commit, and a dry run sends nothing", () => {
+  const yml = wf("resend-restock-email");
+  const on = yml.slice(yml.indexOf("\non:"), yml.indexOf("\npermissions:"));
+  assert.match(on, /workflow_dispatch:/);
+  assert.doesNotMatch(on, /\b(push|schedule|pull_request|issues|workflow_run):/);
+  assert.match(yml, /permissions:\n  contents: read\n/); // it never writes to the repo
+  assert.doesNotMatch(yml, /run:[^\n]*\$\{\{/); // form values only reach scripts through env
+  assert.match(yml, /DRY_RUN: \$\{\{ inputs\.dry_run \}\}/);
+  assert.match(yml, /BUTTONDOWN_API_KEY: \$\{\{ secrets\.BUTTONDOWN_API_KEY \}\}/);
+  assert.match(yml, /ref: main\n\s+fetch-depth: 2/); // it needs the commit before the restock
+  assert.match(yml, /"Back in stock: "\*\)/); // the guard
+  assert.ok(yml.indexOf('"Back in stock: "*)') < yml.indexOf("alerts.mjs send HEAD~1"), "guard comes before the send");
+  assert.match(yml, /\[ "\$DRY_RUN" = "true" \]; then FLAG="--dry-run"/);
+  assert.match(yml, /alerts\.mjs send HEAD~1 \$FLAG/);
+});
+
+test("post-restock points at the resend workflow", () => {
+  assert.match(FLOWS["post-restock"], /run "Resend restock email"/);
+});
+
+test("in all three phone workflows, an expression is only ever an env value or an if: condition, never part of a script", () => {
+  for (const name of ["post-restock", "sold-out-again", "resend-restock-email"]) {
+    const lines = wf(name).split("\n").filter(l => l.includes("${{"));
+    assert.ok(lines.length >= 2, name);
+    for (const l of lines) {
+      assert.match(l, /^\s+(?:[A-Z_]+: \$\{\{ [^}]+ \}\}|if: (?:\$\{\{ [^}]+ \}\}|steps\.[^\n]*))$/, `${name}: ${l}`);
+    }
+  }
 });

@@ -16,6 +16,9 @@ const withRestocks = (restocks, patch = { releaseDate: PAST, releaseWindow: null
   const it = data.items.find(i => i.id === ID);
   it.status = "restock";
   it.restocks = restocks;
+  // The feed's "last changed" date is the newest date on the release, so the real timeline can't be allowed in.
+  it.timeline = [];
+  it.preordersOpened = null;
   Object.assign(it, patch);
   return data;
 };
@@ -72,7 +75,7 @@ test("the log is newest first, and a source that repeats the link isn't shown tw
     { date: "2026-10-12", store: "target", url, source: url },
     { date: "2026-10-12", store: "walmart", url: "https://www.walmart.com/ip/1", source: null }
   ]) }), ID);
-  const log = html.slice(html.indexOf("Restock history"), html.indexOf("Timeline"));
+  const log = html.slice(html.indexOf("Restock history"), html.indexOf("<h2>Sources</h2>"));
   const order = [...log.matchAll(/>(Best Buy|Target|Walmart)</g)].map(m => m[1]);
   assert.deepEqual(order, ["Walmart", "Target", "Best Buy"]); // same-day entries: the later one first
   assert.doesNotMatch(log, /Source/);
@@ -117,6 +120,11 @@ test("the validator checks restocks", () => {
   bad({ url: "http://www.bestbuy.com/a" }, "url must be");
   bad({ url: "not a link" }, "url must be");
   bad({ source: "ftp://x" }, "source must be");
+  // This site has no affiliate links, so hand-edited data can't carry one either.
+  bad({ url: "https://www.bestbuy.com/a?irclickid=abc" }, "url has an affiliate tag (irclickid)");
+  bad({ source: "https://example.com/news?tag=dealsite-20" }, "source has an affiliate tag (tag)");
+  bad({ source: "https://www.amazon.com/dp/B0ABC" }, "source goes to Amazon");
+  bad({ url: "https://amzn.to/3abc" }, "url goes to Amazon");
   // Back in stock with no entry is allowed, but flagged.
   const noLog = withRestocks([]);
   const r = validate(noLog);

@@ -73,6 +73,38 @@ test("a link has to be a full https address", () => {
   fails(() => cleanLink("nope", "The source link"), /^The source link/);
 });
 
+test("a link keeps its own brackets and encoding, and loses quotes and full stops", () => {
+  assert.equal(cleanLink("https://en.wikipedia.org/wiki/Nintendo_(company)"), "https://en.wikipedia.org/wiki/Nintendo_(company)");
+  assert.equal(cleanLink("(see https://en.wikipedia.org/wiki/Nintendo_(company))."), "https://en.wikipedia.org/wiki/Nintendo_(company)");
+  assert.equal(cleanLink("see [this](https://example.com/a/b)"), "https://example.com/a/b");
+  assert.equal(cleanLink(`\u201c${BB}\u201d`), BB); // pasted in curly quotes
+  assert.equal(cleanLink(`"${BB}",`), BB);
+  assert.equal(cleanLink(`<${BB}>`), BB);
+  // The rest of the query is kept exactly as written, even when a tag is removed from beside it.
+  assert.equal(cleanLink("https://www.bestbuy.com/site/x.p?sku=(1)&a=b%20c~d&utm_source=x"), "https://www.bestbuy.com/site/x.p?sku=(1)&a=b%20c~d");
+  assert.equal(cleanLink("https://example.com/p?utm_source=x&utm_medium=y"), "https://example.com/p"); // nothing left: no "?"
+  assert.equal(cleanLink("https://example.com/p?a=1&&b=2"), "https://example.com/p?a=1&&b=2"); // untouched when nothing is removed
+});
+
+test("affiliate and tracking tags are removed from a link, from any site", () => {
+  const dirty = "https://example.com/a?keep=1&tag=dealsite-20&linkCode=ll1&siteID=abc&ref=nav&igsh=xyz&share_id=1&si=abc&aff=9&partner=z&TAG=x&gclid=1";
+  assert.equal(cleanLink(dirty), "https://example.com/a?keep=1");
+  // X adds ?s= and ?t= to shared posts. Only there.
+  assert.equal(cleanLink("https://x.com/user/status/123?s=20&t=abc"), "https://x.com/user/status/123");
+  assert.equal(cleanLink("https://example.com/a?s=20&t=abc"), "https://example.com/a?s=20&t=abc");
+});
+
+test("a link to Amazon, or with a port, is refused", () => {
+  for (const bad of ["https://www.amazon.com/dp/B0ABC?tag=dealsite-20", "https://smile.amazon.co.uk/dp/B0", "https://amzn.to/3abc", "https://a.co/d/abc"]) {
+    fails(() => cleanLink(bad), /goes to Amazon/);
+    fails(() => cleanLink(bad, "The source link"), /^The source link goes to Amazon/);
+  }
+  fails(() => cleanLink("https://www.bestbuy.com:8443/site/x/1.p"), /port number/);
+  assert.equal(cleanLink("https://www.bestbuy.com:443/site/x/1.p"), "https://www.bestbuy.com/site/x/1.p"); // the normal port isn't a port
+  // A source can't sneak an affiliate link in either.
+  fails(() => restock({ source: "https://www.amazon.com/dp/B0ABC?tag=dealsite-20" }), /source link goes to Amazon/);
+});
+
 test("the link has to be on the store's own website", () => {
   const { store } = resolveStore(mini(), "best buy");
   assert.equal(listingLink(store, BB), BB);
@@ -90,6 +122,7 @@ test("the link has to be on the store's own website", () => {
   // The store's home page isn't a listing.
   fails(() => listingLink(store, "https://www.bestbuy.com/"), /home page/);
   fails(() => listingLink(store, "https://www.bestbuy.com"), /home page/);
+  fails(() => listingLink(store, "https://www.bestbuy.com/?intl=nosplash"), /home page/);
 });
 
 test("a restock is logged, the status switches, and the input is left alone", () => {
@@ -115,20 +148,24 @@ test("new restocks go on the end of the log, and a source that repeats the link 
   assert.doesNotMatch(later.message, /Source:/);
 });
 
-test("the same restock twice is one entry, unless it sold out in between or it's a new day", () => {
+test("a second restock at the same store on the same day is one entry, however the page was pasted", () => {
   const first = restock();
-  const again = restock({}, first.data);
-  assert.equal(again.changed, false);
-  assert.match(again.note, /already logged/);
-  assert.equal(again.data, first.data); // returned untouched
-  // Sold out, then back at the same listing the same day: a second wave, so a second entry.
+  for (const link of [BB, "https://bestbuy.com/site/example/6000000.p?skuId=6000000", BB + "&ref=app&irclickid=abc", BB.replace(".p?", ".p/?")]) {
+    const again = restock({ link }, first.data);
+    assert.equal(again.changed, false, link);
+    assert.match(again.note, /already logged \(Best Buy, 2026-10-09\)/);
+    assert.match(again.note, /Sold out again/);
+    assert.match(again.note, /Resend restock email/);
+    assert.equal(again.data, first.data); // returned untouched
+  }
+  // Another store, or the next day, is a new entry.
+  assert.equal(restock({ retailer: "target", link: "https://www.target.com/p/x/-/A-9" }, first.data).changed, true);
+  assert.equal(restock({ today: "2026-10-10" }, first.data).changed, true);
+  // Sold out, then back at the same store the same day: a second wave, so a second entry.
   const sold = applySoldOut(first.data, { item: "xbox-series-x25", today: TODAY });
   const wave2 = restock({}, sold.data);
   assert.equal(wave2.changed, true);
   assert.equal(wave2.data.items.find(i => i.id === "xbox-series-x25").restocks.length, 2);
-  // The next day is a new entry too.
-  const next = restock({ today: "2026-10-10" }, first.data);
-  assert.equal(next.changed, true);
 });
 
 test("every mistake is reported at once", () => {

@@ -29,9 +29,10 @@ When something comes back in stock at a store, log it by hand. A release can car
 
 **From your phone:** GitHub app (or github.com) > Actions > **Post a restock** > Run workflow. Type part of the release's name (or its id), the store, and the link to the product page, and add where you saw it if you like. Tick *Dry run* first to see exactly what would happen, email included, without changing anything. A real run saves the restock to `main`, sends the email within seconds, and starts a fresh deploy. If something is wrong it changes nothing and says why on the run page.
 
-- The link has to be on the store's own website. A store that sells from more than one site gets a `domains` list in `stores` (Xbox has `microsoft.com`). Tracking tags such as `utm_*` and `irclickid` are removed from links.
-- The same restock run twice is logged once. A release that sells out and comes back the same day can be logged again after **Sold out again**.
+- The link has to be on the store's own website. A store that sells from more than one site gets a `domains` list in `stores` (Xbox has `microsoft.com`). Tracking and affiliate tags (`utm_*`, `irclickid`, `tag` and so on) are removed from every link you paste, links to Amazon are refused, and the data check rejects them if they're added by hand.
+- A second restock at the same store on the same day is logged once, however the link was pasted. A release that sells out and comes back the same day can be logged again after **Sold out again**.
 - **Sold out again** (also under Actions) switches a release back to "Sold out" so the page stops saying "Back in stock". It emails nobody.
+- **Resend restock email** (also under Actions) is only for when a restock saved but its email step failed (open that run to see). It emails for the latest change on `main` if that change is a restock. If the first email did go out it sends it twice, so check Buttondown > Emails first. Tick *Dry run* to see what it would send.
 - The news check never sets "Back in stock" itself. It can add a timeline note about a restock, and you decide whether to log it.
 
 ## Prices and resellers
