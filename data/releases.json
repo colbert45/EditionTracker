@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-11",
+  "updated": "2026-10-12",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2085,6 +2085,42 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/psa-pokemon-red-and-blue-game-boy-jukebox-back-in-stock"
+        }
+      ]
+    },
+    {
+      "id": "sonic-dna-figure",
+      "name": "Sonic 'DNA' Figure",
+      "category": "collect",
+      "platform": "Figure",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Sonic DNA figure SEGA",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "figure",
+        "colors": [
+          "#1E5BD8",
+          "#D8232A",
+          "#F2F2F2"
+        ]
+      },
+      "notes": [
+        "Based on the life-size Sonic statue SEGA put in its Shibuya store earlier this year. SEGA says that statue contains Sonic's \"DNA\".",
+        "Until now you had to go to Tokyo to see it. This version is meant for collectors to keep at home.",
+        "It's very expensive. I haven't seen a confirmed US price or release date yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/random-sonic-figure-containing-the-blue-blurs-dna-comes-with-an-eye-watering-price-tag"
         }
       ]
     }
