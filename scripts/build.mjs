@@ -98,6 +98,7 @@ const fontFaces = FONTS.map(([fam, w, file]) =>
   `@font-face{font-family:"${fam}";font-style:normal;font-weight:${w};font-display:swap;src:url(/fonts/${file}.woff2) format("woff2");unicode-range:${LATIN}}`).join("\n");
 
 // The design's CSS, untouched, plus a few lines for real photos.
+const SUPPORT = /^https:\/\//.test(config.support?.url || "") ? { url: config.support.url, label: config.support.label || "Buy me a coffee" } : null;
 const CSS = `${fontFaces}\n${read("lib/design.css")}
 .thumb img,.hero .art img{display:block;width:100%;height:100%;object-fit:contain}
 .hero .art img{border-radius:4px}
@@ -105,6 +106,7 @@ const CSS = `${fontFaces}\n${read("lib/design.css")}
 .mast nav{display:flex;align-items:center;gap:16px;margin-left:auto;margin-right:18px;font-size:.92rem;font-weight:600}
 .mast nav a{text-decoration:none}
 .mast nav a:hover{text-decoration:underline}
+.coffee{margin:22px 0 0;text-align:center;color:var(--soft);font-size:.92rem}
 .logo b{font-size:2.05rem;white-space:nowrap}
 .tag{width:32px;height:22px}
 .tag::after{top:8px;right:6px}
@@ -299,15 +301,16 @@ ${analytics()}
 <div class="wrap">
   <header class="mast">
     <a class="logo" href="/"><span class="tag" aria-hidden="true"></span><b>edition tracker</b></a>
-    <nav aria-label="Site"><a href="/calendar/">Calendar</a><a class="rss" href="/feed.xml">RSS</a>${alertsHref ? `<a class="alert-btn" href="${alertsHref}"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1Z"/></svg>Get alerts</a>` : ""}</nav>
+    <nav aria-label="Site"><a href="/calendar/">Calendar</a><a class="rss" href="/feed.xml">RSS</a>${SUPPORT ? `<a class="tip" href="${esc(SUPPORT.url)}" rel="noopener">☕ Tip</a>` : ""}${alertsHref ? `<a class="alert-btn" href="${alertsHref}"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1Z"/></svg>Get alerts</a>` : ""}</nav>
     <span class="updated" id="updated">Updated ${long(HEADER_DATE)}</span>
   </header>
   <main id="app">${body}</main>
   ${noindex ? "" : signup(alertItem)}
+  ${SUPPORT ? `<p class="coffee">Free, no ads, no affiliate links. <a href="${esc(SUPPORT.url)}" rel="noopener">${esc(SUPPORT.label)}</a> if it saved you some money.</p>` : ""}
   <footer>
     <p>Edition Tracker isn't affiliated with Nintendo, Sony, Microsoft or any store. Prices and stock move fast, so double-check before you buy.</p>
     <p>Spotted something I missed? <a href="mailto:tips@editiontracker.com">Send a tip</a> to tips@editiontracker.com. It'll be added once there's a source.</p>
-    <p>No ads. No affiliate links. I don't get paid when you click or buy. <a href="/about/">What it costs to run</a>.</p>
+    <p>No ads. No affiliate links. I don't get paid when you click or buy. <a href="/about/">What it costs to run</a>.${SUPPORT ? ` <a href="${esc(SUPPORT.url)}" rel="noopener">${esc(SUPPORT.label)}</a>.` : ""}</p>
     <p><a href="/calendar/">Release calendar</a> · <a href="/feed.xml">RSS feed</a> · <a href="/about/">About</a> · <a href="/contact/">Contact</a> · <a href="/privacy/">Privacy and cookies</a></p>
     ${FOLLOW.length ? `<p>Follow: ${FOLLOW.map(([n, u]) => `<a href="${esc(u)}" rel="me noopener">${n}</a>`).join(" · ")}</p>` : ""}
   </footer>
@@ -638,7 +641,6 @@ function contact() {
 // so updating a number is a one-line edit. A row with no price is left out.
 const COSTS = (() => { try { return JSON.parse(read("data/costs.json")); } catch { return null; } })();
 const costRows = (COSTS?.items || []).filter(r => r && typeof r.name === "string" && typeof r.price === "string" && r.price.trim());
-const SUPPORT = /^https:\/\//.test(config.support?.url || "") ? { url: config.support.url, label: config.support.label || "Buy me a coffee" } : null;
 
 function about() {
   const rows = costRows.map(r => `<tr><td>${esc(r.name)}${r.what ? `<span class="what">${esc(r.what)}</span>` : ""}</td><td>${esc(r.price)}</td></tr>`).join("");
