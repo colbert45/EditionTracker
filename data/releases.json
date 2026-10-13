@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-12",
+  "updated": "2026-10-13",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2121,6 +2121,81 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/random-sonic-figure-containing-the-blue-blurs-dna-comes-with-an-eye-watering-price-tag"
+        }
+      ]
+    },
+    {
+      "id": "first4figures-totk-zelda-statue",
+      "name": "First 4 Figures Princess Zelda Statue (Tears of the Kingdom)",
+      "category": "collect",
+      "platform": "Statue",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "preordersStart": "2026-10-22",
+      "searchQuery": "First 4 Figures Zelda Tears of the Kingdom statue",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "figure",
+        "colors": [
+          "#2a4c8c",
+          "#f2e8d0",
+          "#c9a23a"
+        ]
+      },
+      "notes": [
+        "A 12-inch painted PVC statue of Princess Zelda as she appears in Tears of the Kingdom.",
+        "It follows the Link statue First 4 Figures made earlier in the 40th anniversary year.",
+        "Preorders open October 22. I haven't seen a price or ship date yet."
+      ],
+      "inTheBox": [
+        "12-inch painted PVC Zelda statue"
+      ],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/tears-of-the-kingdom-zelda-statue-officially-revealed-heres-a-sneak-peek"
+        }
+      ]
+    },
+    {
+      "id": "god-of-war-laufey-collector-box",
+      "name": "God of War Laufey Collector Box",
+      "category": "games",
+      "platform": "Merch box (game not included)",
+      "status": "preorder",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": "2026-10-13",
+      "searchQuery": "God of War Laufey Collector Box",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#1c2a3a",
+          "#9cc4d8",
+          "#c9a23a"
+        ]
+      },
+      "notes": [
+        "A box of exclusive God of War Laufey merch. The game itself is not included.",
+        "It showed up for preorder on the PlayStation store in Spain before Sony announced it.",
+        "I haven't seen Sony confirm a price, contents list or US availability yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/10/god-of-war-laufey-collector-box-available-for-pre-order-now-doesnt-include-the-game"
         }
       ]
     }
