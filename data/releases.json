@@ -2198,6 +2198,42 @@
           "url": "https://www.pushsquare.com/news/2026/10/god-of-war-laufey-collector-box-available-for-pre-order-now-doesnt-include-the-game"
         }
       ]
+    },
+    {
+      "id": "youtooz-retro-crash-spyro-figures",
+      "name": "Youtooz Retro Crash Bandicoot and Spyro Figures",
+      "category": "collect",
+      "platform": "Vinyl figures",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Youtooz retro Crash Bandicoot Spyro figure",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "figure",
+        "colors": [
+          "#6B3FA0",
+          "#F28C28",
+          "#F2C744"
+        ]
+      },
+      "notes": [
+        "Two vinyl figures from Youtooz with a retro look inspired by the PS1 era.",
+        "One is Crash Bandicoot and the other is Spyro the Dragon.",
+        "I haven't seen a price or a release date yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/news/2026/10/new-retro-figures-of-ps1-legends-spyro-the-dragon-and-crash-bandicoot-are-on-the-way-from-youtooz"
+        }
+      ]
     }
   ]
 }
