@@ -267,6 +267,23 @@ test("the log shows what the request to X carries, or why X would refuse it", ()
   assert.match(src, /async function xPost\(p\) \{[^}]*const text = xBody\(p, config\.siteUrl\);[\s\S]*?body: JSON\.stringify\(\{ text \}\)/);
 });
 
+test("a message of your own goes to Discord only when asked, so the webhook can be tested", () => {
+  const { dir, start } = repoWithRestock();
+  const hook = "https://discord.com/api/webhooks/123456789/token-abc";
+  const discord = r => r.calls.filter(c => c.url === hook);
+  const asked = sendFor(dir, start, ["--text", "Testing the restock channel", "--only", "discord"], { DISCORD_WEBHOOK_URL: hook });
+  assert.equal(asked.status, 0, asked.stderr + asked.stdout);
+  assert.equal(discord(asked).length, 1);
+  assert.match(JSON.parse(discord(asked)[0].body).content, /Testing the restock channel/);
+  assert.deepEqual(asked.x, []);
+  assert.deepEqual(asked.bluesky, []);
+  assert.ok(!asked.stdout.includes("token-abc"));
+  // The usual way (both) never sends it there.
+  const usual = sendFor(dir, start, ["--text", "Testing"], { DISCORD_WEBHOOK_URL: hook });
+  assert.equal(discord(usual).length, 0);
+  assert.equal(usual.x.length, 1);
+});
+
 test("the scheduled posts go to X without links too", () => {
   const edit = d => { Object.assign(d.items[0], { status: "preorder", releaseDate: "2099-06-04", releaseWindow: null }); };
   const { dir, start } = repoWithRestock(undefined, edit);

@@ -46,7 +46,7 @@ const discordPost = p => postToDiscord(discordUrl, p.discord);
 // Where a post goes: restocks to Bluesky and Discord (X only if the config says so), everything else to Bluesky and X.
 const targets = p => p.restock
   ? [["Bluesky", useBsky, bskyPost], ["Discord", useDiscord, discordPost], ["X", useX && restockToX, xPost]]
-  : [["Bluesky", useBsky, bskyPost], ["X", useX, xPost]];
+  : [["Bluesky", useBsky, bskyPost], ["X", useX, xPost], ["Discord", useDiscord && only === "discord" && p.discord, discordPost]]; // a message of your own goes to Discord only when asked
 // What a post looks like, for the log. X gets its own version without the link, shown when X is a place it would go.
 const goesToX = p => (!only || only === "x") && (!p.restock || restockToX);
 // It shows exactly what the request to X will carry (xBody), or says why X would refuse it.
@@ -162,7 +162,8 @@ if (ownText !== undefined) {
   const url = (text.match(/https?:\/\/\S+/) || [])[0] || config.siteUrl;
   const p = { text, url, title: config.siteName, description: "Special edition consoles, controllers, games and collectibles: release dates, prices and where to buy.", imageFile: arg("--image") };
   if (!text.includes(url)) p.text = `${text}\n${url}`;
-  p.xText = xCustom(text, config.siteUrl); // the same words with every link taken out, and the site named in words
+  p.xText = xCustom(text, config.siteUrl);
+  p.discord = text; // the same words with every link taken out, and the site named in words
   if ((!only || only === "x") && xLength(p.xText) > X_LIMIT) { console.log(`Too long for X once its links are taken out: ${xLength(p.xText)} (limit ${X_LIMIT}).`); process.exit(1); }
   // Bluesky counts what a reader sees as one character each, and its post keeps the link.
   if ((!only || only === "bluesky") && graphemes(p.text) > BSKY_LIMIT) { console.log(`Too long for Bluesky: ${graphemes(p.text)} (limit ${BSKY_LIMIT}).`); process.exit(1); }
