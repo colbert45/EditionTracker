@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-13",
+  "updated": "2026-10-14",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -100,6 +100,10 @@
     "retroremake": {
       "name": "RetroRemake",
       "url": "https://retroremake.co/"
+    },
+    "pokemoncenter": {
+      "name": "Pokémon Center",
+      "url": "https://www.pokemoncenter.com/"
     }
   },
   "items": [
@@ -2054,9 +2058,9 @@
       "category": "collect",
       "platform": "Music player",
       "status": "out",
-      "price": "TBA",
-      "releaseDate": null,
-      "releaseWindow": "2026",
+      "price": "$69.99",
+      "releaseDate": "2026-02-27",
+      "releaseWindow": null,
       "preordersOpened": null,
       "searchQuery": "Pokémon Red Blue Game Boy Jukebox",
       "image": "/images/pokemon-red-blue-game-boy-jukebox.jpg",
@@ -2074,7 +2078,12 @@
         "It came out earlier this year for Pokémon's 30th anniversary and is sold through the Pokémon Center."
       ],
       "inTheBox": [],
-      "stores": [],
+      "stores": [
+        {
+          "store": "pokemoncenter",
+          "listed": true
+        }
+      ],
       "timeline": [
         {
           "date": "2026-10-11",
@@ -2085,6 +2094,10 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/psa-pokemon-red-and-blue-game-boy-jukebox-back-in-stock"
+        },
+        {
+          "label": "Pokémon.com",
+          "url": "https://www.pokemon.com/us/news/pokemon-red-pokemon-blue-game-boy-jukebox-back-in-stock-at-pokemon-center"
         }
       ]
     },
