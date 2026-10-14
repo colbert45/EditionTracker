@@ -2182,7 +2182,7 @@
       "category": "games",
       "platform": "Merch box (game not included)",
       "status": "preorder",
-      "price": "TBA",
+      "price": "$150",
       "releaseDate": null,
       "releaseWindow": "TBA",
       "preordersOpened": "2026-10-13",
@@ -2200,15 +2200,25 @@
       "notes": [
         "A box of exclusive God of War Laufey merch. The game itself is not included.",
         "It showed up for preorder on the PlayStation store in Spain before Sony announced it.",
-        "I haven't seen Sony confirm a price, contents list or US availability yet."
+        "I haven't seen Sony confirm a price, contents list or US availability yet.",
+        "The box has a statue, a mini art book and a deck of cards. The game is not included."
       ],
       "inTheBox": [],
       "stores": [],
-      "timeline": [],
+      "timeline": [
+        {
+          "date": "2026-10-14",
+          "text": "Price revealed at $150, along with the contents: a statue, a mini art book and a deck of cards."
+        }
+      ],
       "sources": [
         {
           "label": "Push Square",
           "url": "https://www.pushsquare.com/news/2026/10/god-of-war-laufey-collector-box-available-for-pre-order-now-doesnt-include-the-game"
+        },
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/god-of-war-laufeys-150-collector-box-has-been-revealed-doesnt-include-a-copy-of-the-game/"
         }
       ]
     },
@@ -2245,6 +2255,66 @@
         {
           "label": "Time Extension",
           "url": "https://www.timeextension.com/news/2026/10/new-retro-figures-of-ps1-legends-spyro-the-dragon-and-crash-bandicoot-are-on-the-way-from-youtooz"
+        }
+      ]
+    },
+    {
+      "id": "dualsense-gran-turismo-limited",
+      "name": "DualSense Gran Turismo Limited Edition",
+      "category": "playstation",
+      "platform": "PS5",
+      "status": "announced",
+      "price": "$84.99",
+      "releaseDate": "2026-12-10",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "DualSense Gran Turismo Limited Edition controller",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#F2F2F2",
+          "#1A1A1A",
+          "#D62828"
+        ]
+      },
+      "notes": [
+        "Made for the series' 30th anniversary.",
+        "It uses the standard white DualSense as a base with Gran Turismo themed decoration.",
+        "Sony says it will be made in limited quantities. I haven't seen a preorder date yet."
+      ],
+      "inTheBox": [
+        "DualSense wireless controller, Gran Turismo Limited Edition"
+      ],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": false
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-14",
+          "text": "Announced for Gran Turismo's 30th anniversary. $84.99, out December 10 in limited quantities."
+        }
+      ],
+      "sources": [
+        {
+          "label": "PlayStation Blog",
+          "url": "https://blog.playstation.com/2026/10/14/gran-turismo-7s-spec-iv-part-1-launches-today-and-a-first-look-at-dualsense-wireless-controller-gran-turismo-limited-edition/"
+        },
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/10/playstation-celebrates-30-years-of-gran-turismo-with-a-stunning-ps5-controller"
+        },
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/gran-turismo-is-getting-a-new-limited-edition-ps5-dualsense-controller/"
+        },
+        {
+          "label": "Gematsu",
+          "url": "https://www.gematsu.com/2026/10/gran-turismo-limited-edition-dualsense-controller-announced"
         }
       ]
     }
