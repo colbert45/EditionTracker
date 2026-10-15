@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseBestBuy, planStock, bestBuyListing, isSku } from "../lib/stockcheck.js";
+import { parseBestBuy, proposeRestocks, planStock, bestBuyListing, isSku } from "../lib/stockcheck.js";
 import { plainData, pickItems } from "./helpers/stock.mjs";
 import { applyRestock } from "../lib/restock.js";
 
@@ -146,7 +146,8 @@ test("--show says what Best Buy answers and changes nothing", () => {
 
 test("the stock check workflow is wired safely", () => {
   const yml = readFileSync(`${ROOT}.github/workflows/stock-check.yml`, "utf8");
-  assert.match(yml, /schedule:\n\s+- cron: "\*\/5 \* \* \* \*"/);
+  // Instant mode is off for now: the twice-daily news check looks at Best Buy instead.
+  assert.doesNotMatch(yml.replace(/^#.*$/gm, ""), /schedule:/);
   assert.match(yml, /permissions:\n  contents: write[^\n]*\n  actions: write/);
   assert.match(yml, /concurrency:\n  group: stock-check\n  cancel-in-progress: false/);
   assert.match(yml, /BESTBUY_API_KEY: \$\{\{ secrets\.BESTBUY_API_KEY \}\}/);
@@ -161,4 +162,32 @@ test("the stock check workflow is wired safely", () => {
   for (const st of steps) assert.match(st, /if: env\.HAS_KEY == 'true'/);
   // It never pushes to main.
   assert.doesNotMatch(yml, /push[^\n]*\bmain\b/);
+});
+
+test("the news check proposes a restock for a product Best Buy sells while the site says sold out", async () => {
+  const { applyAll, prMarkdown } = await import("../lib/proposals.js");
+  const d = plainData();
+  const [a, b, c] = d.items.filter(i => ["out", "soldout"].includes(i.status)).slice(0, 3);
+  const pre = d.items.find(i => i.status === "preorder");
+  a.status = "soldout"; b.status = "soldout"; c.status = "out"; pre.status = "preorder";
+  const entries = [{ item: a.id, sku: "1000001" }, { item: b.id, sku: "1000002" }, { item: c.id, sku: "1000003" }, { item: pre.id, sku: "1000004" }, { item: "nope", sku: "1000005" }];
+  const seen = parseBestBuy({ products: [
+    { sku: 1000001, name: "A", onlineAvailability: true, orderable: "Available" },
+    { sku: 1000002, name: "B", onlineAvailability: false, orderable: "SoldOut" },
+    { sku: 1000003, name: "C", onlineAvailability: true, orderable: "Available" },
+    { sku: 1000004, name: "P", onlineAvailability: true, orderable: "Available" },
+    { sku: 1000005, name: "N", onlineAvailability: true, orderable: "Available" }] });
+  const { proposals, headlines } = proposeRestocks(d.items, entries, seen, "2026-10-15");
+  assert.deepEqual(proposals.map(p => p.itemId), [a.id, c.id]); // not the unavailable one, the preorder, or an unknown release
+  const { data: next, applied, skipped } = applyAll(d, proposals, new Map(headlines.map(h => [h.id, h])), "2026-10-15");
+  assert.equal(skipped.length, 0);
+  assert.equal(applied.length, 2);
+  const it = next.items.find(i => i.id === a.id);
+  assert.equal(it.status, "restock");
+  assert.deepEqual(it.restocks.at(-1), { date: "2026-10-15", store: "bestbuy", url: bestBuyListing("1000001"), source: bestBuyListing("1000001"), reported: true });
+  const md = prMarkdown({ applied, skipped, reviewed: 0, when: "now", today: "2026-10-15" });
+  assert.match(md, /Merge by the end of 2026-10-17/);
+  assert.match(md, /Best Buy product page/);
+  // Both are "Back in stock" on the site now: nothing more to propose.
+  assert.equal(proposeRestocks(next.items, entries, seen, "2026-10-15").proposals.length, 0);
 });

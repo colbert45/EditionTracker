@@ -138,8 +138,9 @@ test("a restock link is only used when the report's own text has it and it's on 
   const page = "https://www.bestbuy.com/site/switch-2-zelda/6000000.p";
   const good = `${page}?skuId=6000000`;
   const withUrl = h => logged(run({ listingUrl: good }, h)).url;
-  // Everything after the "?" comes off: a link inside a headline can carry a tag no list of tags knows about.
-  assert.equal(withUrl({ summary: `Buy it here: ${good}&irclickid=abc` }), page);
+  // Everything after the "?" comes off, except Best Buy's own product number: a link inside a headline can carry a tag no list of tags knows about.
+  assert.equal(withUrl({ summary: `Buy it here: ${good}&irclickid=abc` }), good);
+  assert.equal(logged(run({ listingUrl: `${page}?skuId=evil` }, { summary: `${page}?skuId=evil` })).url, page);
   assert.equal(withUrl({}), BB_SEARCH(PICK.id)); // the model's link isn't in the report: it's not trusted
   assert.equal(withUrl({ summary: "Buy it at https://www.amazon.com/dp/B0ABC", title: good.replace("bestbuy.com", "bestbuy.com.evil.test") }), BB_SEARCH(PICK.id));
   const wrongSite = run({ listingUrl: "https://www.target.com/p/x/-/A-1" }, { summary: "https://www.target.com/p/x/-/A-1" });

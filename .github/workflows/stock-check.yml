@@ -1,4 +1,8 @@
-# Checks Best Buy's stock every 5 minutes for the releases in config/stock-check.json. When one comes back, it starts
+# INSTANT MODE, currently OFF. For now Best Buy is checked inside the twice-daily news check, which puts any restock in
+# its pull request for review. To turn instant mode back on, put back these two lines under "on:":
+#   schedule:
+#     - cron: "*/5 * * * *"
+# Then it checks Best Buy every 5 minutes for the releases in config/stock-check.json. When one comes back, it starts
 # "Post a restock", which puts it on the site, emails the people following it, posts it, and redeploys.
 # Needs the BESTBUY_API_KEY secret (free key from developer.bestbuy.com). Without it, this does nothing.
 # To see what Best Buy says for each product without changing anything: Actions > Best Buy stock check > Run workflow > tick "Just show".
@@ -6,8 +10,6 @@
 name: Best Buy stock check
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
       show:
@@ -28,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      # Without the secret every step is skipped, so the 10-minute schedule costs nothing until the key is added.
+      # Without the secret every step is skipped, so a run costs nothing until the key is added.
       HAS_KEY: ${{ secrets.BESTBUY_API_KEY != '' }}
     steps:
       - uses: actions/checkout@v4

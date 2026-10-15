@@ -11,6 +11,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 import { parseFeed, robotsAllows, matchesKeywords } from "../lib/feeds.js";
+import { parseBestBuy, proposeRestocks, isSku } from "../lib/stockcheck.js";
 import { proposalSchema, applyAll, prMarkdown, sourceLine } from "../lib/proposals.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -205,9 +206,27 @@ fresh.sort((a, b) => (b.published || "").localeCompare(a.published || ""));
 const headlines = fresh.slice(0, MAX_HEADLINES).map((h, k) => ({ ...h, id: k + 1 }));
 log(`${all.length} entries read, ${headlines.length} new and relevant`);
 
-if (!headlines.length) { output("changed", "false"); saveState(); summary("No new relevant headlines."); process.exit(0); }
+// Best Buy's own answer for the products in config/stock-check.json: one request, and only with BESTBUY_API_KEY.
+// A product that can be bought now while the site says sold out becomes a proposed restock in the same pull request.
+async function bestBuyProposals() {
+  if (!process.env.BESTBUY_API_KEY) { log("Best Buy: skipped (no BESTBUY_API_KEY secret)"); return { proposals: [], headlines: [] }; }
+  try {
+    const file = join(ROOT, "config/stock-check.json");
+    const entries = (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).bestbuy || [] : []).filter(e => isSku(e.sku));
+    if (!entries.length) return { proposals: [], headlines: [] };
+    const url = `https://api.bestbuy.com/v1/products(sku in(${entries.map(e => e.sku).join(",")}))?apiKey=${encodeURIComponent(process.env.BESTBUY_API_KEY)}&show=sku,name,onlineAvailability,orderable&format=json`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
+    if (!res.ok) throw new Error(`Best Buy answered ${res.status}`);
+    const found = proposeRestocks(data.items, entries, parseBestBuy(await res.json()), today);
+    log(`Best Buy: ${found.proposals.length} product(s) in stock that the site shows as sold out`);
+    return found;
+  } catch (e) { log(`Best Buy: ${String(e.message).replace(/apiKey=[^&\s]*/g, "apiKey=***")}, skipped`); return { proposals: [], headlines: [] }; }
+}
+const stock = await bestBuyProposals();
 
-if (!process.env.ANTHROPIC_API_KEY) {
+if (!headlines.length && !stock.proposals.length) { output("changed", "false"); saveState(); summary("No new relevant headlines."); process.exit(0); }
+
+if (headlines.length && !process.env.ANTHROPIC_API_KEY && !stock.proposals.length) {
   // Without a key, list the headlines in the run summary instead (and don't mark them seen).
   summary(`### Relevant headlines (no ANTHROPIC_API_KEY set, so no edits were proposed)\n\n` +
     headlines.map(sourceLine).join("\n"));
@@ -216,10 +235,11 @@ if (!process.env.ANTHROPIC_API_KEY) {
   process.exit(0);
 }
 
-const proposals = await askClaude(data, headlines);
-const byId = new Map(headlines.map(h => [h.id, h]));
+const askAi = headlines.length && process.env.ANTHROPIC_API_KEY;
+const proposals = [...(askAi ? await askClaude(data, headlines) : []), ...stock.proposals];
+const byId = new Map([...headlines, ...stock.headlines].map(h => [h.id, h]));
 const { data: next, applied, skipped } = applyAll(data, proposals, byId, today);
-for (const h of headlines) state.seen[h.link] = new Date().toISOString();
+if (askAi) for (const h of headlines) state.seen[h.link] = new Date().toISOString();
 
 const body = prMarkdown({ applied, skipped, reviewed: headlines.length, when: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC", today });
 mkdirSync(STATE_DIR, { recursive: true });
