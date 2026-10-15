@@ -156,13 +156,13 @@ test("a new release or big change is posted to X without its link, with the site
   asNintendo(old.items.find(i => i.id === "test-announced"));
   const [p] = socialPosts(old, now, SITE);
   assert.ok(p.text.endsWith(`${SITE}/test-announced/`)); // Bluesky still gets the link
-  assert.equal(p.xText, "Preorders open: Test test-announced\nNintendo Switch 2 · $99.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2");
+  assert.equal(p.xText, "Preorders open: Test test-announced\nNintendo Switch 2 · $99.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2 #SpecialEdition #GameCollecting");
   assert.doesNotMatch(p.xText, NO_LINK);
   // A brand new release too.
   const fresh = base(), more = base();
   more.items.push({ ...asNintendo({ ...more.items.find(i => i.id === "test-announced") }), id: "new-a", name: "New A", status: "announced" });
   const [n] = socialPosts(fresh, more, SITE);
-  assert.equal(n.xText, "New: New A\nNintendo Switch 2 · $99.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2");
+  assert.equal(n.xText, "New: New A\nNintendo Switch 2 · $99.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2 #SpecialEdition #GameCollecting");
 });
 
 test("stock news, release day, restocks and the week ahead all have a version for X without a link", () => {
@@ -172,7 +172,7 @@ test("stock news, release day, restocks and the week ahead all have a version fo
   asNintendo(old.items.find(i => i.id === "test-preorder"));
   it.timeline.push({ date: "2026-10-09", text: "Best Buy will sell limited extra units in stores at launch." });
   const [stock] = socialPosts(old, now, SITE);
-  assert.match(stock.xText, /^Stock news: Test test-preorder\nNintendo Switch 2 · \$99\.99 · Out Jun 1, 2099\nBest Buy will sell limited extra units in stores at launch\.\nDetails: editiontracker dot com\n#Nintendo #Switch2$/);
+  assert.match(stock.xText, /^Stock news: Test test-preorder\nNintendo Switch 2 · \$99\.99 · Out Jun 1, 2099\nBest Buy will sell limited extra units in stores at launch\.\nDetails: editiontracker dot com\n#Nintendo #Switch2 #SpecialEdition #GameCollecting$/);
   // A restock says where the links are
   const { posts: [restock], it: restocked } = restockPosts([BB]);
   assert.equal(restock.xText.split("\n").at(-2), "Store links: editiontracker dot com");
@@ -182,7 +182,7 @@ test("stock news, release day, restocks and the week ahead all have a version fo
   const d = base();
   asNintendo(d.items.find(i => i.id === "test-preorder"));
   const [today] = outTodayPosts(d, "2099-06-01", SITE).filter(p => p.id === "test-preorder");
-  assert.equal(today.xText, "Out today: Test test-preorder\nNintendo Switch 2 · $99.99\nDetails: editiontracker dot com\n#Nintendo #Switch2");
+  assert.equal(today.xText, "Out today: Test test-preorder\nNintendo Switch 2 · $99.99\nDetails: editiontracker dot com\n#Nintendo #Switch2 #SpecialEdition #GameCollecting");
   // The week ahead
   const week = weekAheadPost(d, "2099-06-01", SITE);
   assert.ok(week.text.endsWith(`${SITE}/calendar/`));

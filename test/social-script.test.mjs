@@ -149,7 +149,7 @@ test("a post to X has no link in it, and the same post on Bluesky keeps its link
   const r = sendFor(dir, start);
   assert.equal(r.status, 0, r.stderr + r.stdout);
   // One post to X: the new release. With restocks switched off for X, the restock isn't posted there.
-  assert.deepEqual(r.x, ["New: Brand New Test Edition\nNintendo Switch 2 · $59.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2"]);
+  assert.deepEqual(r.x, ["New: Brand New Test Edition\nNintendo Switch 2 · $59.99 · Expected 2099\nDetails: editiontracker dot com\n#Nintendo #Switch2 #SpecialEdition #GameCollecting"]);
   assert.doesNotMatch(r.x[0], NO_LINK);
   // Bluesky gets both, with the link in the text, as a clickable part of it, and as the preview card.
   assert.equal(r.bluesky.length, 2);
@@ -159,7 +159,7 @@ test("a post to X has no link in it, and the same post on Bluesky keeps its link
   assert.equal(card.embed.external.uri, "https://editiontracker.com/brand-new-test/");
   assert.deepEqual(r.other, []); // nothing went anywhere else
   // The log shows what X gets, so it can be looked at before it's real.
-  assert.match(r.stdout, /On X, without the link:\n    New: Brand New Test Edition\n    Nintendo Switch 2 · \$59\.99 · Expected 2099\n    Details: editiontracker dot com\n    #Nintendo #Switch2/);
+  assert.match(r.stdout, /On X, without the link:\n    New: Brand New Test Edition\n    Nintendo Switch 2 · \$59\.99 · Expected 2099\n    Details: editiontracker dot com\n    #Nintendo #Switch2 #SpecialEdition #GameCollecting/);
 });
 
 test("restocks reach X when the config says so, still without a link, and not when it says no", () => {

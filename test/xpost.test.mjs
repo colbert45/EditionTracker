@@ -129,19 +129,27 @@ test("X's way of counting: most characters are 1, bullets, arrows, the ellipsis 
   assert.equal(xLength("a\nb"), 3);
 });
 
-test("hashtags come from the category and, when it's exactly one known platform, the platform", () => {
-  assert.deepEqual(xTags({ category: "nintendo", platform: "Nintendo Switch 2" }), ["#Nintendo", "#Switch2"]);
-  assert.deepEqual(xTags({ category: "playstation", platform: "PS5 Digital Edition" }), ["#PlayStation", "#PS5"]);
-  assert.deepEqual(xTags({ category: "xbox", platform: "Xbox Series X|S, PC" }), ["#Xbox", "#XboxSeriesX"]);
-  assert.deepEqual(xTags({ category: "games", platform: "PS5, Xbox Series X|S" }), ["#Gaming"]); // two platforms: neither
-  assert.deepEqual(xTags({ category: "collect", platform: "LEGO" }), ["#Collectibles"]);
-  assert.deepEqual(xTags({ category: "retro", platform: "Sega Genesis" }), ["#RetroGaming"]);
-  assert.deepEqual(xTags({ category: "pc", platform: "Windows handheld" }), ["#PCGaming"]);
-  assert.deepEqual(xTags({ category: "somethingnew", platform: "Whatever" }), []); // nothing invented
+test("hashtags come from the franchise, the category and the platform, and two general ones", () => {
+  const G = ["#SpecialEdition", "#GameCollecting"];
+  assert.deepEqual(xTags({ category: "nintendo", platform: "Nintendo Switch 2", name: "Some Edition" }), ["#Nintendo", "#Switch2", ...G]);
+  assert.deepEqual(xTags({ category: "nintendo", platform: "Nintendo Switch 2", name: "Switch 2 Zelda 40th Anniversary Edition" }), ["#Zelda", "#Nintendo", "#Switch2", ...G]);
+  assert.deepEqual(xTags({ category: "playstation", platform: "PS5 Digital Edition", name: "PS5 Wolverine Battle Yellow Bundle" }), ["#Wolverine", "#PlayStation", "#PS5", ...G]);
+  assert.deepEqual(xTags({ category: "xbox", platform: "Xbox Series X|S, PC", name: "Xbox X25 Controller" }), ["#Xbox", "#XboxSeriesX", ...G]);
+  assert.deepEqual(xTags({ category: "games", platform: "PS5, Xbox Series X|S", name: "Final Fantasy VII Revelation Collector's Edition" }), ["#FinalFantasy", "#Gaming", ...G]); // two platforms: neither
+  assert.deepEqual(xTags({ category: "collect", platform: "LEGO", name: "LEGO Pok\u00e9mon Mystery Bags" }), ["#Pokemon", "#Collectibles", ...G]); // the first franchise in the list
+  assert.deepEqual(xTags({ category: "collect", platform: "Figure", name: "Youtooz Figures" }), ["#Collectibles", ...G]);
+  assert.deepEqual(xTags({ category: "retro", platform: "Sega Genesis", name: "Sonic 1 & 2 Legacy Cartridges" }), ["#Sonic", "#RetroGaming", ...G]);
+  assert.deepEqual(xTags({ category: "pc", platform: "Windows handheld", name: "ROG Xbox Ally X20" }), ["#PCGaming", ...G]);
+  assert.deepEqual(xTags({ category: "somethingnew", platform: "Whatever", name: "Nothing known" }), []); // nothing known, nothing invented
+  assert.deepEqual(xTags({ category: "somethingnew", platform: "Whatever", name: "Zelda Thing" }), ["#Zelda", ...G]);
   assert.deepEqual(xTags(undefined), []);
   // Every category the site has today has a hashtag, and every hashtag on the real releases is plain letters and digits.
-  for (const cat of ["nintendo", "playstation", "xbox", "pc", "games", "retro", "collect"]) assert.equal(xTags({ category: cat, platform: "" }).length, 1, cat);
-  for (const item of readReal("data/releases.json").items) for (const tag of xTags(item)) assert.match(tag, /^#[A-Za-z0-9]+$/);
+  for (const cat of ["nintendo", "playstation", "xbox", "pc", "games", "retro", "collect"]) assert.ok(xTags({ category: cat, platform: "", name: "" }).length >= 3, cat);
+  for (const item of readReal("data/releases.json").items) {
+    const tags = xTags(item);
+    assert.ok(tags.length >= 3 && tags.length <= 5, item.id);
+    for (const tag of tags) assert.match(tag, /^#[A-Za-z0-9]+$/);
+  }
 });
 
 test("extra lines are dropped from the end when they don't fit, and the body is kept", () => {
