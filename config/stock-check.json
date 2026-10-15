@@ -1,0 +1,8 @@
+{
+  "_readme": "Releases whose stock at a store is checked automatically (see scripts/stock-check.mjs). Each entry is a release id from data/releases.json and the store's own product number. For Best Buy the SKU is the number in the product link (bestbuy.com/.../6691841.p or skuId=6691841). Add an entry, or take one out, and the next check follows it.",
+  "bestbuy": [
+    { "item": "switch-2-zelda-40th", "sku": "6691841" },
+    { "item": "switch-2-pro-controller-zelda-40th", "sku": "6691849" },
+    { "item": "switch-2-carrying-case-zelda-40th", "sku": "6691852" }
+  ]
+}
