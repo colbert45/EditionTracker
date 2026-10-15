@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14",
+  "updated": "2026-10-15",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -112,7 +112,7 @@
       "name": "Switch 2 Zelda 40th Anniversary Edition",
       "category": "nintendo",
       "platform": "Nintendo Switch 2",
-      "status": "preorder",
+      "status": "soldout",
       "price": "$519.99",
       "releaseDate": "2026-10-29",
       "releaseWindow": null,
