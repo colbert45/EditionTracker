@@ -3,7 +3,7 @@
 //   node scripts/social.mjs --text "..." [--image path] [--dry-run]   post one message of your own
 //   node scripts/social.mjs --scheduled [--dry-run]   today's "Out today" posts, plus "Coming out this week" on Thursdays
 // Posts to Bluesky when BLUESKY_APP_PASSWORD is set, and to X when the four X_* keys are set.
-// Posts to X never have a link in them (X charges $0.20 for a post with one, about 1.5 cents without): they name the
+// Posts to X never have a link in them (X charges $0.20 for a post with one, about 2 cents without): they name the
 // site in words and carry hashtags instead. See lib/xpost.js. Bluesky and Discord posts keep their links.
 // Restock posts go to Bluesky and, when DISCORD_WEBHOOK_URL is set, to a Discord channel. They go to X
 // when site.config.json has social.restockToX: true (it does).

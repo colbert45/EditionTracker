@@ -25,7 +25,7 @@
     "blueskyDid": "did:plc:lh2jnxw3w43w4zx6b5fdc7np",
     "_discord": "Your Discord server's invite link (https://discord.gg/...). It's shown in the footer once it's filled in.",
     "discord": "https://discord.gg/3gA2ZVjNWk",
-    "_restockToX": "Restock posts go to Bluesky and to X, and to Discord once DISCORD_WEBHOOK_URL is set. Set this to false to keep them off X. Posts on X have no link in them, so each costs about 1.5 cents.",
+    "_restockToX": "Restock posts go to Bluesky and to X, and to Discord once DISCORD_WEBHOOK_URL is set. Set this to false to keep them off X. Posts on X have no link in them, so each costs about 2 cents.",
     "restockToX": true
   },
   "support": {
