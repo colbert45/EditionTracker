@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-15",
+  "updated": "2026-10-16",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2162,17 +2162,27 @@
       "notes": [
         "A 12-inch painted PVC statue of Princess Zelda as she appears in Tears of the Kingdom.",
         "It follows the Link statue First 4 Figures made earlier in the 40th anniversary year.",
-        "Preorders open October 22. I haven't seen a price or ship date yet."
+        "Preorders open October 22. I haven't seen a price or ship date yet.",
+        "First 4 Figures offers this one in an exclusive edition, like its earlier Link statue. I haven't seen a price yet."
       ],
       "inTheBox": [
         "12-inch painted PVC Zelda statue"
       ],
       "stores": [],
-      "timeline": [],
+      "timeline": [
+        {
+          "date": "2026-10-16",
+          "text": "Fully revealed, including an exclusive edition. Preorders open next week."
+        }
+      ],
       "sources": [
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/tears-of-the-kingdom-zelda-statue-officially-revealed-heres-a-sneak-peek"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/zelda-tears-of-the-kingdom-exclusive-edition-statue-officially-revealed-heres-a-look"
         }
       ]
     },
