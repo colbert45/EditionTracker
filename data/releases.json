@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-16",
+  "updated": "2026-10-17",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2325,6 +2325,49 @@
         {
           "label": "Gematsu",
           "url": "https://www.gematsu.com/2026/10/gran-turismo-limited-edition-dualsense-controller-announced"
+        }
+      ]
+    },
+    {
+      "id": "hyper-duel-2-disc-soundtrack",
+      "name": "Hyper Duel 2-Disc Soundtrack",
+      "category": "collect",
+      "platform": "Soundtrack CD",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "November 2026",
+      "preordersOpened": null,
+      "searchQuery": "Hyper Duel soundtrack 2-disc CD Technosoft",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#1b2a5c",
+          "#c8302c",
+          "#c0c4cc"
+        ]
+      },
+      "notes": [
+        "A new two-disc CD soundtrack for Technosoft's Hyper Duel, the shoot 'em up from the Thunder Force team.",
+        "It arrives 30 years after the Sega Saturn version, which is rare and pricey on the used market.",
+        "It's a Japanese release. I haven't seen a price or an exact date yet."
+      ],
+      "inTheBox": [
+        "2 soundtrack CDs"
+      ],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-17",
+          "text": "Announced for a Japanese release in November."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/news/2026/10/technosofts-rare-sega-saturn-blaster-hyper-duel-is-getting-a-2-disc-soundtrack-release-next-month"
         }
       ]
     }
