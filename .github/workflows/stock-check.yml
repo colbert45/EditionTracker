@@ -1,4 +1,4 @@
-# INSTANT MODE, currently OFF. For now Best Buy is checked inside the twice-daily news check, which puts any restock in
+# INSTANT MODE, currently OFF. For now Best Buy is checked every hour inside the news check, which puts any restock in
 # its pull request for review. To turn instant mode back on, put back these two lines under "on:":
 #   schedule:
 #     - cron: "*/5 * * * *"

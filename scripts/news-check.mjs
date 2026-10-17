@@ -5,7 +5,8 @@
 //   ANTHROPIC_API_KEY=... node scripts/news-check.mjs
 //
 // Outputs (for the workflow): data/releases.json (edited in place), .news-state/pr-body.md,
-// and changed=true|false in $GITHUB_OUTPUT.
+// and changed=true|false (and checked=true when the news was read) in $GITHUB_OUTPUT.
+// NEWS_ROOT and NEWS_NOW (an ISO time) are for the tests: another copy of the site's files, and another "now".
 import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,7 +15,7 @@ import { parseFeed, robotsAllows, matchesKeywords } from "../lib/feeds.js";
 import { parseBestBuy, proposeRestocks, isSku } from "../lib/stockcheck.js";
 import { proposalSchema, applyAll, prMarkdown, sourceLine } from "../lib/proposals.js";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = process.env.NEWS_ROOT || join(dirname(fileURLToPath(import.meta.url)), "..");
 const STATE_DIR = join(ROOT, ".news-state");
 const STATE_FILE = join(STATE_DIR, "state.json");
 const DATA_FILE = join(ROOT, "data/releases.json");
@@ -27,9 +28,11 @@ const UA = feeds.userAgent;
 const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, "utf8")) : {};
 state.seen ??= {};      // link -> ISO date first seen
 state.http ??= {};      // feed url -> { etag, lastModified }
-const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+state.bestbuyOffered ??= {}; // Best Buy SKU -> true once proposed, until Best Buy says it's gone again
+const NOW = process.env.NEWS_NOW ? new Date(process.env.NEWS_NOW) : new Date();
+const today = NOW.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 // "2026-10-06 AM" or "2026-10-06 PM", New York time. Scheduled runs check once per half-day.
-const nyHour = +new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", hourCycle: "h23" });
+const nyHour = +NOW.toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", hourCycle: "h23" });
 const halfDay = `${today} ${nyHour < 12 ? "AM" : "PM"}`;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const log = (...a) => console.log(...a);
@@ -44,7 +47,7 @@ function saveState() {
   state.lastCheck = today;
   state.lastHalfDay = halfDay;
   // Forget links after 30 days so the file stays small.
-  const cutoff = Date.now() - 30 * 86400000;
+  const cutoff = NOW.getTime() - 30 * 86400000;
   for (const [k, v] of Object.entries(state.seen)) if (Date.parse(v) < cutoff) delete state.seen[k];
   mkdirSync(STATE_DIR, { recursive: true });
   writeFileSync(STATE_FILE, JSON.stringify(state, null, 1));
@@ -174,15 +177,62 @@ async function askClaude(data, headlines) {
 }
 
 // ---------- main ----------
-// Scheduled runs fire every hour as backups; only the first one in each half of the
-// New York day (12am-11:59am, 12pm-11:59pm) checks.
-if (process.env.ONCE_PER_HALF_DAY === "true" && state.lastHalfDay === halfDay) {
-  log(`Already checked this half of the day (${halfDay}), skipping this run.`);
-  output("changed", "false");
+// Scheduled runs fire every hour. Each one asks Best Buy about the products in config/stock-check.json (when the
+// BESTBUY_API_KEY secret is set), so a restock there reaches the pull request within about an hour. Only the first
+// run in each half of the New York day (12am-11:59am, 12pm-11:59pm) also reads the news.
+const stockOnly = process.env.ONCE_PER_HALF_DAY === "true" && state.lastHalfDay === halfDay;
+const data = JSON.parse(readFileSync(DATA_FILE, "utf8"));
+const when = NOW.toISOString().slice(0, 16).replace("T", " ") + " UTC";
+
+// Best Buy's own answer for the products in config/stock-check.json: one request, and only with BESTBUY_API_KEY.
+// A product that can be bought now while the site says sold out becomes a proposed restock in the pull request.
+async function bestBuyProposals() {
+  const none = { proposals: [], headlines: [] };
+  if (!process.env.BESTBUY_API_KEY) { log("Best Buy: skipped (no BESTBUY_API_KEY secret)"); return none; }
+  try {
+    const file = join(ROOT, "config/stock-check.json");
+    const entries = (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).bestbuy || [] : []).filter(e => isSku(e.sku));
+    if (!entries.length) return none;
+    const url = `https://api.bestbuy.com/v1/products(sku in(${entries.map(e => e.sku).join(",")}))?apiKey=${encodeURIComponent(process.env.BESTBUY_API_KEY)}&show=sku,name,onlineAvailability,orderable&format=json`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
+    if (!res.ok) throw new Error(`Best Buy answered ${res.status}`);
+    const found = proposeRestocks(data.items, entries, parseBestBuy(await res.json()), today, state.bestbuyOffered);
+    state.bestbuyOffered = found.offered;
+    log(`Best Buy: ${found.proposals.length} product(s) newly in stock that the site shows as sold out`);
+    return found;
+  } catch (e) { log(`Best Buy: ${String(e.message).replace(/apiKey=[^&\s]*/g, "apiKey=***")}, skipped`); return none; }
+}
+
+// Writes the pull request text and, when something changed, the edited releases.json.
+// A restock found at Best Buy mentions the repository's owner, so GitHub notifies them even when the pull request is
+// already open (a new comment on it doesn't always).
+function finish({ applied, skipped, next, reviewed, title }) {
+  const owner = process.env.GITHUB_REPOSITORY_OWNER || "";
+  const fromBestBuy = applied.some(a => a.restock && a.used.some(h => h.sourceName === "Best Buy"));
+  const ping = fromBestBuy && /^[A-Za-z0-9-]+$/.test(owner)
+    ? `@${owner} Best Buy has something back in stock. Check it and merge soon so the alert goes out while it's fresh.\n\n` : "";
+  const body = ping + prMarkdown({ applied, skipped, reviewed, when, today, title });
+  mkdirSync(STATE_DIR, { recursive: true });
+  writeFileSync(join(STATE_DIR, "pr-body.md"), body);
+  summary(body);
+  if (applied.length) {
+    writeFileSync(DATA_FILE, JSON.stringify(next, null, 2) + "\n");
+    output("changed", "true");
+  } else output("changed", "false");
+  saveState();
+  log(`${applied.length} change(s) written, ${skipped.length} dropped.`);
+}
+
+if (stockOnly) {
+  log(`Already read the news this half of the day (${halfDay}), so this run only checks Best Buy.`);
+  const stock = await bestBuyProposals();
+  if (!stock.proposals.length) { output("changed", "false"); saveState(); process.exit(0); }
+  const { data: next, applied, skipped } = applyAll(data, stock.proposals, new Map(stock.headlines.map(h => [h.id, h])), today);
+  finish({ applied, skipped, next, reviewed: null, title: "Best Buy check" });
   process.exit(0);
 }
+
 output("checked", "true");
-const data = JSON.parse(readFileSync(DATA_FILE, "utf8"));
 const known = new Set(data.items.flatMap(i => i.sources.map(s => s.url)));
 
 let all = [];
@@ -192,7 +242,7 @@ for (const f of feeds.news) {
 }
 try { all.push(...await readReddit()); } catch (e) { log(`Reddit: ${e.message}, skipped`); }
 
-const cutoff = Date.now() - MAX_AGE_DAYS * 86400000;
+const cutoff = NOW.getTime() - MAX_AGE_DAYS * 86400000;
 const fresh = [];
 const dupes = new Set();
 for (const e of all) {
@@ -206,22 +256,6 @@ fresh.sort((a, b) => (b.published || "").localeCompare(a.published || ""));
 const headlines = fresh.slice(0, MAX_HEADLINES).map((h, k) => ({ ...h, id: k + 1 }));
 log(`${all.length} entries read, ${headlines.length} new and relevant`);
 
-// Best Buy's own answer for the products in config/stock-check.json: one request, and only with BESTBUY_API_KEY.
-// A product that can be bought now while the site says sold out becomes a proposed restock in the same pull request.
-async function bestBuyProposals() {
-  if (!process.env.BESTBUY_API_KEY) { log("Best Buy: skipped (no BESTBUY_API_KEY secret)"); return { proposals: [], headlines: [] }; }
-  try {
-    const file = join(ROOT, "config/stock-check.json");
-    const entries = (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).bestbuy || [] : []).filter(e => isSku(e.sku));
-    if (!entries.length) return { proposals: [], headlines: [] };
-    const url = `https://api.bestbuy.com/v1/products(sku in(${entries.map(e => e.sku).join(",")}))?apiKey=${encodeURIComponent(process.env.BESTBUY_API_KEY)}&show=sku,name,onlineAvailability,orderable&format=json`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
-    if (!res.ok) throw new Error(`Best Buy answered ${res.status}`);
-    const found = proposeRestocks(data.items, entries, parseBestBuy(await res.json()), today);
-    log(`Best Buy: ${found.proposals.length} product(s) in stock that the site shows as sold out`);
-    return found;
-  } catch (e) { log(`Best Buy: ${String(e.message).replace(/apiKey=[^&\s]*/g, "apiKey=***")}, skipped`); return { proposals: [], headlines: [] }; }
-}
 const stock = await bestBuyProposals();
 
 if (!headlines.length && !stock.proposals.length) { output("changed", "false"); saveState(); summary("No new relevant headlines."); process.exit(0); }
@@ -239,15 +273,5 @@ const askAi = headlines.length && process.env.ANTHROPIC_API_KEY;
 const proposals = [...(askAi ? await askClaude(data, headlines) : []), ...stock.proposals];
 const byId = new Map([...headlines, ...stock.headlines].map(h => [h.id, h]));
 const { data: next, applied, skipped } = applyAll(data, proposals, byId, today);
-if (askAi) for (const h of headlines) state.seen[h.link] = new Date().toISOString();
-
-const body = prMarkdown({ applied, skipped, reviewed: headlines.length, when: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC", today });
-mkdirSync(STATE_DIR, { recursive: true });
-writeFileSync(join(STATE_DIR, "pr-body.md"), body);
-summary(body);
-if (applied.length) {
-  writeFileSync(DATA_FILE, JSON.stringify(next, null, 2) + "\n");
-  output("changed", "true");
-} else output("changed", "false");
-saveState();
-log(`${applied.length} change(s) written, ${skipped.length} dropped.`);
+if (askAi) for (const h of headlines) state.seen[h.link] = NOW.toISOString();
+finish({ applied, skipped, next, reviewed: headlines.length });

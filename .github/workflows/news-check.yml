@@ -1,6 +1,8 @@
 # Checks news and subreddit feeds twice a day, once in the morning (12:00am-11:59am
 # New York time) and once in the afternoon (12:00pm-11:59pm), and opens (or adds to) one
-# pull request with proposed edits to data/releases.json. It never pushes to main:
+# pull request with proposed edits to data/releases.json. Every hourly run also asks Best
+# Buy about the products in config/stock-check.json (once BESTBUY_API_KEY is set) and adds
+# a proposed restock to the same pull request when one comes back. It never pushes to main:
 # nothing goes live until you merge the pull request.
 name: News check
 
@@ -8,8 +10,8 @@ on:
   schedule:
     # GitHub schedules run on UTC and can start hours late or be dropped when
     # GitHub is busy, so there's a try every hour. The first try that actually
-    # runs in each half of the New York day does the check; the script skips
-    # the rest of that half-day's tries.
+    # runs in each half of the New York day reads the news; the rest of that
+    # half-day's runs only check Best Buy.
     # Minute 17 avoids the top of the hour, when GitHub drops the most runs.
     - cron: "17 * * * *"
   workflow_dispatch:

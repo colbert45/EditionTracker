@@ -191,3 +191,83 @@ test("the news check proposes a restock for a product Best Buy sells while the s
   // Both are "Back in stock" on the site now: nothing more to propose.
   assert.equal(proposeRestocks(next.items, entries, seen, "2026-10-15").proposals.length, 0);
 });
+
+// ---------- the hourly Best Buy check inside the news check (scripts/news-check.mjs), with Best Buy replaced ----------
+// 15:00 UTC on Oct 15 is 11am in New York: the morning half of the day, so a state that already read the news this
+// morning makes the run check Best Buy only.
+const NEWS_NOW = "2026-10-15T15:00:00Z";
+function newsSetup({ alreadyRead = true } = {}) {
+  const dir = mkdtempSync(join(tmpdir(), "et-news-stock-"));
+  for (const d of ["config", "data", ".news-state"]) mkdirSync(join(dir, d));
+  const data = plainData();
+  const a = data.items.find(i => i.id !== PICK.id && ["out", "soldout", "preorder"].includes(i.status));
+  const b = data.items.find(i => i.id === PICK.id);
+  a.status = "soldout"; b.status = "out";
+  writeFileSync(join(dir, "data/releases.json"), JSON.stringify(data, null, 2) + "\n");
+  writeFileSync(join(dir, "config/feeds.json"), readFileSync(join(ROOT, "config/feeds.json")));
+  writeFileSync(join(dir, "config/stock-check.json"), JSON.stringify({ bestbuy: [{ item: a.id, sku: "1000001" }, { item: b.id, sku: "1000002" }] }));
+  if (alreadyRead) writeFileSync(join(dir, ".news-state/state.json"), JSON.stringify({ seen: {}, http: {}, lastCheck: "2026-10-15", lastHalfDay: "2026-10-15 AM" }));
+  return { dir, a, b, original: readFileSync(join(dir, "data/releases.json"), "utf8"), fetchLog: join(dir, "fetch.log"), out: join(dir, "gh-output") };
+}
+function newsRun(s, products, env = {}) {
+  writeFileSync(join(s.dir, "bestbuy.json"), JSON.stringify(answer(...products)));
+  writeFileSync(s.fetchLog, ""); writeFileSync(s.out, "");
+  const base = { ...process.env };
+  delete base.ANTHROPIC_API_KEY;
+  const r = spawnSync("node", ["scripts/news-check.mjs"], { cwd: ROOT, encoding: "utf8",
+    env: { ...base, NEWS_ROOT: s.dir, NEWS_NOW, ONCE_PER_HALF_DAY: "true", GITHUB_REPOSITORY_OWNER: "someone-42", BESTBUY_API_KEY: "secret-key-123", GITHUB_OUTPUT: s.out,
+      FAKE_BESTBUY: join(s.dir, "bestbuy.json"), FAKE_FETCH_LOG: s.fetchLog, NODE_OPTIONS: `--import=${join(ROOT, "test/helpers/fake-bestbuy.mjs")}`, ...env } });
+  const read = f => existsSync(join(s.dir, f)) ? readFileSync(join(s.dir, f), "utf8") : null;
+  return { ...r, output: readFileSync(s.out, "utf8"), fetches: readFileSync(s.fetchLog, "utf8").split("\n").filter(Boolean).map(l => JSON.parse(l).url),
+    data: JSON.parse(read("data/releases.json")), body: read(".news-state/pr-body.md"), state: JSON.parse(read(".news-state/state.json") || "null") };
+}
+const itemIn = (r, id) => r.data.items.find(i => i.id === id);
+
+test("hourly runs after the news was read check Best Buy only, and propose a restock for review", () => {
+  const s = newsSetup();
+  const r = newsRun(s, [prod(1000001, true), prod(1000002, false)]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.fetches.length, 1); // no news feeds, one request to Best Buy
+  assert.match(r.fetches[0], /^https:\/\/api\.bestbuy\.com\//);
+  assert.match(r.output, /changed=true/);
+  assert.doesNotMatch(r.output, /checked=true/); // not counted as a news check (no "last checked" update, no redeploy)
+  assert.equal(itemIn(r, s.a.id).status, "restock");
+  assert.deepEqual(itemIn(r, s.a.id).restocks.at(-1), { date: "2026-10-15", store: "bestbuy", url: bestBuyListing("1000001"), source: bestBuyListing("1000001"), reported: true });
+  assert.equal(itemIn(r, s.b.id).status, "out"); // not available at Best Buy
+  assert.match(r.body, /^@someone-42 Best Buy has something back in stock\..*\n\n### Best Buy check, 2026-10-15 15:00 UTC\n\nProposed 1 change\(s\)\./);
+  assert.doesNotMatch(r.body, /headline/);
+  assert.match(r.body, /Merge by the end of 2026-10-17/);
+  assert.equal(r.state.lastHalfDay, "2026-10-15 AM");
+  assert.deepEqual(r.state.bestbuyOffered, { 1000001: true });
+  assert.doesNotMatch(r.stdout + r.stderr, /secret-key-123/);
+});
+
+test("a restock already proposed isn't proposed again every hour, until Best Buy says it's gone and it comes back", () => {
+  const s = newsSetup();
+  newsRun(s, [prod(1000001, true)]);
+  writeFileSync(join(s.dir, "data/releases.json"), s.original); // the pull request was closed without merging
+  const again = newsRun(s, [prod(1000001, true)]);
+  assert.equal(again.status, 0, again.stderr);
+  assert.match(again.output, /changed=false/);
+  assert.equal(itemIn(again, s.a.id).status, "soldout");
+  const quiet = newsRun(s, []); // Best Buy didn't answer for it: nothing is forgotten
+  assert.deepEqual(quiet.state.bestbuyOffered, { 1000001: true });
+  const gone = newsRun(s, [prod(1000001, false)]);
+  assert.deepEqual(gone.state.bestbuyOffered, {});
+  const back = newsRun(s, [prod(1000001, true)]);
+  assert.match(back.output, /changed=true/);
+  assert.equal(itemIn(back, s.a.id).status, "restock");
+});
+
+test("the hourly Best Buy check does nothing without the key, and a Best Buy error is only logged", () => {
+  const s = newsSetup();
+  const nokey = newsRun(s, [prod(1000001, true)], { BESTBUY_API_KEY: "" });
+  assert.equal(nokey.status, 0, nokey.stderr);
+  assert.deepEqual(nokey.fetches, []);
+  assert.match(nokey.output, /changed=false/);
+  assert.equal(readFileSync(join(s.dir, "data/releases.json"), "utf8"), s.original);
+  const broken = newsRun(s, [prod(1000001, true)], { FAKE_BESTBUY_THROW: "1" });
+  assert.equal(broken.status, 0, broken.stderr);
+  assert.match(broken.output, /changed=false/);
+  assert.doesNotMatch(broken.stdout + broken.stderr, /secret-key-123/);
+});
