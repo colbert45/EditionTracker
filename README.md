@@ -5,6 +5,10 @@ Source for [editiontracker.com](https://editiontracker.com): special edition con
 - `data/releases.json` holds every release. The site is built from it and published with GitHub Pages.
 - A scheduled news check reads public news feeds and proposes updates as pull requests. Nothing is published until a pull request is reviewed and merged.
 
+## Brand and type
+
+Every release has a `category` (its brand row on the homepage: Nintendo, PlayStation, Xbox and so on, listed in `categories`) and a `type`, what kind of thing it is (consoles and handhelds, controllers, accessories, game editions, figures and amiibo, LEGO, other collectibles, listed in `types`). The homepage has a row of buttons for each, and they work together, so "PlayStation" plus "Controllers" shows only DualSense editions. A type with no releases gets no button. The news check picks the type for each new release it proposes.
+
 ## Preorder dates
 
 A release can carry `preordersStart`, the date its preorders are announced to open (the news check fills it in). The release page shows "Opens <date>". On that day the **Preorder dates** action opens a pull request switching it to "Preorders open"; it never merges, so check the store and merge it yourself.

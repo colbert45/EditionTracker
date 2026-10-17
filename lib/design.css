@@ -33,6 +33,10 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--red);outline-offset
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
 .chips button{font:inherit;font-size:.92rem;font-weight:600;padding:6px 13px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chips.types{margin-top:2px}
+.chips.types button{font-size:.86rem;font-weight:500;padding:4px 11px}
+/* On phones each row of filters scrolls sideways instead of wrapping onto several lines. */
+@media (max-width:600px){.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}.chips button{flex:none}}
 
 h2.sec{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.45rem;margin:34px 0 6px;display:flex;align-items:baseline;gap:10px}
 h2.sec small{font-family:"Barlow",sans-serif;font-size:.9rem;font-weight:500;color:var(--soft)}

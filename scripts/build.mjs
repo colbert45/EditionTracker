@@ -49,6 +49,7 @@ const TODAY = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_Yo
 const daysOut = d => Math.round((toDate(d) - toDate(TODAY)) / 86400000);
 
 const CATS = data.categories;
+const TYPES = data.types;
 const STATUS = data.statuses;
 const STORES = data.stores;
 
@@ -329,9 +330,9 @@ function thumb(i) {
 function rowHTML(i, release = false) {
   let sub = "";
   if (i.date && !isOut(i)) { const n = daysOut(i.date); sub = n === 0 ? "today" : n === 1 ? "tomorrow" : `in ${n} days`; }
-  const q = [i.name, i.platform, CATS[i.category], STATUS[i.status], i.searchQuery].join(" ").toLowerCase();
+  const q = [i.name, i.platform, CATS[i.category], TYPES[i.type], STATUS[i.status], i.searchQuery].join(" ").toLowerCase();
   const rs = !release && i.status === "restock" ? lastRestock(i) : null;
-  return `<li data-i="${i.n}" data-q="${esc(q)}" data-cat="${esc(i.category)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}${rs ? ` data-rs="${rs.date}"` : ""}><a href="${esc(i.path)}">
+  return `<li data-i="${i.n}" data-q="${esc(q)}" data-cat="${esc(i.category)}" data-type="${esc(i.type)}" data-status="${esc(i.status)}"${i.date ? ` data-date="${i.date}"` : ""}${rs ? ` data-rs="${rs.date}"` : ""}><a href="${esc(i.path)}">
     <span class="thumb">${thumb(i)}</span>
     <span class="nm">${esc(i.name)}<span class="pf">${esc(i.platform)}, ${esc(i.price)}</span></span>
     <span class="dt">${rs ? `${restockWord(rs)} ${short(rs.date)}<span>at ${esc(storeName(rs.store))}${restockIsOld(i) ? " · may be gone" : ""}</span>` : `${i.date ? (isOut(i) ? long(i.date) : short(i.date)) : esc(i.when || "TBA")}${sub ? `<span>${sub}</span>` : ""}`}</span>
@@ -368,6 +369,9 @@ function home() {
   const out = ITEMS.filter(i => i.status !== "rumor" && i.status !== "restock" && isOut(i)).sort((a, b) => byDate(b, a));
   const chips = [["all", "Everything"]].concat(Object.entries(CATS))
     .map(([k, v]) => `<button type="button" data-cat="${esc(k)}" aria-pressed="${k === "all"}">${esc(v)}</button>`).join("");
+  // What kind of thing it is (consoles, controllers, LEGO...), for types that have at least one release.
+  const typeChips = [["all", "All types"]].concat(Object.entries(TYPES).filter(([k]) => ITEMS.some(i => i.type === k)))
+    .map(([k, v]) => `<button type="button" data-type="${esc(k)}" aria-pressed="${k === "all"}">${esc(v)}</button>`).join("");
   const featuredIds = Array.isArray(data.featured) && data.featured.length ? data.featured : coming.filter(i => i.date).slice(0, 4).map(i => i.id);
   const featured = featuredIds.map(id => ITEMS.find(i => i.id === id)).filter(Boolean);
   for (const i of coming) if (featured.length < 6 && i.date && photoInList(i) && !featured.includes(i)) featured.push(i);
@@ -395,7 +399,8 @@ function home() {
       </div>` : ""}
     </section>` : ""}
     <input class="search" type="search" placeholder="Search releases" aria-label="Search releases" autocomplete="off">
-    <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
+    <div class="chips" role="group" aria-label="Filter by brand">${chips}</div>
+    <div class="chips types" role="group" aria-label="Filter by type">${typeChips}</div>
     ${section("restock", "Back in stock", "buy from the store itself, at MSRP", restock)}
     ${section("coming", "Coming up", "", coming, true)}
     ${section("rumors", "Rumors and leaks", "not confirmed", rumors)}

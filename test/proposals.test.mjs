@@ -31,7 +31,7 @@ test("adds a new release", () => {
   const { data: next, applied } = applyAll(data, [{
     kind: "new", itemId: "Zork Test Pad", summary: "New controller", confidence: "medium", headlineIds: [2],
     changes: noChange, timelineEntry: null,
-    newItem: { name: "Zork Test Pad Limited Edition", category: "playstation", platform: "PS5", status: "announced", price: "$79.99",
+    newItem: { name: "Zork Test Pad Limited Edition", category: "playstation", type: "controller", platform: "PS5", status: "announced", price: "$79.99",
       releaseDate: null, releaseWindow: "November 2026", preordersOpened: null, searchQuery: "Zork Test Pad",
       notes: ["Blue and white controller."], inTheBox: [], stores: ["psdirect", "bestbuy"], artType: "pad", artColors: ["#2E6FD8", "#FFFFFF", "#1A1A1A"] }
   }], h, "2026-10-03");
@@ -65,7 +65,7 @@ test("the news check can't switch anything to Back in stock", () => {
   const { applied, skipped } = applyAll(data, [
     { kind: "update", itemId: FIRST, summary: "x", confidence: "high", headlineIds: [1], changes: { ...noChange, status: "restock" }, timelineEntry: null, newItem: null },
     { kind: "new", itemId: "x", summary: "x", confidence: "high", headlineIds: [2], changes: noChange, timelineEntry: null,
-      newItem: { name: "Some Edition", category: "playstation", platform: "PS5", status: "restock", price: "$1.00", releaseDate: null, releaseWindow: "TBA",
+      newItem: { name: "Some Edition", category: "playstation", type: "controller", platform: "PS5", status: "restock", price: "$1.00", releaseDate: null, releaseWindow: "TBA",
         preordersOpened: null, searchQuery: "x", notes: ["x"], inTheBox: [], stores: [], artType: "pad", artColors: ["#111111", "#222222", "#333333"] } }
   ], h, "2026-10-03");
   assert.equal(applied.length, 0);
@@ -287,7 +287,7 @@ test("a headline can't add headings, lists, links, images or hidden text to the 
 });
 
 test("a new release's name can't break out of its heading", () => {
-  const newItem = { name: `Zork Test Pad ${EVIL.join(" ")}`, category: "playstation", platform: "PS5", status: "announced", price: "$79.99", releaseDate: null, releaseWindow: "November 2026",
+  const newItem = { name: `Zork Test Pad ${EVIL.join(" ")}`, category: "playstation", type: "controller", platform: "PS5", status: "announced", price: "$79.99", releaseDate: null, releaseWindow: "November 2026",
     preordersOpened: null, preordersStart: null, searchQuery: "Zork Test Pad", notes: [`A pad. ${EVIL.join(" ")}`], inTheBox: [], stores: ["psdirect"], artType: "pad", artColors: ["#2E6FD8", "#FFFFFF", "#1A1A1A"] };
   const { applied, skipped } = applyAll(plainData(), [{ kind: "new", itemId: "zork", summary: "New controller", confidence: "medium", headlineIds: [2],
     changes: noChange, timelineEntry: null, newItem }], h, "2026-10-03");

@@ -75,3 +75,22 @@ test("the validator rejects affiliate links", async () => {
 });
 
 
+
+test("every release has a type, and the homepage has a type button for each type in use", async () => {
+  const { validate } = await import("../lib/validate.js");
+  const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
+  for (const bad of [undefined, "spaceship", "toString"]) {
+    const d = JSON.parse(JSON.stringify(data));
+    d.items[0].type = bad;
+    assert.ok(validate(d).errors.some(e => e.includes("type (what kind of thing it is)")), String(bad));
+  }
+  execFileSync("node", ["scripts/build.mjs"], { cwd: ROOT });
+  const home = readFileSync(join(ROOT, "_site/index.html"), "utf8");
+  assert.match(home, /<div class="chips types" role="group" aria-label="Filter by type"><button type="button" data-type="all" aria-pressed="true">All types<\/button>/);
+  const used = new Set(data.items.map(i => i.type));
+  for (const [k, v] of Object.entries(data.types)) {
+    const button = `data-type="${k}" aria-pressed="false">${v.replace(/&/g, "&amp;")}</button>`;
+    assert.equal(home.includes(button), used.has(k), k);
+  }
+  for (const i of data.items) assert.ok(home.includes(`data-cat="${i.category}" data-type="${i.type}"`), i.id);
+});
