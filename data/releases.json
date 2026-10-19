@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-17",
+  "updated": "2026-10-19",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -141,7 +141,8 @@
       "notes": [
         "Nintendo's first special edition Switch 2. Green and gold console, green Joy-Con, and a black dock with a gold Triforce. It's only $20 more than a regular Switch 2, which is a big part of why it went fast.",
         "Preorders sold out at Nintendo, Best Buy and Target within about a day, with resellers asking $800 and up. If you missed it, keep an eye out for restocks before Oct 29.",
-        "Best Buy plans to hold back a limited number of units for in-store sale at its Ocarina of Time midnight launch in the US."
+        "Best Buy plans to hold back a limited number of units for in-store sale at its Ocarina of Time midnight launch in the US.",
+        "Nintendo has said it misjudged demand for this console and plans more stock. I haven't seen dates or stores for that yet."
       ],
       "inTheBox": [
         "Switch 2 console with green Joy-Con",
@@ -183,6 +184,10 @@
         {
           "date": "2026-10-09",
           "text": "Best Buy will sell limited extra units in stores at its Ocarina of Time midnight launch."
+        },
+        {
+          "date": "2026-10-19",
+          "text": "Nintendo said it underestimated demand and that more consoles are on the way. No dates yet."
         }
       ],
       "sources": [
@@ -201,6 +206,10 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/best-buy-to-offer-additional-switch-2-zelda-units-in-store-at-midnight-launch"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/nintendo-underestimated-zelda-switch-2-console-sales-but-promises-restocks-are-on-the-way"
         }
       ]
     },
