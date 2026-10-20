@@ -9,6 +9,8 @@ Source for [editiontracker.com](https://editiontracker.com): special edition con
 
 Every release has a `category` (its brand row on the homepage: Nintendo, PlayStation, Xbox and so on, listed in `categories`) and a `type`, what kind of thing it is (consoles and handhelds, controllers, accessories, game editions, figures and amiibo, LEGO, other collectibles, listed in `types`). The homepage has a row of buttons for each, and they work together, so "PlayStation" plus "Controllers" shows only DualSense editions. A type with no releases gets no button. The news check picks the type for each new release it proposes.
 
+A release can also have a `brand`, the company that makes it ("Nintendo", "Sony", "HORI"). It isn't shown on the page; it goes into the page's data for Google (the "brand" of the Product). Leave it out when you don't know it for sure. The news check only fills it in when its source names the maker.
+
 ## Preorder dates
 
 A release can carry `preordersStart`, the date its preorders are announced to open (the news check fills it in). The release page shows "Opens <date>". On that day the **Preorder dates** action opens a pull request switching it to "Preorders open"; it never merges, so check the store and merge it yourself.

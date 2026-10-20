@@ -553,7 +553,7 @@ function item(i, ogImage) {
   const product = {
     "@context": "https://schema.org", "@type": "Product",
     name: i.name, description: i.notes.join(" "), url: i.url, image: [ogImage],
-    category: CATS[i.category], ...(i.date && { releaseDate: i.date }),
+    category: CATS[i.category], ...(i.brand && { brand: { "@type": "Brand", name: i.brand } }), ...(i.date && { releaseDate: i.date }),
     ...(offers(i) && { offers: offers(i) })
   };
   const crumbs = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [

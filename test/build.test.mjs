@@ -94,3 +94,21 @@ test("every release has a type, and the homepage has a type button for each type
   }
   for (const i of data.items) assert.ok(home.includes(`data-cat="${i.category}" data-type="${i.type}"`), i.id);
 });
+
+test("a release's brand goes into its Product data, and a release without one has none", async () => {
+  const { validate } = await import("../lib/validate.js");
+  const data = JSON.parse(readFileSync(join(ROOT, "data/releases.json")));
+  for (const bad of ["", " Sony", 7, "x".repeat(61)]) {
+    const d = JSON.parse(JSON.stringify(data));
+    d.items[0].brand = bad;
+    assert.ok(validate(d).errors.some(e => e.includes("brand")), JSON.stringify(bad));
+  }
+  execFileSync("node", ["scripts/build.mjs"], { cwd: ROOT });
+  const product = id => JSON.parse(readFileSync(join(ROOT, "_site", id, "index.html"), "utf8").match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
+  for (const i of data.items) {
+    const p = product(i.id);
+    if (i.brand) assert.deepEqual(p.brand, { "@type": "Brand", name: i.brand }, i.id);
+    else assert.equal(p.brand, undefined, i.id);
+  }
+  assert.ok(data.items.some(i => i.brand) && data.items.some(i => !i.brand)); // both cases are checked
+});

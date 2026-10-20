@@ -328,3 +328,18 @@ test("merging a reported restock emails it as reported", () => {
   assert.match(body, /was reported back in stock on Oct 12, 2026, per \[news\.example\]\(https:\/\/news\.example\/zelda-restock\)/);
   assert.match(body, /may already be gone/);
 });
+
+test("a new release keeps a brand only when the news check gives one", () => {
+  const data = plainData();
+  const h = { id: 1, title: "Zork Pad announced", link: "https://example.com/zork-pad", sourceName: "Example", summary: "", published: "2026-10-20T12:00:00Z" };
+  const make = (name, brand) => ({ kind: "new", itemId: null, confidence: "high", headlineIds: [1], summary: "s", timelineEntry: null, changes: null,
+    newItem: { name, category: "playstation", type: "controller", brand, platform: "PS5", status: "announced", price: "$79.99", releaseDate: null, releaseWindow: "2027",
+      preordersOpened: null, preordersStart: null, searchQuery: name, notes: ["A pad."], inTheBox: [], stores: [], artType: "pad", artColors: ["#111111", "#222222", "#333333"] } });
+  const { data: next, applied, skipped } = applyAll(data, [make("Zork Pad One", "Sony"), make("Zork Pad Two", null), make("Zork Pad Three", "  ")], new Map([[1, h]]), "2026-10-20");
+  assert.deepEqual(skipped, []);
+  assert.equal(applied.length, 3);
+  const by = n => next.items.find(i => i.name === n);
+  assert.equal(by("Zork Pad One").brand, "Sony");
+  assert.ok(!("brand" in by("Zork Pad Two")));
+  assert.ok(!("brand" in by("Zork Pad Three")));
+});
