@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -611,7 +611,7 @@
       "type": "controller",
       "brand": "Microsoft",
       "platform": "Xbox Series X|S, PC",
-      "status": "preorder",
+      "status": "out",
       "price": "$79.99",
       "releaseDate": "2026-10-20",
       "releaseWindow": null,
@@ -628,7 +628,8 @@
         ]
       },
       "notes": [
-        "The translucent green controller from the X25 set, on its own. Comes out about three weeks before the console."
+        "The translucent green controller from the X25 set, on its own. Comes out about three weeks before the console.",
+        "Owners of the controller get an exclusive dynamic background on their Xbox."
       ],
       "inTheBox": [],
       "stores": [
@@ -653,12 +654,20 @@
         {
           "date": "2026-08-26",
           "text": "Preorders opened."
+        },
+        {
+          "date": "2026-10-20",
+          "text": "Released. It comes with an exclusive dynamic background for owners."
         }
       ],
       "sources": [
         {
           "label": "Digital Citizen",
           "url": "https://www.digitalcitizen.life/xbox-series-x25-launches-november-13-for-899-99-with-special-edition-controller/"
+        },
+        {
+          "label": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/xbox-25th-anniversary-controller-comes-with-exclusive-dynamic-background"
         }
       ]
     },
