@@ -343,3 +343,15 @@ test("a new release keeps a brand only when the news check gives one", () => {
   assert.ok(!("brand" in by("Zork Pad Two")));
   assert.ok(!("brand" in by("Zork Pad Three")));
 });
+
+test("the news check's schema stays within what Claude's API accepts (at most 16 nullable or union fields)", () => {
+  let unions = 0;
+  const walk = o => {
+    if (!o || typeof o !== "object") return;
+    if (Array.isArray(o)) return o.forEach(walk);
+    if (o.anyOf || Array.isArray(o.type)) unions++;
+    Object.values(o).forEach(walk);
+  };
+  walk(proposalSchema(plainData()));
+  assert.ok(unions <= 16, `${unions} nullable or union fields; the API refuses more than 16`);
+});
