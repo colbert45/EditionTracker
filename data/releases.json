@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-20",
+  "updated": "2026-10-21",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2470,6 +2470,49 @@
         {
           "label": "Time Extension",
           "url": "https://www.timeextension.com/news/2026/10/technosofts-rare-sega-saturn-blaster-hyper-duel-is-getting-a-2-disc-soundtrack-release-next-month"
+        }
+      ]
+    },
+    {
+      "id": "denshattack-deluxe-edition-switch-2",
+      "name": "Denshattack! Deluxe Physical Edition (Switch 2)",
+      "category": "games",
+      "type": "game",
+      "brand": "Fangamer",
+      "platform": "Nintendo Switch 2",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "2027",
+      "preordersOpened": null,
+      "searchQuery": "Denshattack deluxe edition Switch 2 Fangamer",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#D9312B",
+          "#F2F2F2",
+          "#2B2B2B"
+        ]
+      },
+      "notes": [
+        "Fangamer is making both a standard and a deluxe physical edition.",
+        "I haven't seen a price or a list of what's in the deluxe box yet.",
+        "There's a sign-up on Fangamer's site to get notified when it goes on sale."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-21",
+          "text": "Fangamer announced standard and deluxe physical editions for Switch 2, due sometime in 2027."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/all-aboard-denshattack-physical-edition-arriving-on-switch-2-in-2027"
         }
       ]
     }
