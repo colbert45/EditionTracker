@@ -2378,11 +2378,11 @@
       "type": "controller",
       "brand": "Sony",
       "platform": "PS5",
-      "status": "announced",
+      "status": "preorder",
       "price": "$84.99",
       "releaseDate": "2026-12-10",
       "releaseWindow": null,
-      "preordersOpened": null,
+      "preordersOpened": "2026-10-22",
       "searchQuery": "DualSense Gran Turismo Limited Edition controller",
       "image": null,
       "imageCredit": null,
@@ -2405,13 +2405,17 @@
       "stores": [
         {
           "store": "psdirect",
-          "listed": false
+          "listed": true
         }
       ],
       "timeline": [
         {
           "date": "2026-10-14",
           "text": "Announced for Gran Turismo's 30th anniversary. $84.99, out December 10 in limited quantities."
+        },
+        {
+          "date": "2026-10-22",
+          "text": "Preorders opened. It still ships December 10 in limited quantities."
         }
       ],
       "sources": [
@@ -2430,6 +2434,10 @@
         {
           "label": "Gematsu",
           "url": "https://www.gematsu.com/2026/10/gran-turismo-limited-edition-dualsense-controller-announced"
+        },
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/10/reminder-pre-orders-go-live-today-for-gran-turismos-gorgeous-ps5-controller"
         }
       ]
     },
@@ -2517,6 +2525,91 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/all-aboard-denshattack-physical-edition-arriving-on-switch-2-in-2027"
+        }
+      ]
+    },
+    {
+      "id": "fanbrix-tomb-raider-lara-croft-manor-30th-anniversary",
+      "name": "FanBrix Tomb Raider Lara Croft Manor (30th Anniversary)",
+      "category": "collect",
+      "type": "lego",
+      "brand": "FanBrix",
+      "platform": "Building bricks",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "FanBrix Lara Croft Manor Tomb Raider",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "bricks",
+        "colors": [
+          "#8C8577",
+          "#3E5B3A",
+          "#6B4A2E"
+        ]
+      },
+      "notes": [
+        "A 4,300-piece brick model of Croft Manor made for Tomb Raider's 30th anniversary.",
+        "This is a FanBrix set, not an official LEGO product.",
+        "I haven't seen a price or release date yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-22",
+          "text": "Announced for Tomb Raider's 30th anniversary. 4,300 pieces. No price or date yet."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/news/2026/10/4300-piece-fanbrix-build-of-lara-croft-manor-coming-to-celebrate-tomb-raiders-30th-anniversary"
+        }
+      ]
+    },
+    {
+      "id": "croc-legend-of-the-gobbos-collectors-edition",
+      "name": "Croc: Legend of the Gobbos Collector's Edition",
+      "category": "games",
+      "type": "game",
+      "brand": "Rock It Games",
+      "platform": "Nintendo Switch, PS5",
+      "status": "out",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Croc Legend of the Gobbos Collector's Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#3FA34D",
+          "#F2C230",
+          "#7A4B2A"
+        ]
+      },
+      "notes": [
+        "Collector's editions for Switch and PS5 that first went on sale in October 2024.",
+        "They were delayed for a long time and only began shipping in October 2026, after Argonaut got involved."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-22",
+          "text": "Started shipping to buyers after long delays. Argonaut stepped in to sort out the problems."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/news/2026/10/long-delayed-croc-collectors-editions-reportedly-shipping-after-argonaut-intervenes"
         }
       ]
     }
