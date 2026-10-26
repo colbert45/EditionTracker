@@ -230,6 +230,7 @@ async function xWatchHeadlines() {
     state.xWatch.reads += Array.isArray(json.data) ? json.data.length : 0;
     if (/^\d+$/.test(json.meta?.newest_id || "")) state.xWatch.sinceId = json.meta.newest_id;
     log(`X watch (@${cfg.account}): ${posts.length} new matching post(s); ${state.xWatch.reads} read this month (cap ${cap})`);
+    for (const h of posts) log(`  ${h.title.slice(0, 140)} (${h.link})`); // so the run's log shows what was read
     return posts;
   } catch (e) { log(`::warning title=X watch skipped::${String(e.message).slice(0, 300)}`); return []; }
 }
