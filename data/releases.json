@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-22",
+  "updated": "2026-10-26",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2610,6 +2610,54 @@
         {
           "label": "Time Extension",
           "url": "https://www.timeextension.com/news/2026/10/long-delayed-croc-collectors-editions-reportedly-shipping-after-argonaut-intervenes"
+        }
+      ]
+    },
+    {
+      "id": "final-fantasy-40th-anniversary-crystal-edition-album",
+      "name": "Final Fantasy 40th Anniversary: The Crystal Edition (Album)",
+      "category": "collect",
+      "type": "other",
+      "brand": "Square Enix",
+      "platform": "Soundtrack album",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "January 2027",
+      "preordersOpened": null,
+      "searchQuery": "Final Fantasy 40th Anniversary The Crystal Edition album",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#7FB8E6",
+          "#FFFFFF",
+          "#1C2A4A"
+        ]
+      },
+      "notes": [
+        "An anniversary album for Final Fantasy's 40th.",
+        "It has 16 tracks, one picked from each mainline game.",
+        "I haven't seen a price or the physical formats confirmed yet."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "squareenix",
+          "listed": false
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-26",
+          "text": "Announced by Square Enix for January."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/10/final-fantasys-40th-anniversary-album-picks-just-one-track-from-each-main-game-and-itll-split-fan-opinion"
         }
       ]
     }
