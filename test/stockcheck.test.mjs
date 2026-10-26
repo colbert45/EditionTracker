@@ -209,7 +209,11 @@ function newsSetup({ alreadyRead = true } = {}) {
   if (alreadyRead) writeFileSync(join(dir, ".news-state/state.json"), JSON.stringify({ seen: {}, http: {}, lastCheck: "2026-10-15", lastHalfDay: "2026-10-15 AM" }));
   return { dir, a, b, original: readFileSync(join(dir, "data/releases.json"), "utf8"), fetchLog: join(dir, "fetch.log"), out: join(dir, "gh-output") };
 }
+// Each run here stands for a new hour: Best Buy is asked at most once an hour (tested in xwatch.test.mjs), so the
+// time of the last ask is cleared first.
 function newsRun(s, products, env = {}) {
+  const stateFile = join(s.dir, ".news-state/state.json");
+  if (existsSync(stateFile)) { const st = JSON.parse(readFileSync(stateFile, "utf8")); delete st.lastBestBuy; writeFileSync(stateFile, JSON.stringify(st)); }
   writeFileSync(join(s.dir, "bestbuy.json"), JSON.stringify(answer(...products)));
   writeFileSync(s.fetchLog, ""); writeFileSync(s.out, "");
   const base = { ...process.env };
@@ -234,7 +238,7 @@ test("hourly runs after the news was read check Best Buy only, and propose a res
   assert.equal(itemIn(r, s.a.id).status, "restock");
   assert.deepEqual(itemIn(r, s.a.id).restocks.at(-1), { date: "2026-10-15", store: "bestbuy", url: bestBuyListing("1000001"), source: bestBuyListing("1000001"), reported: true });
   assert.equal(itemIn(r, s.b.id).status, "out"); // not available at Best Buy
-  assert.match(r.body, /^@someone-42 Best Buy has something back in stock\..*\n\n### Best Buy check, 2026-10-15 15:00 UTC\n\nProposed 1 change\(s\)\./);
+  assert.match(r.body, /^@someone-42 Something is reported back in stock \(Best Buy\)\..*\n\n### Best Buy check, 2026-10-15 15:00 UTC\n\nProposed 1 change\(s\)\./);
   assert.doesNotMatch(r.body, /headline/);
   assert.match(r.body, /Merge by the end of 2026-10-17/);
   assert.equal(r.state.lastHalfDay, "2026-10-15 AM");
