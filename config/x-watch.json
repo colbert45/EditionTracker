@@ -1,7 +1,14 @@
 {
-  "_readme": "A restock account on X that the news check watches (see lib/xwatch.js). Every run (about every 15 minutes) asks X's search for this account's new posts that mention one of the keywords AND say something like in stock, restock, available or preorder. Matching posts go to the AI like headlines, and a real restock ends up in the news pull request for you to check and merge. X charges for each post it sends back (reported at about half a cent), so monthlyCap is the most posts read in a calendar month; after that the watch pauses until the next month. Needs the same X_* secrets the posts use. Add keywords for other releases, or empty the list to stop.",
+  "_readme": "A restock account on X that the news check watches (see lib/xwatch.js). Every run (about every 15 minutes) asks X's search for this account's new posts that mention one of the keywords AND say something like in stock, restock, available or preorder. Matching posts go to the AI like headlines, and a real restock ends up in the news pull request for you to check and merge. X charges for each post it sends back (reported at about half a cent), so readCap is the most posts read in any capDays days in a row (100 in 10 days); after that the watch pauses until older reads fall out of the window. Needs the same X_* secrets the posts use. Add keywords for other releases, or empty the list to stop.",
   "account": "Wario64",
-  "keywords": ["zelda", "ocarina", "hyrule", "triforce", "majora"],
-  "monthlyCap": 600,
+  "keywords": [
+    "zelda",
+    "ocarina",
+    "hyrule",
+    "triforce",
+    "majora"
+  ],
+  "readCap": 100,
+  "capDays": 10,
   "maxResults": 25
 }

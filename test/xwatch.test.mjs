@@ -8,7 +8,7 @@ import { searchQuery, searchUrl, unwrapLink, postsToHeadlines, oauthHeader } fro
 import { plainData } from "./helpers/stock.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const CFG = { account: "Wario64", keywords: ["zelda", "ocarina", "hyrule"], monthlyCap: 600, maxResults: 25 };
+const CFG = { account: "Wario64", keywords: ["zelda", "ocarina", "hyrule"], readCap: 100, capDays: 10, maxResults: 25 };
 
 test("OAuth signing matches X's own worked example", () => {
   const h = oauthHeader("POST", "https://api.twitter.com/1.1/statuses/update.json?include_entities=true",
@@ -105,8 +105,7 @@ test("a Wario64 in-stock post becomes a proposed restock in the pull request, wi
   assert.match(r.body, /^@someone-42 Something is reported back in stock \(Wario64 on X\)\./);
   assert.match(r.body, /### Restock check, 2026-10-26 15:00 UTC\n\nRead 1 new headline\(s\)\. Proposed 1 change\(s\)\./);
   assert.equal(r.state.xWatch.sinceId, "1850000000000000002");
-  assert.equal(r.state.xWatch.reads, 1);
-  assert.equal(r.state.xWatch.month, "2026-10");
+  assert.deepEqual(r.state.xWatch.days, { "2026-10-26": 1 });
   assert.ok(r.state.seen["https://x.com/Wario64/status/1850000000000000002"]);
   assert.equal(r.state.lastHalfDay, "2026-10-26 AM");
   // Next run: only newer posts are asked for, and with none, Claude isn't called and nothing changes.
@@ -116,15 +115,20 @@ test("a Wario64 in-stock post becomes a proposed restock in the pull request, wi
   assert.match(again.output, /changed=false/);
 });
 
-test("the X watch stops at the monthly cap, starts again next month, and does nothing without the X keys", () => {
-  const capped = setup({ state: { xWatch: { month: "2026-10", reads: 600, sinceId: "5" } } });
+test("the X watch stops at 100 posts in 10 days, starts again as old reads age out, and does nothing without the X keys", () => {
+  const capped = setup({ state: { xWatch: { days: { "2026-10-16": 50, "2026-10-20": 60, "2026-10-26": 40 }, sinceId: "5" } } });
   const r = run(capped, { x: POST, claude: RESTOCK });
   assert.equal(r.status, 0, r.stderr);
   assert.equal(to(r, "api.x.com").length, 0);
-  assert.match(r.stdout, /X watch: paused, 600 posts read this month \(cap 600\)/);
-  const nextMonth = run(capped, { now: "2026-11-02T15:00:00Z", env: {} });
-  // A new half-day reads the news too; here only the X request matters, and it happens again in a new month.
-  assert.equal(to(nextMonth, "api.x.com").length, 1);
+  assert.match(r.stdout, /X watch: paused, 100 posts read in the last 10 days \(cap 100\)/); // Oct 16 is outside the 10 days (Oct 17 to 26)
+  assert.deepEqual(JSON.parse(readFileSync(join(capped.dir, ".news-state/state.json"))).xWatch.days, { "2026-10-20": 60, "2026-10-26": 40 });
+  // On Oct 30 the Oct 20 reads are out of the window, so it reads again, asking for no more than the room left (min 10).
+  const later = run(capped, { now: "2026-10-30T15:00:00Z" });
+  const [call] = to(later, "api.x.com");
+  assert.ok(call);
+  assert.equal(new URL(call.url).searchParams.get("max_results"), "25");
+  const nearly = setup({ state: { xWatch: { days: { "2026-10-26": 95 } } } });
+  assert.equal(new URL(to(run(nearly), "api.x.com")[0].url).searchParams.get("max_results"), "10");
   const nokeys = setup();
   const n = run(nokeys, { x: POST, env: { X_API_KEY: "" } });
   assert.equal(to(n, "api.x.com").length, 0);

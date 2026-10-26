@@ -30,7 +30,7 @@ const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, "utf8
 state.seen ??= {};      // link -> ISO date first seen
 state.http ??= {};      // feed url -> { etag, lastModified }
 state.bestbuyOffered ??= {}; // Best Buy SKU -> true once proposed, until Best Buy says it's gone again
-state.xWatch ??= {};         // { sinceId, month: "2026-10", reads } for the X account in config/x-watch.json
+state.xWatch ??= {};         // { sinceId, days: { "2026-10-26": posts read } } for the X account in config/x-watch.json
 const NOW = process.env.NEWS_NOW ? new Date(process.env.NEWS_NOW) : new Date();
 const today = NOW.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 // "2026-10-06 AM" or "2026-10-06 PM", New York time. Scheduled runs check once per half-day.
@@ -209,7 +209,7 @@ async function bestBuyProposals() {
 }
 
 // New posts from the X account in config/x-watch.json that name something on the list and say it's in stock, as
-// headlines. Only with the X_* secrets; never more than the monthly cap of posts read (X charges for each one).
+// headlines. Only with the X_* secrets; never more than readCap posts read in capDays days (X charges for each one).
 async function xWatchHeadlines() {
   const file = join(ROOT, "config/x-watch.json");
   if (!existsSync(file)) return [];
@@ -217,19 +217,23 @@ async function xWatchHeadlines() {
   if (!cfg.account || !(cfg.keywords || []).length) return [];
   const creds = { key: process.env.X_API_KEY, secret: process.env.X_API_SECRET, token: process.env.X_ACCESS_TOKEN, tokenSecret: process.env.X_ACCESS_TOKEN_SECRET };
   if (!creds.key || !creds.secret || !creds.token || !creds.tokenSecret) { log("X watch: skipped (no X_* secrets)"); return []; }
-  const month = today.slice(0, 7);
-  if (state.xWatch.month !== month) state.xWatch = { ...state.xWatch, month, reads: 0 };
-  const cap = Number(cfg.monthlyCap) || 0;
-  if (state.xWatch.reads >= cap) { log(`X watch: paused, ${state.xWatch.reads} posts read this month (cap ${cap})`); return []; }
+  // Posts read per day, kept for the last capDays days: the cap is on their total.
+  const capDays = Math.max(Number(cfg.capDays) || 10, 1), cap = Number(cfg.readCap) || 0;
+  const oldest = new Date(Date.parse(today + "T12:00:00Z") - (capDays - 1) * 86400000).toISOString().slice(0, 10);
+  const days = Object.fromEntries(Object.entries(state.xWatch.days || {}).filter(([d, n]) => d >= oldest && Number.isFinite(n)));
+  state.xWatch = { sinceId: state.xWatch.sinceId, days };
+  const read = () => Object.values(days).reduce((a, b) => a + b, 0);
+  if (read() >= cap) { log(`X watch: paused, ${read()} posts read in the last ${capDays} days (cap ${cap})`); return []; }
   try {
-    const url = searchUrl(cfg, { sinceId: state.xWatch.sinceId, now: NOW });
+    // Never ask for many more posts than the cap has room for (X's smallest page is 10).
+    const url = searchUrl({ ...cfg, maxResults: Math.min(Number(cfg.maxResults) || 25, Math.max(cap - read(), 10)) }, { sinceId: state.xWatch.sinceId, now: NOW });
     const res = await fetch(url, { headers: { Authorization: oauthHeader("GET", url, creds), "user-agent": UA }, signal: AbortSignal.timeout(20000) });
     if (!res.ok) throw new Error(`X answered ${res.status}: ${(await res.text()).slice(0, 200)}`);
     const json = await res.json();
     const posts = postsToHeadlines(json, cfg.account).filter(h => !state.seen[h.link]);
-    state.xWatch.reads += Array.isArray(json.data) ? json.data.length : 0;
+    days[today] = (days[today] || 0) + (Array.isArray(json.data) ? json.data.length : 0);
     if (/^\d+$/.test(json.meta?.newest_id || "")) state.xWatch.sinceId = json.meta.newest_id;
-    log(`X watch (@${cfg.account}): ${posts.length} new matching post(s); ${state.xWatch.reads} read this month (cap ${cap})`);
+    log(`X watch (@${cfg.account}): ${posts.length} new matching post(s); ${read()} read in the last ${capDays} days (cap ${cap})`);
     for (const h of posts) log(`  ${h.title.slice(0, 140)} (${h.link})`); // so the run's log shows what was read
     return posts;
   } catch (e) { log(`::warning title=X watch skipped::${String(e.message).slice(0, 300)}`); return []; }
