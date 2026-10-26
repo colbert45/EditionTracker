@@ -123,7 +123,7 @@
       "type": "console",
       "brand": "Nintendo",
       "platform": "Nintendo Switch 2",
-      "status": "soldout",
+      "status": "restock",
       "price": "$519.99",
       "releaseDate": "2026-10-29",
       "releaseWindow": null,
@@ -211,6 +211,19 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/nintendo-underestimated-zelda-switch-2-console-sales-but-promises-restocks-are-on-the-way"
+        },
+        {
+          "label": "Wario64 on X",
+          "url": "https://x.com/Wario64/status/2114757325391028549"
+        }
+      ],
+      "restocks": [
+        {
+          "date": "2026-10-26",
+          "store": "nintendo",
+          "url": "https://www.nintendo.com/us/store/products/nintendo-switch-2-the-legend-of-zelda-40th-anniversary-edition-121642/",
+          "source": "https://x.com/Wario64/status/2114757325391028549",
+          "reported": true
         }
       ]
     },
