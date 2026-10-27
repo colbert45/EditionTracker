@@ -15,7 +15,15 @@ on:
     # Buy at most hourly). Minutes 2/17/32/47 avoid the top of the hour, when
     # GitHub drops the most runs.
     - cron: "2,17,32,47 * * * *"
+  # Started by hand, or by an outside timer every 15 minutes with quick ticked (GitHub's own
+  # schedule above often runs only every few hours). A quick run is like a scheduled one: it
+  # checks for restocks, and reads the news only if it hasn't this half of the day.
   workflow_dispatch:
+    inputs:
+      quick:
+        description: "Quick: only check for restocks (unless the news is due)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -85,7 +93,7 @@ jobs:
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
           REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
           NEWS_MODEL: ${{ vars.NEWS_MODEL }}
-          ONCE_PER_HALF_DAY: ${{ github.event_name == 'schedule' }}
+          ONCE_PER_HALF_DAY: ${{ github.event_name == 'schedule' || inputs.quick == true }}
         run: node scripts/news-check.mjs
 
       - name: Make sure the site still builds with the edits

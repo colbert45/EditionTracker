@@ -107,3 +107,11 @@ test("post-restock posts to Bluesky, X and Discord after the email, and a failed
   assert.doesNotMatch(FLOWS["sold-out-again"], /social\.mjs/);
   assert.doesNotMatch(wf("resend-restock-email"), /social\.mjs/);
 });
+
+test("the news check can be started as a quick run, which behaves like a scheduled one", () => {
+  const yml = readFileSync(new URL("../.github/workflows/news-check.yml", import.meta.url), "utf8");
+  assert.match(yml, /workflow_dispatch:\n(?:\s+#.*\n)*?\s+inputs:\n\s+quick:\n(?:.*\n)*?\s+type: boolean\n\s+default: false/);
+  assert.match(yml, /ONCE_PER_HALF_DAY: \$\{\{ github\.event_name == 'schedule' \|\| inputs\.quick == true \}\}/);
+  // The input only reaches the script through that one expression, never pasted into a shell line.
+  assert.deepEqual(yml.split("\n").filter(l => /inputs\./.test(l)).map(l => l.trim()), ["ONCE_PER_HALF_DAY: ${{ github.event_name == 'schedule' || inputs.quick == true }}"]);
+});
