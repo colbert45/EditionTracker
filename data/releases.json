@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-26",
+  "updated": "2026-10-28",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2671,6 +2671,62 @@
         {
           "label": "Push Square",
           "url": "https://www.pushsquare.com/news/2026/10/final-fantasys-40th-anniversary-album-picks-just-one-track-from-each-main-game-and-itll-split-fan-opinion"
+        }
+      ]
+    },
+    {
+      "id": "ps5-prism-collection",
+      "name": "PS5 Prism Collection (transparent DualSense and console covers)",
+      "category": "playstation",
+      "type": "controller",
+      "brand": "Sony",
+      "platform": "PS5",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "PS5 Prism Collection transparent DualSense",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#E8732C",
+          "#2E8B57",
+          "#5A5D63"
+        ]
+      },
+      "notes": [
+        "Transparent shells for both the DualSense controller and the PS5 console covers, so you can see the parts inside.",
+        "Three colors: Flare Orange, Emerald Green and Graphite Gray.",
+        "I haven't seen Sony give a price or release date yet, or say whether these are limited."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "psdirect",
+          "listed": false
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-10-28",
+          "text": "Announced in three transparent colors. No price or date yet."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/sony-announces-new-prism-collection-of-transparent-ps5-dualsense-controllers-and-console-covers/"
+        },
+        {
+          "label": "PlayStation Blog",
+          "url": "https://blog.playstation.com/2026/10/28/first-look-inside-the-prism-collection-with-three-new-transparent-designs-for-ps5-accessories/"
+        },
+        {
+          "label": "Push Square",
+          "url": "https://www.pushsquare.com/news/2026/10/ps5-revives-retro-transparent-hardware-with-3-new-gorgeous-accessory-colours"
         }
       ]
     }
