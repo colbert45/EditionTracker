@@ -123,7 +123,7 @@
       "type": "console",
       "brand": "Nintendo",
       "platform": "Nintendo Switch 2",
-      "status": "restock",
+      "status": "out",
       "price": "$519.99",
       "releaseDate": "2026-10-29",
       "releaseWindow": null,
@@ -193,6 +193,10 @@
         {
           "date": "2026-10-29",
           "text": "Walmart cancelled some preorders a day before launch after overselling. Affected buyers won't be charged."
+        },
+        {
+          "date": "2026-10-29",
+          "text": "Launched today. Preorder buyers are starting to get their consoles."
         }
       ],
       "sources": [
@@ -223,6 +227,10 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/walmart-cancels-zelda-switch-2-pre-orders-a-day-before-release"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/gallery-heres-a-closer-look-at-the-zelda-40th-anniversary-special-edition-switch-2"
         }
       ],
       "restocks": [
@@ -2735,6 +2743,43 @@
         {
           "label": "Push Square",
           "url": "https://www.pushsquare.com/news/2026/10/ps5-revives-retro-transparent-hardware-with-3-new-gorgeous-accessory-colours"
+        }
+      ]
+    },
+    {
+      "id": "grand-theft-auto-vi-official-score-by-justice-cd-and-vinyl",
+      "name": "Grand Theft Auto VI Official Score by Justice (CD and Vinyl)",
+      "category": "collect",
+      "type": "other",
+      "platform": "Soundtrack CD and vinyl",
+      "status": "preorder",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "December 2026",
+      "preordersOpened": "2026-10-29",
+      "searchQuery": "GTA 6 score Justice vinyl",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#E8458B",
+          "#2B1B4D",
+          "#F6A04D"
+        ]
+      },
+      "notes": [
+        "The official GTA VI score is by the French duo Justice.",
+        "It comes on CD and vinyl in December. Preorders are open now.",
+        "I haven't seen a price yet. One track is already on streaming services."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Video Games Chronicle",
+          "url": "https://www.videogameschronicle.com/news/the-official-grand-theft-auto-6-musical-score-by-justice-is-released-in-december-cd-and-vinyl-pre-orders-available-now/"
         }
       ]
     }
