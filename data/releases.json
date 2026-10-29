@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28",
+  "updated": "2026-10-29",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -189,6 +189,10 @@
         {
           "date": "2026-10-19",
           "text": "Nintendo said it underestimated demand and that more consoles are on the way. No dates yet."
+        },
+        {
+          "date": "2026-10-29",
+          "text": "Walmart cancelled some preorders a day before launch after overselling. Affected buyers won't be charged."
         }
       ],
       "sources": [
@@ -215,6 +219,10 @@
         {
           "label": "Wario64 on X",
           "url": "https://x.com/Wario64/status/2114757325391028549"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/walmart-cancels-zelda-switch-2-pre-orders-a-day-before-release"
         }
       ],
       "restocks": [
