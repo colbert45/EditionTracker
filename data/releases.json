@@ -2790,6 +2790,49 @@
           "url": "https://www.videogameschronicle.com/news/the-official-grand-theft-auto-6-musical-score-by-justice-is-released-in-december-cd-and-vinyl-pre-orders-available-now/"
         }
       ]
+    },
+    {
+      "id": "brickstation-lego-playstation-kit",
+      "name": "BrickStation (playable kit for LEGO PlayStation)",
+      "category": "collect",
+      "type": "accessory",
+      "platform": "LEGO PlayStation (72306)",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "BrickStation LEGO PlayStation kit",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "bricks",
+        "colors": [
+          "#BFBFBF",
+          "#7A7A7A",
+          "#2B2B2B"
+        ]
+      },
+      "notes": [
+        "This is an unofficial kit, not a LEGO or Sony product. It fits inside the LEGO PlayStation set and turns it into a console you can play.",
+        "It comes from the same team that made the BrickBoy kit for the LEGO Game Boy.",
+        "It's meant to let you rip your own original discs and use your old memory cards.",
+        "I haven't seen a price or release date yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-30",
+          "text": "Revealed as an unofficial kit that makes the LEGO PlayStation playable. No price or date yet."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/features/brickstation-turns-the-lego-playstation-into-a-console-you-can-actually-play"
+        }
+      ]
     }
   ]
 }
