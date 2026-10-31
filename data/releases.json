@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30",
+  "updated": "2026-10-31",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2831,6 +2831,91 @@
         {
           "label": "Time Extension",
           "url": "https://www.timeextension.com/features/brickstation-turns-the-lego-playstation-into-a-console-you-can-actually-play"
+        }
+      ]
+    },
+    {
+      "id": "pok-mon-30th-anniversary-fender-electric-guitars",
+      "name": "Pokémon 30th Anniversary Fender Electric Guitars",
+      "category": "collect",
+      "type": "other",
+      "brand": "Fender",
+      "platform": "Electric guitars",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Pokemon Fender guitar 30th anniversary",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#CC2229",
+          "#3A9A3E",
+          "#F5F5F5"
+        ]
+      },
+      "notes": [
+        "Two electric guitars made with Fender for Pokémon's 30th anniversary.",
+        "The designs are themed around Pokémon Red and Green.",
+        "I haven't seen a price or release date yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-30",
+          "text": "Fender and The Pokémon Company revealed two electric guitars for the 30th anniversary."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/pokemon-and-fender-are-teaming-up-a-rocking-guitar-collaboration"
+        }
+      ]
+    },
+    {
+      "id": "xbox-25th-anniversary-football-jerseys",
+      "name": "Xbox 25th Anniversary Football Jerseys",
+      "category": "xbox",
+      "type": "other",
+      "platform": "Apparel",
+      "status": "out",
+      "price": "TBA",
+      "releaseDate": "2026-10-30",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Xbox 25th anniversary football jersey",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#107C10",
+          "#000000",
+          "#FFFFFF"
+        ]
+      },
+      "notes": [
+        "Three football jerseys made to mark Xbox's 25th anniversary.",
+        "There's also a very limited edition bundle.",
+        "I haven't confirmed pricing for the jerseys or the bundle yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-10-30",
+          "text": "Three anniversary jerseys went on sale, including a very limited bundle."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/three-special-football-jerseys-go-on-sale-to-celebrate-xboxs-25th-anniversary"
         }
       ]
     }
