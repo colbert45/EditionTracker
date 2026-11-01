@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-31",
+  "updated": "2026-11-01",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -1595,7 +1595,7 @@
       "type": "accessory",
       "brand": "HORI",
       "platform": "Nintendo Switch 2",
-      "status": "preorder",
+      "status": "restock",
       "price": "$49.99",
       "releaseDate": "2026-11-05",
       "releaseWindow": null,
@@ -1636,6 +1636,19 @@
         {
           "label": "Notebookcheck",
           "url": "https://www.notebookcheck.net/Hori-s-electric-Ocarina-of-Time-is-now-available-to-pre-order.1399682.0.html"
+        },
+        {
+          "label": "Wario64 on X",
+          "url": "https://x.com/Wario64/status/2116992874713952353"
+        }
+      ],
+      "restocks": [
+        {
+          "date": "2026-11-01",
+          "store": "target",
+          "url": "https://www.target.com/s?searchTerm=HORI%20Electric%20Ocarina%20of%20Time%20Switch%202",
+          "source": "https://x.com/Wario64/status/2116992874713952353",
+          "reported": true
         }
       ]
     },
