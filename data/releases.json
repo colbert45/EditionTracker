@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01",
+  "updated": "2026-11-03",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -201,6 +201,10 @@
         {
           "date": "2026-10-30",
           "text": "Some Target preorder buyers are reportedly being told their console won't arrive until mid-November. Walmart is said to be blaming a supply chain delay."
+        },
+        {
+          "date": "2026-11-03",
+          "text": "Walmart is reportedly sending $519 gift cards to some buyers whose preorders it cancelled. A few people also say they managed to reorder the console."
         }
       ],
       "sources": [
@@ -239,6 +243,10 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/10/poll-so-have-you-got-the-zelda-40th-anniversary-switch-2"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/11/after-cancelling-zelda-switch-2-pre-orders-walmart-is-now-supposedly-sending-out-usd519-gift-cards"
         }
       ],
       "restocks": [
