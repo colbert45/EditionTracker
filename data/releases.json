@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-03",
+  "updated": "2026-11-05",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -2937,6 +2937,54 @@
         {
           "label": "Pure Xbox",
           "url": "https://www.purexbox.com/news/2026/10/three-special-football-jerseys-go-on-sale-to-celebrate-xboxs-25th-anniversary"
+        }
+      ]
+    },
+    {
+      "id": "zelda-40th-anniversary-pin-set",
+      "name": "Zelda 40th Anniversary Pin Set",
+      "category": "collect",
+      "type": "other",
+      "brand": "Nintendo",
+      "platform": "Pin set",
+      "status": "out",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "November 2026",
+      "preordersOpened": null,
+      "searchQuery": "Zelda 40th Anniversary Pin Set",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#C9A227",
+          "#1F5E3A",
+          "#8B1E1E"
+        ]
+      },
+      "notes": [
+        "A US exclusive pin set from Nintendo for Zelda's 40th anniversary.",
+        "It came out the same week as Ocarina of Time on Switch 2.",
+        "I haven't seen a price yet, and it may not stick around for long."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "nintendo",
+          "listed": true
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-11-05",
+          "text": "Released in the US alongside the Ocarina of Time launch on Switch 2."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/11/nintendo-celebrates-zeldas-40th-anniversary-with-an-exclusive-pin-set-us"
         }
       ]
     }
