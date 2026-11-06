@@ -36,7 +36,8 @@ const x = { key: env.X_API_KEY, secret: env.X_API_SECRET, token: env.X_ACCESS_TO
 // --only bluesky or --only x limits a run to one platform.
 const only = (() => { const i = process.argv.indexOf("--only"); return i > 0 ? (process.argv[i + 1] || "").toLowerCase() : ""; })();
 const useBsky = !DRY && (!only || only === "bluesky") && bsky.handle && bsky.password;
-const useX = !DRY && (!only || only === "x") && x.key && x.secret && x.token && x.tokenSecret;
+// social.xEnabled: false in site.config.json turns X off for every post (posting there costs money).
+const useX = !DRY && config.social?.xEnabled !== false && (!only || only === "x") && x.key && x.secret && x.token && x.tokenSecret;
 // The webhook link is a secret, so it's never printed, and anything that isn't a Discord webhook is ignored.
 const discordUrl = (env.DISCORD_WEBHOOK_URL || "").trim(); // a pasted secret often ends in a line break
 if (discordUrl && !isDiscordWebhook(discordUrl)) console.log("DISCORD_WEBHOOK_URL is set but isn't a Discord webhook link. Not posting to Discord.");

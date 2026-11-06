@@ -8,13 +8,11 @@
 name: News check
 
 on:
-  schedule:
-    # GitHub schedules run on UTC and can start late or be dropped when GitHub
-    # is busy. The first run that actually happens in each half of the New York
-    # day reads the news; the others only check for restocks (X every run, Best
-    # Buy at most hourly). Minutes 2/17/32/47 avoid the top of the hour, when
-    # GitHub drops the most runs.
-    - cron: "2,17,32,47 * * * *"
+  # PAUSED to stop the AI and X costs. Put this back to turn the news check on again:
+  #   schedule:
+  #     - cron: "2,17,32,47 * * * *"
+  # (GitHub runs it late and unevenly, so the first run in each half of the New York day
+  # reads the news and the others only check for restocks.)
   # Started by hand, or by an outside timer every 15 minutes with quick ticked (GitHub's own
   # schedule above often runs only every few hours). A quick run is like a scheduled one: it
   # checks for restocks, and reads the news only if it hasn't this half of the day.

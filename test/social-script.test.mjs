@@ -21,6 +21,7 @@ function repoWithRestock(message, edit, editConfig) {
   git(dir, "init", "-q", "-b", "main");
   mkdirSync(join(dir, "data")); mkdirSync(join(dir, "scripts"));
   const config = JSON.parse(readFileSync(join(ROOT, "site.config.json"), "utf8"));
+  config.social.xEnabled = true; // pinned, so these tests don't depend on whether the live config has X switched off
   if (editConfig) editConfig(config);
   writeFileSync(join(dir, "site.config.json"), JSON.stringify(config, null, 2));
   copyFileSync(join(ROOT, "scripts/social.mjs"), join(dir, "scripts/social.mjs"));
@@ -294,4 +295,12 @@ test("the scheduled posts go to X without links too", () => {
   assert.ok(r.x.some(t => t.startsWith("Out today: ") && t.includes("\nDetails: editiontracker dot com")));
   for (const t of r.x) assert.doesNotMatch(t, NO_LINK);
   assert.ok(r.bluesky.every(x => /https:\/\/editiontracker\.com\//.test(x.text)));
+});
+
+test("social.xEnabled: false keeps every post off X (it costs money), and Bluesky still gets it", () => {
+  const { dir, start } = repoWithRestock(undefined, newRelease, c => { c.social.xEnabled = false; c.social.restockToX = true; });
+  const r = sendFor(dir, start);
+  assert.equal(r.status, 0, r.stderr + r.stdout);
+  assert.deepEqual(r.x, []);
+  assert.equal(r.bluesky.length, 2);
 });
