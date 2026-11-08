@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-05",
+  "updated": "2026-11-08",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -408,7 +408,7 @@
       "type": "game",
       "brand": "Nintendo",
       "platform": "Nintendo Switch 2",
-      "status": "preorder",
+      "status": "out",
       "price": "$69.99",
       "releaseDate": "2026-11-05",
       "releaseWindow": null,
@@ -458,6 +458,10 @@
         {
           "date": "2026-09-08",
           "text": "Preorders opened. $69.99 physical, $59.99 digital."
+        },
+        {
+          "date": "2026-11-05",
+          "text": "Released. Resellers are already asking well above retail for copies."
         }
       ],
       "sources": [
@@ -468,6 +472,10 @@
         {
           "label": "TechRadar",
           "url": "https://techradar.com/gaming/nintendo-switch/the-physical-edition-of-the-legend-of-zelda-ocarina-of-time-on-nintendo-switch-2-is-getting-limited-textured-foil-packaging-heres-where-to-preorder-now"
+        },
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/11/scalpers-already-want-insane-sums-for-the-ocarina-remake-with-exclusive-bits"
         }
       ]
     },
