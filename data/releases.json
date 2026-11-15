@@ -3007,6 +3007,82 @@
           "url": "https://www.nintendolife.com/news/2026/11/nintendo-celebrates-zeldas-40th-anniversary-with-an-exclusive-pin-set-us"
         }
       ]
+    },
+    {
+      "id": "halo-25th-anniversary-football-jerseys",
+      "name": "Halo 25th Anniversary Football Jerseys",
+      "category": "xbox",
+      "type": "other",
+      "brand": "Dyenamik",
+      "platform": "Apparel",
+      "status": "out",
+      "price": "TBA",
+      "releaseDate": "2026-11-12",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Halo 25th anniversary football jersey Dyenamik",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "mystery",
+        "colors": [
+          "#2f6b3a",
+          "#9aa5a8",
+          "#1c2024"
+        ]
+      },
+      "notes": [
+        "Three Halo-themed jerseys went on sale from Xbox and Dyenamik.",
+        "One of the options is a very limited edition bundle.",
+        "I haven't seen a price yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/11/three-special-football-jerseys-go-on-sale-to-celebrate-halos-25th-anniversary"
+        }
+      ]
+    },
+    {
+      "id": "ayaneo-konkr-pocket-advance-ice-pink-special-edition",
+      "name": "AYANEO KONKR Pocket Advance Ice Pink Special Edition",
+      "category": "pc",
+      "type": "console",
+      "brand": "AYANEO",
+      "platform": "Emulation handheld",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "AYANEO KONKR Pocket Advance Ice Pink Special Edition",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "handheld",
+        "colors": [
+          "#f2a2c4",
+          "#e0568f",
+          "#4a2a3a"
+        ]
+      },
+      "notes": [
+        "A pink colorway of AYANEO's GBA-style handheld.",
+        "It is the latest in a run of colorways for this device.",
+        "I haven't confirmed a price or release date."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/features/hands-on-ayaneo-konkr-pocket-advance-ice-pink-special-edition-the-fuchsia-is-in-your-hands"
+        }
+      ]
     }
   ]
 }
