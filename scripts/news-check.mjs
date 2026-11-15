@@ -22,7 +22,8 @@ const STATE_FILE = join(STATE_DIR, "state.json");
 const DATA_FILE = join(ROOT, "data/releases.json");
 const MAX_AGE_DAYS = 3;
 const MAX_HEADLINES = 80;
-const MODEL = process.env.NEWS_MODEL || "claude-opus-5-5";
+// Sonnet is a good deal cheaper than Opus and does this job well; set the NEWS_MODEL variable in GitHub to change it.
+const MODEL = process.env.NEWS_MODEL || "claude-sonnet-5-5";
 
 const feeds = JSON.parse(readFileSync(process.env.NEWS_FEEDS_FILE || join(ROOT, "config/feeds.json"), "utf8"));
 const UA = feeds.userAgent;
@@ -30,12 +31,21 @@ const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, "utf8
 state.seen ??= {};      // link -> ISO date first seen
 state.http ??= {};      // feed url -> { etag, lastModified }
 state.bestbuyOffered ??= {}; // Best Buy SKU -> true once proposed, until Best Buy says it's gone again
+state.claudeCalls ??= {};    // { "2026-11-15": calls made that day }, kept for 3 days
 state.xWatch ??= {};         // { sinceId, days: { "2026-10-26": posts read } } for the X account in config/x-watch.json
 const NOW = process.env.NEWS_NOW ? new Date(process.env.NEWS_NOW) : new Date();
 const today = NOW.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 // "2026-10-06 AM" or "2026-10-06 PM", New York time. Scheduled runs check once per half-day.
 const nyHour = +NOW.toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", hourCycle: "h23" });
 const halfDay = `${today} ${nyHour < 12 ? "AM" : "PM"}`;
+// config/budget.json keeps the paid parts inside a prepaid balance: how many times a day Claude may be asked, and how often
+// the news is read (1 = once a day, 2 = morning and afternoon). Without the file there's no limit and it's twice a day.
+const budget = (() => { try { return JSON.parse(readFileSync(join(ROOT, "config/budget.json"), "utf8")); } catch { return {}; } })();
+const newsPeriod = Number(budget.newsReadsPerDay) === 1 ? today : halfDay;
+const claudeLimit = Number(budget.claudeCallsPerDay) > 0 ? Number(budget.claudeCallsPerDay) : Infinity;
+const claudeToday = () => state.claudeCalls[today] || 0;
+// Whether Claude can be asked right now: the key is there and today's calls aren't used up.
+const canAsk = () => Boolean(process.env.ANTHROPIC_API_KEY) && claudeToday() < claudeLimit;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const log = (...a) => console.log(...a);
 
@@ -47,7 +57,8 @@ function summary(md) {
 }
 function saveState() {
   state.lastCheck = today;
-  state.lastHalfDay = halfDay;
+  state.lastHalfDay = newsPeriod;
+  for (const d of Object.keys(state.claudeCalls)) if (d < new Date(NOW.getTime() - 3 * 86400000).toISOString().slice(0, 10)) delete state.claudeCalls[d];
   // Forget links after 30 days so the file stays small.
   const cutoff = NOW.getTime() - 30 * 86400000;
   for (const [k, v] of Object.entries(state.seen)) if (Date.parse(v) < cutoff) delete state.seen[k];
@@ -170,6 +181,7 @@ async function askClaude(data, headlines) {
       content: `Today is ${today}.\n\nCurrent releases on the site:\n${JSON.stringify(compactList(data))}\n\nStore keys: ${JSON.stringify(Object.fromEntries(Object.entries(data.stores).map(([k, v]) => [k, v.name])))}\n\n<headlines>\n${JSON.stringify(batch, null, 1)}\n</headlines>`
     }]
   });
+  state.claudeCalls[today] = claudeToday() + 1; // counted once Claude has answered (a refused request costs nothing)
   if (response.stop_reason === "refusal") throw new Error("Claude declined this batch");
   if (response.stop_reason === "max_tokens") throw new Error("Claude's answer was cut off (max_tokens)");
   const text = response.content.filter(b => b.type === "text").map(b => b.text).join("");
@@ -182,7 +194,7 @@ async function askClaude(data, headlines) {
 // Scheduled runs fire about every 15 minutes. Each one reads the X account in config/x-watch.json for new restock posts
 // and, at most once an hour, asks Best Buy about the products in config/stock-check.json, so a restock reaches the pull
 // request quickly. Only the first run in each half of the New York day (12am-11:59am, 12pm-11:59pm) also reads the news.
-const stockOnly = process.env.ONCE_PER_HALF_DAY === "true" && state.lastHalfDay === halfDay;
+const stockOnly = process.env.ONCE_PER_HALF_DAY === "true" && state.lastHalfDay === newsPeriod;
 const data = JSON.parse(readFileSync(DATA_FILE, "utf8"));
 const when = NOW.toISOString().slice(0, 16).replace("T", " ") + " UTC";
 
@@ -215,6 +227,7 @@ async function xWatchHeadlines() {
   if (!existsSync(file)) return [];
   const cfg = JSON.parse(readFileSync(file, "utf8"));
   if (!cfg.account || !(cfg.keywords || []).length) return [];
+  if (!canAsk()) { log("X watch: skipped (Claude can't be asked right now, so the posts wouldn't be read)"); return []; }
   const creds = { key: process.env.X_API_KEY, secret: process.env.X_API_SECRET, token: process.env.X_ACCESS_TOKEN, tokenSecret: process.env.X_ACCESS_TOKEN_SECRET };
   if (!creds.key || !creds.secret || !creds.token || !creds.tokenSecret) { log("X watch: skipped (no X_* secrets)"); return []; }
   // Posts read per day, kept for the last capDays days: the cap is on their total.
@@ -261,11 +274,11 @@ function finish({ applied, skipped, next, reviewed, title }) {
 }
 
 if (stockOnly) {
-  log(`Already read the news this half of the day (${halfDay}), so this run only checks for restocks.`);
+  log(`Already read the news this ${newsPeriod === today ? "day" : "half of the day"} (${newsPeriod}), so this run only checks for restocks.`);
   const posts = (await xWatchHeadlines()).map((h, k) => ({ ...h, id: k + 1 }));
   const stock = await bestBuyProposals();
-  const askAi = posts.length && process.env.ANTHROPIC_API_KEY;
-  if (posts.length && !askAi) log("X watch: no ANTHROPIC_API_KEY, so the posts weren't read");
+  const askAi = posts.length && canAsk();
+  if (posts.length && !askAi) log("X watch: Claude can't be asked right now, so the posts weren't read");
   const proposals = [...(askAi ? await askClaude(data, posts) : []), ...stock.proposals];
   if (askAi) for (const h of posts) state.seen[h.link] = NOW.toISOString();
   if (!proposals.length) { output("changed", "false"); saveState(); process.exit(0); }
@@ -303,16 +316,16 @@ const stock = await bestBuyProposals();
 
 if (!headlines.length && !stock.proposals.length) { output("changed", "false"); saveState(); summary("No new relevant headlines."); process.exit(0); }
 
-if (headlines.length && !process.env.ANTHROPIC_API_KEY && !stock.proposals.length) {
-  // Without a key, list the headlines in the run summary instead (and don't mark them seen).
-  summary(`### Relevant headlines (no ANTHROPIC_API_KEY set, so no edits were proposed)\n\n` +
+if (headlines.length && !canAsk() && !stock.proposals.length) {
+  // Without a key (or past today's limit), list the headlines in the run summary instead (and don't mark them seen).
+  summary(`### Relevant headlines (no ANTHROPIC_API_KEY set, or today's limit reached, so no edits were proposed)\n\n` +
     headlines.map(sourceLine).join("\n"));
   output("changed", "false");
   saveState();
   process.exit(0);
 }
 
-const askAi = headlines.length && process.env.ANTHROPIC_API_KEY;
+const askAi = headlines.length && canAsk();
 const proposals = [...(askAi ? await askClaude(data, headlines) : []), ...stock.proposals];
 const byId = new Map([...headlines, ...stock.headlines].map(h => [h.id, h]));
 const { data: next, applied, skipped } = applyAll(data, proposals, byId, today);

@@ -1,0 +1,5 @@
+{
+  "_readme": "Keeps the paid parts of the news check inside a prepaid balance (see scripts/news-check.mjs). claudeCallsPerDay: the most times Claude is asked in a day (a day's news read counts as one, and so does each batch of X posts); once it's used up, runs only list headlines. newsReadsPerDay: 1 reads the news once a day, 2 reads it morning and afternoon. Delete the file for no limit and twice a day.",
+  "claudeCallsPerDay": 3,
+  "newsReadsPerDay": 1
+}

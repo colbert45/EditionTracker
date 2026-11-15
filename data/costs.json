@@ -9,13 +9,13 @@
     },
     {
       "name": "News check",
-      "what": "An AI model (Claude) used to read gaming news twice a day and suggest changes. It's paused for now to save money, so new releases and restocks are added by hand.",
-      "price": "Paused (was about $4 to $7 a month)"
+      "what": "An AI model (Claude) reads gaming news about once a day and suggests changes, and reads restock posts from one deals account on X when they show up. I approve every change. It's paid from a small prepaid balance with a daily limit, so it can't run up a bill.",
+      "price": "About $2 to $4 a month"
     },
     {
       "name": "Posts on X",
-      "what": "Posting to X costs money, about 2 cents a post (and $0.20 with a link), so I stopped. Bluesky and Discord are free and still get every post.",
-      "price": "Paused (was about 2 cents a post)"
+      "what": "X charges me about 2 cents for a post with no link in it (and $0.20 with one), so my posts there have no link and spell out the site's name instead. Reading the deals account's restock posts costs about half a cent each, capped at 100 posts every 10 days. Paid from a prepaid balance.",
+      "price": "About 2 cents a post, plus up to about $1.50 a month for reading"
     },
     {
       "name": "Posts on Bluesky",

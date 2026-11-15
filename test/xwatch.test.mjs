@@ -155,3 +155,33 @@ test("Best Buy is asked at most once an hour, even with runs every 15 minutes", 
   const later = run(s, { bestbuy: bb, env, now: "2026-10-26T16:01:00Z" });
   assert.equal(to(later, "api.bestbuy.com").length, 1);
 });
+
+test("config/budget.json: Claude is asked at most claudeCallsPerDay times a day, and X isn't read once it can't be", () => {
+  const s = setup();
+  writeFileSync(join(s.dir, "config/budget.json"), JSON.stringify({ claudeCallsPerDay: 1, newsReadsPerDay: 2 }));
+  const first = run(s, { x: POST, claude: RESTOCK });
+  assert.equal(to(first, "api.anthropic.com").length, 1);
+  assert.deepEqual(first.state.claudeCalls, { "2026-10-26": 1 });
+  const newer = { data: [{ ...POST.data[0], id: "1850000000000000009", text: "Zelda in stock at Target https://t.co/z" }], meta: { newest_id: "1850000000000000009" } };
+  const second = run(s, { x: newer, claude: RESTOCK, now: "2026-10-26T15:15:00Z" });
+  assert.equal(to(second, "api.anthropic.com").length, 0); // today's one call is used up
+  assert.equal(to(second, "api.x.com").length, 0); // and the posts aren't paid for, since they couldn't be read
+  assert.match(second.stdout, /X watch: skipped \(Claude can't be asked right now/);
+  const tomorrow = run(s, { x: newer, claude: RESTOCK, now: "2026-10-30T15:00:00Z" });
+  assert.equal(to(tomorrow, "api.x.com").length, 1);
+  assert.equal(to(tomorrow, "api.anthropic.com").length, 1);
+  assert.deepEqual(tomorrow.state.claudeCalls, { "2026-10-30": 1 }); // days older than 3 are forgotten
+});
+
+test("config/budget.json: newsReadsPerDay 1 reads the news once a day, not morning and afternoon", () => {
+  const afternoon = "2026-10-26T20:00:00Z"; // 4pm in New York
+  const once = setup({ state: { lastHalfDay: "2026-10-26" } });
+  writeFileSync(join(once.dir, "config/budget.json"), JSON.stringify({ newsReadsPerDay: 1 }));
+  const a = run(once, { now: afternoon });
+  assert.match(a.stdout, /Already read the news this day \(2026-10-26\)/);
+  assert.equal(a.calls.filter(c => !/api\.(x|anthropic)\.com/.test(c.url)).length, 0); // no news sites asked
+  const twice = setup({ state: { lastHalfDay: "2026-10-26 AM" } }); // no budget file: twice a day, as before
+  const b = run(twice, { now: afternoon });
+  assert.doesNotMatch(b.stdout, /Already read the news/);
+  assert.ok(b.calls.some(c => c.url.includes("nintendolife.com")), "the news sites are read in the afternoon");
+});
