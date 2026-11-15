@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-08",
+  "updated": "2026-11-15",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -123,7 +123,7 @@
       "type": "console",
       "brand": "Nintendo",
       "platform": "Nintendo Switch 2",
-      "status": "out",
+      "status": "soldout",
       "price": "$519.99",
       "releaseDate": "2026-10-29",
       "releaseWindow": null,
@@ -141,9 +141,9 @@
       },
       "notes": [
         "Nintendo's first special edition Switch 2. Green and gold console, green Joy-Con, and a black dock with a gold Triforce. It's only $20 more than a regular Switch 2, which is a big part of why it went fast.",
-        "Preorders sold out at Nintendo, Best Buy and Target within about a day, with resellers asking $800 and up. If you missed it, keep an eye out for restocks before Oct 29.",
-        "Best Buy plans to hold back a limited number of units for in-store sale at its Ocarina of Time midnight launch in the US.",
-        "Nintendo has said it misjudged demand for this console and plans more stock. I haven't seen dates or stores for that yet."
+        "Preorders sold out at Nintendo, Best Buy and Target within about a day, with resellers asking $800 and up. Small restocks have followed, but they've gone fast.",
+        "Best Buy, Target and GameStop had limited in-store stock on Nov 5, with Target and Walmart online restocks reported on Nov 6.",
+        "Nintendo's store shows it as sold out and says more inventory is on the way. I haven't seen dates or stores for that yet."
       ],
       "inTheBox": [
         "Switch 2 console with green Joy-Con",
@@ -205,6 +205,10 @@
         {
           "date": "2026-11-03",
           "text": "Walmart is reportedly sending $519 gift cards to some buyers whose preorders it cancelled. A few people also say they managed to reorder the console."
+        },
+        {
+          "date": "2026-11-06",
+          "text": "Limited restocks reported around the Ocarina of Time launch: Best Buy, Target and GameStop in stores on Nov 5, and Target and Walmart online on Nov 6. The Nintendo store shows it as sold out, with more inventory on the way."
         }
       ],
       "sources": [
@@ -593,7 +597,7 @@
       "type": "console",
       "brand": "Microsoft",
       "platform": "Xbox Series X",
-      "status": "preorder",
+      "status": "soldout",
       "price": "$899.99",
       "releaseDate": "2026-11-13",
       "releaseWindow": null,
@@ -611,7 +615,7 @@
       },
       "notes": [
         "Translucent green Series X, styled after the original Xbox, for the 25th anniversary. Every one is numbered with its own engraving. $100 over a standard 1TB Series X, but it comes with the matching controller and Halo: Campaign Evolved.",
-        "Limit one per customer. One outlet listed Oct 20 as the release date, but that's the controller. The console is Nov 13."
+        "Limit one per customer. It launched Nov 13 and sold out within minutes of preorders opening in August; resellers are asking about $2,000 to $2,500. Some outlets report a limited restock around launch and one at Best Buy later in November, but I haven't seen the stores or Microsoft confirm dates."
       ],
       "inTheBox": [
         "Translucent green 1TB Series X, individually numbered",
@@ -644,6 +648,10 @@
         {
           "date": "2026-08-27",
           "text": "Preorders opened for everyone."
+        },
+        {
+          "date": "2026-11-13",
+          "text": "Launched. Preorder buyers are getting their consoles. It's sold out at the stores."
         }
       ],
       "sources": [
@@ -731,7 +739,7 @@
       "type": "accessory",
       "brand": "Razer",
       "platform": "PC, Xbox",
-      "status": "preorder",
+      "status": "out",
       "price": "$119.99 to $209.99",
       "releaseDate": "2026-10-20",
       "releaseWindow": null,
@@ -766,6 +774,10 @@
         {
           "date": "2026-08-25",
           "text": "Preorders opened at Razer.com."
+        },
+        {
+          "date": "2026-10-20",
+          "text": "Released. It started shipping from Razer's US store."
         }
       ],
       "sources": [
