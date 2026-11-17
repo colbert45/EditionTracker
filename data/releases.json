@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15",
+  "updated": "2026-11-17",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -3081,6 +3081,46 @@
         {
           "label": "Time Extension",
           "url": "https://www.timeextension.com/features/hands-on-ayaneo-konkr-pocket-advance-ice-pink-special-edition-the-fuchsia-is-in-your-hands"
+        }
+      ]
+    },
+    {
+      "id": "splatoon-raiders-art-book",
+      "name": "Splatoon Raiders Art Book",
+      "category": "collect",
+      "type": "other",
+      "brand": "Nintendo",
+      "platform": "Art book",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": "2027-02-09",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Splatoon Raiders art book",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#f26a1b",
+          "#2b2bd9",
+          "#f2e52e"
+        ]
+      },
+      "notes": [
+        "A 336-page art book made with KADOKAWA.",
+        "It launches in Japan on Feb 9, 2027, priced at 3,960 yen.",
+        "I haven't seen a release outside Japan announced yet."
+      ],
+      "inTheBox": [
+        "336-page art book"
+      ],
+      "stores": [],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/11/splatoon-raiders-is-getting-its-very-own-336-page-art-book-next-year"
         }
       ]
     }
