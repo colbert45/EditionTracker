@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17",
+  "updated": "2026-11-18",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -3121,6 +3121,51 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/11/splatoon-raiders-is-getting-its-very-own-336-page-art-book-next-year"
+        }
+      ]
+    },
+    {
+      "id": "sea-of-stars-sunset-edition-switch-2",
+      "name": "Sea of Stars: Sunset Edition (Switch 2)",
+      "category": "games",
+      "type": "game",
+      "brand": "iam8bit",
+      "platform": "Nintendo Switch 2",
+      "status": "announced",
+      "price": "$49.99",
+      "releaseDate": "2027-04-02",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "Sea of Stars Sunset Edition Switch 2 iam8bit",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "case",
+        "colors": [
+          "#e8793a",
+          "#5b3a8c",
+          "#1f2a5c"
+        ]
+      },
+      "notes": [
+        "iam8bit announced this as a final physical release for Sea of Stars.",
+        "The cartridge holds the full game and all of its expansions.",
+        "It launches April 2, 2027. I haven't seen a preorder date yet."
+      ],
+      "inTheBox": [
+        "Switch 2 cartridge with the full game and all expansions"
+      ],
+      "stores": [
+        {
+          "store": "iam8bit",
+          "listed": false
+        }
+      ],
+      "timeline": [],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/11/sea-of-stars-is-getting-a-sunset-edition-switch-2-physical-and-a-gorgeous-final-merch-drop"
         }
       ]
     }
