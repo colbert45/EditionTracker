@@ -1016,7 +1016,7 @@
       "type": "controller",
       "brand": "Sony",
       "platform": "PS5",
-      "status": "preorder",
+      "status": "restock",
       "price": "$84.99",
       "releaseDate": "2026-11-19",
       "releaseWindow": null,
@@ -1056,6 +1056,19 @@
         {
           "label": "TweakTown",
           "url": "https://www.tweaktown.com/rss/click/news/113410/?c=news-mf"
+        },
+        {
+          "label": "Wario64 on X",
+          "url": "https://x.com/Wario64/status/2123093003224985673"
+        }
+      ],
+      "restocks": [
+        {
+          "date": "2026-11-18",
+          "store": "psdirect",
+          "url": "https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-grand-theft-auto-vi-black-limited-edition-for-ps5-pc-mac-mobile",
+          "source": "https://x.com/Wario64/status/2123093003224985673",
+          "reported": true
         }
       ]
     },
