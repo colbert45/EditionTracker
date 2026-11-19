@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-18",
+  "updated": "2026-11-19",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -3179,6 +3179,54 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/11/sea-of-stars-is-getting-a-sunset-edition-switch-2-physical-and-a-gorgeous-final-merch-drop"
+        }
+      ]
+    },
+    {
+      "id": "8bitdo-gc-bluetooth-gamepad",
+      "name": "8BitDo GC Bluetooth Gamepad (GameCube 25th Anniversary)",
+      "category": "nintendo",
+      "type": "controller",
+      "brand": "8BitDo",
+      "platform": "Nintendo Switch, Switch 2, Windows",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": "2026-12-10",
+      "releaseWindow": null,
+      "preordersOpened": null,
+      "searchQuery": "8BitDo GC Bluetooth Gamepad GameCube 25th anniversary",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "pad",
+        "colors": [
+          "#4b3f8f",
+          "#c0c0c0",
+          "#222222"
+        ]
+      },
+      "notes": [
+        "Made to mark the GameCube's 25th anniversary.",
+        "It keeps the shape and layout of the classic GameCube pad.",
+        "8BitDo says it will cost less than Nintendo's own GameCube controller. I haven't seen an exact price yet."
+      ],
+      "inTheBox": [],
+      "stores": [
+        {
+          "store": "eightbitdo",
+          "listed": false
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-11-18",
+          "text": "8BitDo announced its GC Bluetooth Gamepad for the GameCube's 25th anniversary. It's set to launch on Dec 10, 2026."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/11/8bitdo-reveals-its-own-gamecube-controller-for-switch-2"
         }
       ]
     }
