@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-19",
+  "updated": "2026-11-24",
   "featured": [
     "switch-2-zelda-40th",
     "gta-vi-goodtime-state-vice-city-collection",
@@ -3227,6 +3227,48 @@
         {
           "label": "Nintendo Life",
           "url": "https://www.nintendolife.com/news/2026/11/8bitdo-reveals-its-own-gamecube-controller-for-switch-2"
+        }
+      ]
+    },
+    {
+      "id": "atari-gamestation-go-gold-edition-55th-anniversary",
+      "name": "Atari GameStation Go Gold Edition (55th Anniversary)",
+      "category": "retro",
+      "type": "console",
+      "brand": "Atari",
+      "platform": "Retro handheld",
+      "status": "announced",
+      "price": "TBA",
+      "releaseDate": null,
+      "releaseWindow": "TBA",
+      "preordersOpened": null,
+      "searchQuery": "Atari GameStation Go gold 55th anniversary Costco",
+      "image": null,
+      "imageCredit": null,
+      "art": {
+        "type": "handheld",
+        "colors": [
+          "#d4af37",
+          "#1a1a1a",
+          "#f5e6a8"
+        ]
+      },
+      "notes": [
+        "Limited gold edition of the GameStation Go for Atari's 55th anniversary.",
+        "It's sold through Costco in the US. I haven't seen a price or exact date yet."
+      ],
+      "inTheBox": [],
+      "stores": [],
+      "timeline": [
+        {
+          "date": "2026-11-24",
+          "text": "Atari announced a limited gold edition of its GameStation Go handheld for its 55th anniversary. It's a Costco exclusive in the US."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Time Extension",
+          "url": "https://www.timeextension.com/news/2026/11/atari-celebrates-55th-anniversary-with-costco-exclusive-gold-gamestation-go"
         }
       ]
     }
