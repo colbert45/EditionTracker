@@ -672,7 +672,7 @@
       "type": "controller",
       "brand": "Microsoft",
       "platform": "Xbox Series X|S, PC",
-      "status": "out",
+      "status": "restock",
       "price": "$79.99",
       "releaseDate": "2026-10-20",
       "releaseWindow": null,
@@ -729,6 +729,19 @@
         {
           "label": "Pure Xbox",
           "url": "https://www.purexbox.com/news/2026/10/xbox-25th-anniversary-controller-comes-with-exclusive-dynamic-background"
+        },
+        {
+          "label": "Wario64 on X",
+          "url": "https://x.com/Wario64/status/2125378870916362508"
+        }
+      ],
+      "restocks": [
+        {
+          "date": "2026-11-24",
+          "store": "xbox",
+          "url": "https://www.microsoft.com/en-us/d/xbox-wireless-controller-x25-special-edition/8wg5vqp0x4h2/kxw9",
+          "source": "https://x.com/Wario64/status/2125378870916362508",
+          "reported": true
         }
       ]
     },
